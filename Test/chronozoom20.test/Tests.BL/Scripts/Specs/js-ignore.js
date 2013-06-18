@@ -1,2 +1,0 @@
-alert = function () { };
-confirm = function () { };

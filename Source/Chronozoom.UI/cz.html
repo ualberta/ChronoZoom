@@ -54,7 +54,6 @@
         }
 
         if (Modernizr.canvas) {
-            if (constants.environment == 'Localhost') {
                 AddScript("/scripts/settings.js");
                 AddScript("/scripts/common.js");
                 AddScript("/scripts/viewport.js");
@@ -97,10 +96,6 @@
                 AddScript("/ui/tourstop-listbox.js");
                 
                 AddScript("/scripts/cz.js");
-            }
-            else {
-                AddScript("/cz.js");
-            }
         }
         else {
             window.location = "/fallback.html"
