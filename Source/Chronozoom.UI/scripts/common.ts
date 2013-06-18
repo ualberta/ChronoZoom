@@ -1,5 +1,4 @@
 ﻿/// <reference path='settings.ts'/>
-/// <reference path='tours.ts'/>
 /// <reference path='breadcrumbs.ts'/>
 /// <reference path='search.ts'/>
 /// <reference path='urlnav.ts'/>
@@ -180,9 +179,6 @@ module CZ {
         Is called by direct user actions like links, bread crumbs clicking, etc.
         */
         export function setVisibleByUserDirectly(visible) {
-            CZ.Tours.pauseTourAtAnyAnimation = false;
-            if (CZ.Tours.tour != undefined && CZ.Tours.tour.state == "play")
-                CZ.Tours.tourPause();
             return setVisible(visible);
         }
 
@@ -238,16 +234,6 @@ module CZ {
                             }
                         );
                     }
-
-                    CZ.Service.getTours().then(
-                        function (response) {
-                            CZ.Tours.parseTours(response);
-                            CZ.Tours.initializeToursContent();
-                        },
-                        function (error) {
-                            console.log("Error connecting to service:\n" + error.responseText);
-                        }
-                    );
                 },
                 function (error) {
                     console.log("Error connecting to service:\n" + error.responseText);

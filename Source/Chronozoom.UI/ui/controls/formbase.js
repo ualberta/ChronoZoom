@@ -2,7 +2,7 @@ var __extends = this.__extends || function (d, b) {
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
     d.prototype = new __();
-};
+}
 var CZ;
 (function (CZ) {
     (function (UI) {
@@ -75,4 +75,6 @@ var CZ;
         UI.FormUpdateEntity = FormUpdateEntity;        
     })(CZ.UI || (CZ.UI = {}));
     var UI = CZ.UI;
+
 })(CZ || (CZ = {}));
+

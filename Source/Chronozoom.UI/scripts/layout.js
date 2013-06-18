@@ -37,8 +37,10 @@ var CZ;
             GenerateAspect(timeline);
             if(timeline.Height) {
                 timeline.Height /= 100;
-            } else if(!timeline.AspectRatio && !timeline.Height) {
-                timeline.Height = 0.4;
+            } else {
+                if(!timeline.AspectRatio && !timeline.Height) {
+                    timeline.Height = 0.4;
+                }
             }
         }
         function GenerateAspect(timeline) {
@@ -57,8 +59,10 @@ var CZ;
                 timeline.timelines.forEach(function (tl) {
                     if(tl.AspectRatio) {
                         tl.height = (tl.right - tl.left) / tl.AspectRatio;
-                    } else if(timeline.height && tl.Height) {
-                        tl.height = Math.min(timeline.height * tl.Height, (tl.right - tl.left) * CZ.Settings.timelineMinAspect);
+                    } else {
+                        if(timeline.height && tl.Height) {
+                            tl.height = Math.min(timeline.height * tl.Height, (tl.right - tl.left) * CZ.Settings.timelineMinAspect);
+                        }
                     }
                     LayoutTimeline(tl, timelineWidth, measureContext);
                 });
@@ -97,7 +101,7 @@ var CZ;
                 var titleObject = GenerateTitleObject(timeline.height, timeline, measureContext);
                 if(timeline.exhibits instanceof Array) {
                     if(timeline.exhibits.length > 0 && (tlRes.max - tlRes.min) < timeline.height) {
-                        while((res.max - res.min) > (timeline.height - titleObject.bboxHeight) && exhibitSize > timelineWidth / 20.0) {
+                        while((res.max - res.min) > (timeline.height - titleObject.bboxHeight) && exhibitSize > timelineWidth / 20) {
                             exhibitSize /= 1.5;
                             res = LayoutContent(timeline, exhibitSize);
                         }
@@ -114,7 +118,7 @@ var CZ;
             } else {
                 var min = res.min;
                 var max = res.max;
-                var minAspect = 1.0 / CZ.Settings.timelineMinAspect;
+                var minAspect = 1 / CZ.Settings.timelineMinAspect;
                 var minHeight = timelineWidth / minAspect;
                 var contentHeight = Math.max((1 - headerPercent) * minHeight, max - min);
                 var fullHeight = contentHeight / (1 - headerPercent);
@@ -186,7 +190,7 @@ var CZ;
                             break;
                         }
                     }
-                    ;
+                    ; ;
                     if(!foundPlace) {
                         y = segmentPoints[segmentPoints.length - 1].value;
                     }
@@ -210,17 +214,19 @@ var CZ;
             if(timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (eb) {
                     eb.size = exhibitSize;
-                    eb.left = eb.x - eb.size / 2.0;
-                    eb.right = eb.x + eb.size / 2.0;
+                    eb.left = eb.x - eb.size / 2;
+                    eb.right = eb.x + eb.size / 2;
                     eb.realHeight = exhibitSize;
                     if(eb.left < timeline.left) {
                         eb.left = timeline.left;
                         eb.right = eb.left + eb.size;
                         eb.isDeposed = true;
-                    } else if(eb.right > timeline.right) {
-                        eb.right = timeline.right;
-                        eb.left = timeline.right - eb.size;
-                        eb.isDeposed = true;
+                    } else {
+                        if(eb.right > timeline.right) {
+                            eb.right = timeline.right;
+                            eb.left = timeline.right - eb.size;
+                            eb.isDeposed = true;
+                        }
                     }
                     if(eb.Sequence) {
                         sequencedContent.push(eb);
@@ -309,7 +315,7 @@ var CZ;
             timeline.y = timeline.realY + timeline.heightEps;
             if(timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (infodot) {
-                    infodot.y = infodot.realY + infodot.size / 2.0 + timeline.y;
+                    infodot.y = infodot.realY + infodot.size / 2 + timeline.y;
                 });
             }
             if(timeline.timelines instanceof Array) {
@@ -320,18 +326,18 @@ var CZ;
             }
         }
         function CalcInfodotSize(timeline) {
-            return (timeline.right - timeline.left) / 20.0;
+            return (timeline.right - timeline.left) / 20;
         }
         function GenerateTitleObject(tlHeight, timeline, measureContext) {
             var tlW = timeline.right - timeline.left;
             measureContext.font = "100pt " + CZ.Settings.timelineHeaderFontName;
             var size = measureContext.measureText(timeline.title);
             var height = CZ.Settings.timelineHeaderSize * tlHeight;
-            var width = height * size.width / 100.0;
+            var width = height * size.width / 100;
             var margin = Math.min(tlHeight, tlW) * CZ.Settings.timelineHeaderMargin;
             if(width + 2 * margin > tlW) {
                 width = tlW - 2 * margin;
-                height = width * 100.0 / size.width;
+                height = width * 100 / size.width;
             }
             return {
                 width: width - 1.25 * height,
@@ -369,7 +375,7 @@ var CZ;
                             contentItems[i].guid = contentItems[i].id;
                         }
                     }
-                    var infodot1 = CZ.VCContent.addInfodot(t1, "layerInfodots", 'e' + childInfodot.id, (childInfodot.left + childInfodot.right) / 2.0, childInfodot.y, 0.8 * childInfodot.size / 2.0, contentItems, {
+                    var infodot1 = CZ.VCContent.addInfodot(t1, "layerInfodots", 'e' + childInfodot.id, (childInfodot.left + childInfodot.right) / 2, childInfodot.y, 0.8 * childInfodot.size / 2, contentItems, {
                         isBuffered: false,
                         guid: childInfodot.id,
                         title: childInfodot.title,
@@ -387,16 +393,24 @@ var CZ;
         function GetTimelineColor(timeline) {
             if(timeline.Regime == "Cosmos") {
                 return "rgba(152, 108, 157, 1.0)";
-            } else if(timeline.Regime == "Earth") {
-                return "rgba(81, 127, 149, 1.0)";
-            } else if(timeline.Regime == "Life") {
-                return "rgba(73, 150, 73, 1.0)";
-            } else if(timeline.Regime == "Pre-history") {
-                return "rgba(237, 145, 50, 1.0)";
-            } else if(timeline.Regime == "Humanity") {
-                return "rgba(212, 92, 70, 1.0)";
             } else {
-                return "rgba(255, 255, 255, 0.5)";
+                if(timeline.Regime == "Earth") {
+                    return "rgba(81, 127, 149, 1.0)";
+                } else {
+                    if(timeline.Regime == "Life") {
+                        return "rgba(73, 150, 73, 1.0)";
+                    } else {
+                        if(timeline.Regime == "Pre-history") {
+                            return "rgba(237, 145, 50, 1.0)";
+                        } else {
+                            if(timeline.Regime == "Humanity") {
+                                return "rgba(212, 92, 70, 1.0)";
+                            } else {
+                                return "rgba(255, 255, 255, 0.5)";
+                            }
+                        }
+                    }
+                }
             }
         }
         Layout.FindChildTimeline = function (timeline, id, recursive) {
@@ -426,7 +440,7 @@ var CZ;
                 var width = timeline.right - timeline.left;
                 var scaleX = vp.visible.scale * width / vp.width;
                 var scaleY = vp.visible.scale * timeline.height / vp.height;
-                return new CZ.Viewport.VisibleRegion2d(timeline.left + (timeline.right - timeline.left) / 2.0, timeline.y + timeline.height / 2.0, Math.max(scaleX, scaleY));
+                return new CZ.Viewport.VisibleRegion2d(timeline.left + (timeline.right - timeline.left) / 2, timeline.y + timeline.height / 2, Math.max(scaleX, scaleY));
             }
         }
         function LoadTimeline(root, rootTimeline) {
@@ -587,9 +601,9 @@ var CZ;
                 var curTime = (new Date()).getTime();
                 var t;
                 if(elem.animation.duration > 0) {
-                    t = Math.min(1.0, (curTime - elem.animation.startTime) / elem.animation.duration);
+                    t = Math.min(1, (curTime - elem.animation.startTime) / elem.animation.duration);
                 } else {
-                    t = 1.0;
+                    t = 1;
                 }
                 t = CZ.ViewportAnimation.animationEase(t);
                 for(var i = 0; i < args.length; i++) {
@@ -597,7 +611,7 @@ var CZ;
                         elem[elem.animation.args[i].property] = elem.animation.args[i].startValue + t * (elem.animation.args[i].targetValue - elem.animation.args[i].startValue);
                     }
                 }
-                if(t == 1.0) {
+                if(t == 1) {
                     elem.animation.isAnimating = false;
                     elem.animation.args = [];
                     delete Layout.animatingElements[elem.id];
@@ -700,21 +714,23 @@ var CZ;
                             }
                         }
                     }
-                } else if(srcChildTimelines.length > 0 && destChildTimelines.length === 0) {
-                    var t = generateLayout(src, dest);
-                    var margin = Math.min(t.width, t.newHeight) * CZ.Settings.timelineHeaderMargin;
-                    dest.delta = Math.max(0, t.newHeight - dest.newHeight);
-                    dest.children.splice(0);
-                    for(var i = 0; i < t.children.length; i++) {
-                        dest.children.push(t.children[i]);
-                    }
-                    dest.titleObject = dest.children[0];
-                    dest.isBuffered = dest.isBuffered || (src.timelines instanceof Array);
-                    for(var i = 0; i < dest.children.length; i++) {
-                        convertRelativeToAbsoluteCoords(dest.children[i], dest.newY);
-                    }
                 } else {
-                    dest.delta = 0;
+                    if(srcChildTimelines.length > 0 && destChildTimelines.length === 0) {
+                        var t = generateLayout(src, dest);
+                        var margin = Math.min(t.width, t.newHeight) * CZ.Settings.timelineHeaderMargin;
+                        dest.delta = Math.max(0, t.newHeight - dest.newHeight);
+                        dest.children.splice(0);
+                        for(var i = 0; i < t.children.length; i++) {
+                            dest.children.push(t.children[i]);
+                        }
+                        dest.titleObject = dest.children[0];
+                        dest.isBuffered = dest.isBuffered || (src.timelines instanceof Array);
+                        for(var i = 0; i < dest.children.length; i++) {
+                            convertRelativeToAbsoluteCoords(dest.children[i], dest.newY);
+                        }
+                    } else {
+                        dest.delta = 0;
+                    }
                 }
             } else {
                 throw "error: Cannot merge timelines. Src and dest node ids differ.";
@@ -743,4 +759,6 @@ var CZ;
         Layout.Merge = Merge;
     })(CZ.Layout || (CZ.Layout = {}));
     var Layout = CZ.Layout;
+
 })(CZ || (CZ = {}));
+

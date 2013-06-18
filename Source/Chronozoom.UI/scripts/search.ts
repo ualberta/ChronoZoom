@@ -17,8 +17,6 @@ module CZ {
 
         // The method is called when the search button is clicked
         export function onSearchClicked() {
-            if (CZ.Tours.isTourWindowVisible && CZ.Tours.onTourClicked)
-                CZ.Tours.onTourClicked();
 
             if (isSearchWindowVisible) {
                 $(".search-icon").removeClass("active");

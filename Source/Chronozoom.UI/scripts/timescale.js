@@ -6,13 +6,17 @@ var CZ;
         }
         if(container.tagName !== undefined && container.tagName.toLowerCase() === "div") {
             container = $(container);
-        } else if(typeof (container) === "string") {
-            container = $("#" + container);
-            if(container.length === 0 || !container.is("div")) {
-                throw "There is no DIV element with such ID.";
+        } else {
+            if(typeof (container) === "string") {
+                container = $("#" + container);
+                if(container.length === 0 || !container.is("div")) {
+                    throw "There is no DIV element with such ID.";
+                }
+            } else {
+                if(!(container instanceof jQuery && container.is("div"))) {
+                    throw "Container parameter is invalid! It should be DIV, or ID of DIV, or jQuery instance of DIV.";
+                }
             }
-        } else if(!(container instanceof jQuery && container.is("div"))) {
-            throw "Container parameter is invalid! It should be DIV, or ID of DIV, or jQuery instance of DIV.";
         }
         container.mousemove(function (e) {
             mouseMove(e);
@@ -159,12 +163,16 @@ var CZ;
             if(_container.currentStyle) {
                 fontSize = _container.currentStyle["font-size"];
                 ctx.font = fontSize + _container.currentStyle["font-family"];
-            } else if(document.defaultView && (document.defaultView).getComputedStyle) {
-                fontSize = (document.defaultView).getComputedStyle(_container[0], null).getPropertyValue("font-size");
-                ctx.font = fontSize + (document.defaultView).getComputedStyle(_container[0], null).getPropertyValue("font-family");
-            } else if(_container.style) {
-                fontSize = _container.style["font-size"];
-                ctx.font = fontSize + _container.style["font-family"];
+            } else {
+                if(document.defaultView && (document.defaultView).getComputedStyle) {
+                    fontSize = (document.defaultView).getComputedStyle(_container[0], null).getPropertyValue("font-size");
+                    ctx.font = fontSize + (document.defaultView).getComputedStyle(_container[0], null).getPropertyValue("font-family");
+                } else {
+                    if(_container.style) {
+                        fontSize = _container.style["font-size"];
+                        ctx.font = fontSize + _container.style["font-family"];
+                    }
+                }
             }
         }
         function updateSize() {
@@ -291,15 +299,19 @@ var CZ;
                         deltaSize = (_ticksInfo[i1].width + _ticksInfo[i2].width) / 2;
                         if(i1 === 0 && (_ticksInfo[i1].position - _ticksInfo[i1].width / 2 < 0)) {
                             deltaSize -= _ticksInfo[i1].width / 2;
-                        } else if(i2 == len - 1 && (_ticksInfo[i2].position - _ticksInfo[i2].width / 2 > _size)) {
-                            deltaSize -= _ticksInfo[i2].width / 2;
+                        } else {
+                            if(i2 == len - 1 && (_ticksInfo[i2].position - _ticksInfo[i2].width / 2 > _size)) {
+                                deltaSize -= _ticksInfo[i2].width / 2;
+                            }
                         }
                     } else {
                         deltaSize = (_ticksInfo[i1].height + _ticksInfo[i2].height) / 2;
                         if(i1 === 0 && (_ticksInfo[i1].position - _ticksInfo[i1].height / 2 < 0)) {
                             deltaSize -= _ticksInfo[i1].height / 2;
-                        } else if(i2 == len - 1 && (_ticksInfo[i2].position - _ticksInfo[i2].height / 2 > _size)) {
-                            deltaSize -= _ticksInfo[i2].height / 2;
+                        } else {
+                            if(i2 == len - 1 && (_ticksInfo[i2].position - _ticksInfo[i2].height / 2 > _size)) {
+                                deltaSize -= _ticksInfo[i2].height / 2;
+                            }
                         }
                     }
                     if(delta - deltaSize < CZ.Settings.minLabelSpace) {
@@ -362,8 +374,10 @@ var CZ;
                     shift = _ticksInfo[i].width / 2;
                     if(i === 0 && x < shift) {
                         shift = 0;
-                    } else if(i == len - 1 && x + shift > _size) {
-                        shift *= 2;
+                    } else {
+                        if(i == len - 1 && x + shift > _size) {
+                            shift *= 2;
+                        }
                     }
                     ctx.moveTo(x, 1);
                     ctx.lineTo(x, 1 + CZ.Settings.tickLength);
@@ -375,8 +389,10 @@ var CZ;
                     shift = _ticksInfo[i].height / 2;
                     if(i === 0 && x + shift > _size) {
                         shift *= 2;
-                    } else if(i == len - 1 && x < shift) {
-                        shift = 0;
+                    } else {
+                        if(i == len - 1 && x < shift) {
+                            shift = 0;
+                        }
                     }
                     ctx.moveTo(1, x);
                     ctx.lineTo(1 + CZ.Settings.tickLength, x);
@@ -406,34 +422,42 @@ var CZ;
                 }
                 if(minDelta >= CZ.Settings.minSmallTickSpace) {
                     switch(_position) {
-                        case "bottom":
+                        case "bottom": {
                             for(i = 0; i < len; i++) {
                                 x = that.getCoordinateFromTick(smallTicks[i]);
                                 ctx.moveTo(x, 1);
                                 ctx.lineTo(x, 1 + CZ.Settings.smallTickLength);
                             }
                             break;
-                        case "top":
+
+                        }
+                        case "top": {
                             for(i = 0; i < len; i++) {
                                 x = that.getCoordinateFromTick(smallTicks[i]);
                                 ctx.moveTo(x, CZ.Settings.tickLength - CZ.Settings.smallTickLength);
                                 ctx.lineTo(x, 1 + CZ.Settings.tickLength);
                             }
                             break;
-                        case "left":
+
+                        }
+                        case "left": {
                             for(i = 0; i < len; i++) {
                                 x = that.getCoordinateFromTick(smallTicks[i]);
                                 ctx.moveTo(CZ.Settings.tickLength - CZ.Settings.smallTickLength, _size - x - 1);
                                 ctx.lineTo(CZ.Settings.tickLength, _size - x - 1);
                             }
                             break;
-                        case "right":
+
+                        }
+                        case "right": {
                             for(i = 0; i < len; i++) {
                                 x = that.getCoordinateFromTick(smallTicks[i]);
                                 ctx.moveTo(1, _size - x - 1);
                                 ctx.lineTo(1 + CZ.Settings.smallTickLength, _size - x - 1);
                             }
                             break;
+
+                        }
                     }
                 }
             }
@@ -525,7 +549,7 @@ var CZ;
                     y: latestVisible.centerY - vp.height / 2,
                     width: (timerange.right - timerange.left),
                     height: vp.height
-                }, 1.0, vp, false);
+                }, 1, vp, false);
                 CZ.Common.vc.virtualCanvas("setVisible", newVis);
                 vp = CZ.Common.vc.virtualCanvas("getViewport");
                 var lt = vp.pointScreenToVirtual(0, 0);
@@ -562,7 +586,7 @@ var CZ;
                         y: latestVisible.centerY - vp.height / 2,
                         width: width1,
                         height: vp.height
-                    }, 1.0, vp, false);
+                    }, 1, vp, false);
                     CZ.Common.vc.virtualCanvas("setVisible", newVis);
                     vp = CZ.Common.vc.virtualCanvas("getViewport");
                     var lt = vp.pointScreenToVirtual(0, 0);
@@ -618,7 +642,7 @@ var CZ;
         };
     }
     CZ.Timescale = Timescale;
-    ;
+    ; ;
     function TickSource() {
         this.delta , this.beta;
         this.range = {
@@ -705,11 +729,15 @@ var CZ;
         this.decreaseTickCount = function () {
             if(this.delta == 1) {
                 this.delta = 2;
-            } else if(this.delta == 2) {
-                this.delta = 5;
-            } else if(this.delta == 5) {
-                this.delta = 1;
-                this.beta++;
+            } else {
+                if(this.delta == 2) {
+                    this.delta = 5;
+                } else {
+                    if(this.delta == 5) {
+                        this.delta = 1;
+                        this.beta++;
+                    }
+                }
             }
             return this.createTicks(this.range);
         };
@@ -717,10 +745,14 @@ var CZ;
             if(this.delta == 1) {
                 this.delta = 5;
                 this.beta--;
-            } else if(this.delta == 2) {
-                this.delta = 1;
-            } else if(this.delta == 5) {
-                this.delta = 2;
+            } else {
+                if(this.delta == 2) {
+                    this.delta = 1;
+                } else {
+                    if(this.delta == 5) {
+                        this.delta = 2;
+                    }
+                }
             }
             return this.createTicks(this.range);
         };
@@ -754,7 +786,7 @@ var CZ;
         };
     }
     CZ.TickSource = TickSource;
-    ;
+    ; ;
     function CosmosTickSource() {
         this.base = CZ.TickSource;
         this.base();
@@ -798,22 +830,30 @@ var CZ;
                     this.regime = "Ma";
                     this.level = 1000000;
                 }
-            } else if(this.range.min <= -10000000) {
-                this.regime = "Ma";
-                this.level = 1000000;
-            } else if(this.range.min <= -10000) {
-                this.regime = "ka";
-                this.level = 1000;
+            } else {
+                if(this.range.min <= -10000000) {
+                    this.regime = "Ma";
+                    this.level = 1000000;
+                } else {
+                    if(this.range.min <= -10000) {
+                        this.regime = "ka";
+                        this.level = 1000;
+                    }
+                }
             }
         };
         this.createTicks = function (range) {
             var ticks = new Array();
             if(this.regime == "Ga" && this.beta < 7) {
                 this.beta = 7;
-            } else if(this.regime == "Ma" && this.beta < 2) {
-                this.beta = 2;
-            } else if(this.regime == "ka" && this.beta < -1) {
-                this.beta = -1;
+            } else {
+                if(this.regime == "Ma" && this.beta < 2) {
+                    this.beta = 2;
+                } else {
+                    if(this.regime == "ka" && this.beta < -1) {
+                        this.beta = -1;
+                    }
+                }
             }
             var dx = this.delta * Math.pow(10, this.beta);
             var min = Math.floor(this.range.min / dx);
@@ -959,15 +999,15 @@ var CZ;
             }
             var scaleY = scale * element.height / height;
             var vs = {
-                centerX: element.x + element.width / 2.0,
-                centerY: element.y + element.height / 2.0,
+                centerX: element.x + element.width / 2,
+                centerY: element.y + element.height / 2,
                 scale: Math.max(scaleX, scaleY)
             };
             return vs;
         };
     }
     CZ.CosmosTickSource = CosmosTickSource;
-    ;
+    ; ;
     CZ.CosmosTickSource.prototype = new CZ.TickSource();
     function CalendarTickSource() {
         this.base = CZ.TickSource;
@@ -1070,7 +1110,7 @@ var CZ;
             }
             for(var i = 0; i < ticks.length - 1; i++) {
                 var t = ticks[i].position;
-                if(step > 1e-10 + 1 / (n + 1) && Math.abs(t - 1.0) < 1e-10) {
+                if(step > 1e-10 + 1 / (n + 1) && Math.abs(t - 1) < 1e-10) {
                     t = 0;
                 }
                 for(var k = 1; k <= n; k++) {
@@ -1092,8 +1132,10 @@ var CZ;
             labelText = Math.round(labelText);
             if(labelText < 0) {
                 labelText = -labelText;
-            } else if(labelText == 0) {
-                labelText = 1;
+            } else {
+                if(labelText == 0) {
+                    labelText = 1;
+                }
             }
             if(time < this.firstYear + 1) {
                 labelText += " " + "BCE";
@@ -1109,8 +1151,10 @@ var CZ;
             labelText = Math.round(labelText);
             if(labelText < 0) {
                 labelText = -labelText;
-            } else if(labelText == 0) {
-                labelText = 1;
+            } else {
+                if(labelText == 0) {
+                    labelText = 1;
+                }
             }
             if(time < this.firstYear + 1) {
                 labelText += " " + "BCE";
@@ -1202,20 +1246,23 @@ var CZ;
             }
             var scaleY = scale * element.height / height;
             var vs = {
-                centerX: element.x + element.width / 2.0,
-                centerY: element.y + element.height / 2.0,
+                centerX: element.x + element.width / 2,
+                centerY: element.y + element.height / 2,
                 scale: scaleX
             };
             return vs;
         };
     }
     CZ.CalendarTickSource = CalendarTickSource;
-    ;
+    ; ;
     CZ.CalendarTickSource.prototype = new CZ.TickSource();
     function DateTickSource() {
         this.base = CZ.TickSource;
         this.base();
-        var year, month, day;
+        var year;
+        var month;
+        var day;
+
         var tempDays = 0;
         this.getRegime = function (l, r) {
             if(l < r) {
@@ -1362,21 +1409,33 @@ var CZ;
             var date = CZ.Dates.getYMDFromCoordinate(tick);
             if(this.regime == "Quarters_Month") {
                 n = 2;
-            } else if(this.regime == "Month_Weeks") {
-                n = CZ.Dates.daysInMonth[date.month];
-            } else if(this.regime == "Weeks_Days") {
-                n = 7;
-            } else if(this.regime == "Days_Quarters") {
-                n = 4;
+            } else {
+                if(this.regime == "Month_Weeks") {
+                    n = CZ.Dates.daysInMonth[date.month];
+                } else {
+                    if(this.regime == "Weeks_Days") {
+                        n = 7;
+                    } else {
+                        if(this.regime == "Days_Quarters") {
+                            n = 4;
+                        }
+                    }
+                }
             }
             if(this.regime == "Quarters_Month") {
                 step = Math.floor(2 * CZ.Dates.daysInMonth[date.month] / n);
-            } else if(this.regime == "Month_Weeks") {
-                step = 1;
-            } else if(this.regime == "Weeks_Days") {
-                step = 1;
-            } else if(this.regime == "Days_Quarters") {
-                step = 0.25;
+            } else {
+                if(this.regime == "Month_Weeks") {
+                    step = 1;
+                } else {
+                    if(this.regime == "Weeks_Days") {
+                        step = 1;
+                    } else {
+                        if(this.regime == "Days_Quarters") {
+                            step = 0.25;
+                        }
+                    }
+                }
             }
             if(k * step < CZ.Settings.minSmallTickSpace) {
                 return null;
@@ -1582,14 +1641,15 @@ var CZ;
             }
             var scaleY = scale * element.height / height;
             var vs = {
-                centerX: element.x + element.width / 2.0,
-                centerY: element.y + element.height / 2.0,
+                centerX: element.x + element.width / 2,
+                centerY: element.y + element.height / 2,
                 scale: Math.min(scaleX, scaleY)
             };
             return vs;
         };
     }
     CZ.DateTickSource = DateTickSource;
-    ;
+    ; ;
     CZ.DateTickSource.prototype = new CZ.TickSource();
 })(CZ || (CZ = {}));
+

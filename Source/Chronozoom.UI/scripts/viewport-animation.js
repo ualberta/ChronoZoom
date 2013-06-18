@@ -36,7 +36,7 @@ var CZ;
                 var dirX = this.direction.X;
                 var dirY = this.direction.Y;
                 this.pathLeng = Math.sqrt(dirX * dirX + dirY * dirY);
-                if(this.pathLeng < 1e-1) {
+                if(this.pathLeng < 0.1) {
                     this.direction.X = this.direction.Y = 0;
                     if(estimatedVisible.scale == prevVis.scale) {
                         this.isActive = false;
@@ -55,7 +55,7 @@ var CZ;
                 var k = this.velocity * timeDiff;
                 var dx = this.endCenterInSC.x - this.previousFrameCenterInSC.x;
                 var dy = this.endCenterInSC.y - this.previousFrameCenterInSC.y;
-                var curDist = Math.max(1.0, Math.sqrt(dx * dx + dy * dy));
+                var curDist = Math.max(1, Math.sqrt(dx * dx + dy * dy));
                 var prevFrameVisible = this.previousFrameViewport.visible;
                 var updatedVisible = new CZ.Viewport.VisibleRegion2d(prevFrameVisible.centerX, prevFrameVisible.centerY, prevFrameVisible.scale);
                 this.previousFrameCenterInSC.x += curDist * k * this.direction.X;
@@ -71,7 +71,7 @@ var CZ;
                     this.isActive = false;
                     return this.estimatedEndViewport.visible;
                 }
-                ;
+                ; ;
                 var virtPoint = this.startViewport.pointScreenToVirtual(this.previousFrameCenterInSC.x, this.previousFrameCenterInSC.y);
                 updatedVisible.centerX = virtPoint.x;
                 updatedVisible.centerY = virtPoint.y;
@@ -114,12 +114,12 @@ var CZ;
                 var curTime = (new Date()).getTime();
                 var t;
                 if(this.duration > 0) {
-                    t = Math.min(1.0, (curTime - this.startTime) / this.duration);
+                    t = Math.min(1, (curTime - this.startTime) / this.duration);
                 } else {
-                    t = 1.0;
+                    t = 1;
                 }
                 t = animationEase(t);
-                if(t == 1.0) {
+                if(t == 1) {
                     this.isActive = false;
                 }
                 return new CZ.Viewport.VisibleRegion2d(this.x(t), this.y(t), this.scale(t));
@@ -191,4 +191,6 @@ var CZ;
         ViewportAnimation.animationEase = animationEase;
     })(CZ.ViewportAnimation || (CZ.ViewportAnimation = {}));
     var ViewportAnimation = CZ.ViewportAnimation;
+
 })(CZ || (CZ = {}));
+

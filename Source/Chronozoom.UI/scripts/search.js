@@ -125,57 +125,67 @@ var CZ;
                 var height;
                 var output = $("#search .searchResults").empty();
                 if(results == null) {
-                } else if(results.length == 0) {
-                    $("<div></div>", {
-                        class: "searchNoResult",
-                        text: "No results"
-                    }).appendTo(output);
                 } else {
-                    var addResults = function (objectType, sectionTitle) {
-                        var first = true;
-                        for(var i = 0; i < results.length; i++) {
-                            var item = results[i];
-                            if(item.objectType != objectType) {
-                                continue;
-                            }
-                            var resultId;
-                            var elementType;
-                            switch(item.objectType) {
-                                case 0:
-                                    resultId = 'e' + item.id;
-                                    elementType = "exhibit";
-                                    break;
-                                case 1:
-                                    resultId = 't' + item.id;
-                                    elementType = "timeline";
-                                    break;
-                                case 2:
-                                    resultId = item.id;
-                                    elementType = "contentItem";
-                                    break;
-                                default:
+                    if(results.length == 0) {
+                        $("<div></div>", {
+                            class: "searchNoResult",
+                            text: "No results"
+                        }).appendTo(output);
+                    } else {
+                        var addResults = function (objectType, sectionTitle) {
+                            var first = true;
+                            for(var i = 0; i < results.length; i++) {
+                                var item = results[i];
+                                if(item.objectType != objectType) {
                                     continue;
-                            }
-                            if(first) {
-                                $("<div></div>", {
-                                    class: "searchResultSection",
-                                    text: sectionTitle
-                                }).appendTo(output);
-                                first = false;
-                            }
-                            $("<div></div>", {
-                                class: "searchResult",
-                                resultId: resultId,
-                                text: results[i].title,
-                                click: function () {
-                                    goToSearchResult(this.getAttribute("resultId"), this.getAttribute("data-element-type"));
                                 }
-                            }).attr("data-element-type", elementType).appendTo(output);
-                        }
-                    };
-                    addResults(1, "Timelines");
-                    addResults(0, "Exhibits");
-                    addResults(2, "Artifacts");
+                                var resultId;
+                                var elementType;
+                                switch(item.objectType) {
+                                    case 0: {
+                                        resultId = 'e' + item.id;
+                                        elementType = "exhibit";
+                                        break;
+
+                                    }
+                                    case 1: {
+                                        resultId = 't' + item.id;
+                                        elementType = "timeline";
+                                        break;
+
+                                    }
+                                    case 2: {
+                                        resultId = item.id;
+                                        elementType = "contentItem";
+                                        break;
+
+                                    }
+                                    default: {
+                                        continue;
+
+                                    }
+                                }
+                                if(first) {
+                                    $("<div></div>", {
+                                        class: "searchResultSection",
+                                        text: sectionTitle
+                                    }).appendTo(output);
+                                    first = false;
+                                }
+                                $("<div></div>", {
+                                    class: "searchResult",
+                                    resultId: resultId,
+                                    text: results[i].title,
+                                    click: function () {
+                                        goToSearchResult(this.getAttribute("resultId"), this.getAttribute("data-element-type"));
+                                    }
+                                }).attr("data-element-type", elementType).appendTo(output);
+                            }
+                        };
+                        addResults(1, "Timelines");
+                        addResults(0, "Exhibits");
+                        addResults(2, "Artifacts");
+                    }
                 }
             }
             if(isSearching) {
@@ -204,12 +214,16 @@ var CZ;
             }
             var url;
             switch(CZ.Settings.czDataSource) {
-                case 'db':
+                case 'db': {
                     url = "/api/Search";
                     break;
-                default:
+
+                }
+                default: {
                     url = "/api/Search";
                     break;
+
+                }
             }
             $.ajax({
                 cache: false,
@@ -241,4 +255,6 @@ var CZ;
         }
     })(CZ.Search || (CZ.Search = {}));
     var Search = CZ.Search;
+
 })(CZ || (CZ = {}));
+

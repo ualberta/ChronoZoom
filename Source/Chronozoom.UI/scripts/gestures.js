@@ -52,7 +52,7 @@ var CZ;
             var mousedblclick = vc.toObservable("dblclick");
             var mousedblclicks = mousedblclick.Zip(mousedblclick, function (event) {
                 var origin = CZ.Common.getXBrowserMouseOrigin(vc, event);
-                return new ZoomGesture(origin.x, origin.y, 1.0 / CZ.Settings.zoomLevelFactor, "Mouse");
+                return new ZoomGesture(origin.x, origin.y, 1 / CZ.Settings.zoomLevelFactor, "Mouse");
             });
             return mouseWheels;
         }
@@ -157,14 +157,16 @@ var CZ;
                 var zoomControllerMouse = createZoomSubject(source);
                 zoomController = zoomControllerTouch.Merge(zoomControllerMouse);
                 pinController = createTouchPinSubjectWin8(source);
-            } else if('ontouchstart' in document.documentElement) {
-                panController = createTouchPanSubject(source);
-                zoomController = createTouchZoomSubject(source);
-                pinController = createTouchPinSubject(source);
             } else {
-                panController = createPanSubject(source);
-                zoomController = createZoomSubject(source);
-                pinController = createPinSubject(source);
+                if('ontouchstart' in document.documentElement) {
+                    panController = createTouchPanSubject(source);
+                    zoomController = createTouchZoomSubject(source);
+                    pinController = createTouchPinSubject(source);
+                } else {
+                    panController = createPanSubject(source);
+                    zoomController = createZoomSubject(source);
+                    pinController = createPinSubject(source);
+                }
             }
             return pinController.Merge(panController.Merge(zoomController));
         }
@@ -182,4 +184,6 @@ var CZ;
         Gestures.applyAxisBehavior = applyAxisBehavior;
     })(CZ.Gestures || (CZ.Gestures = {}));
     var Gestures = CZ.Gestures;
+
 })(CZ || (CZ = {}));
+

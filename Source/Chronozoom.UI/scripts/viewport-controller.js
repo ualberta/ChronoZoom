@@ -33,8 +33,8 @@ var CZ;
             }
             function ZoomViewport(viewport, zoomGesture) {
                 var oldVisible = viewport.visible;
-                var x = zoomGesture.xOrigin + (viewport.width / 2.0 - zoomGesture.xOrigin) * zoomGesture.scaleFactor;
-                var y = zoomGesture.yOrigin + (viewport.height / 2.0 - zoomGesture.yOrigin) * zoomGesture.scaleFactor;
+                var x = zoomGesture.xOrigin + (viewport.width / 2 - zoomGesture.xOrigin) * zoomGesture.scaleFactor;
+                var y = zoomGesture.yOrigin + (viewport.height / 2 - zoomGesture.yOrigin) * zoomGesture.scaleFactor;
                 var newCenter = viewport.pointScreenToVirtual(x, y);
                 viewport.visible.centerX = newCenter.x;
                 viewport.visible.centerY = newCenter.y;
@@ -90,8 +90,10 @@ var CZ;
                 if(CZ.Settings.maxPermitedTimeRange) {
                     if(visible.centerX > CZ.Settings.maxPermitedTimeRange.right) {
                         visible.centerX = CZ.Settings.maxPermitedTimeRange.right;
-                    } else if(visible.centerX < CZ.Settings.maxPermitedTimeRange.left) {
-                        visible.centerX = CZ.Settings.maxPermitedTimeRange.left;
+                    } else {
+                        if(visible.centerX < CZ.Settings.maxPermitedTimeRange.left) {
+                            visible.centerX = CZ.Settings.maxPermitedTimeRange.left;
+                        }
                     }
                 }
             };
@@ -100,8 +102,10 @@ var CZ;
                 if(CZ.Common.maxPermitedVerticalRange) {
                     if(visible.centerY > CZ.Common.maxPermitedVerticalRange.bottom) {
                         visible.centerY = CZ.Common.maxPermitedVerticalRange.bottom;
-                    } else if(visible.centerY < CZ.Common.maxPermitedVerticalRange.top) {
-                        visible.centerY = CZ.Common.maxPermitedVerticalRange.top;
+                    } else {
+                        if(visible.centerY < CZ.Common.maxPermitedVerticalRange.top) {
+                            visible.centerY = CZ.Common.maxPermitedVerticalRange.top;
+                        }
                     }
                 }
             };
@@ -323,4 +327,6 @@ var CZ;
         ViewportController.ViewportController2 = ViewportController2;
     })(CZ.ViewportController || (CZ.ViewportController = {}));
     var ViewportController = CZ.ViewportController;
+
 })(CZ || (CZ = {}));
+

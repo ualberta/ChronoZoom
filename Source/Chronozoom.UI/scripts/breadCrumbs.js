@@ -1,4 +1,4 @@
-﻿var CZ;
+var CZ;
 (function (CZ) {
     (function (BreadCrumbs) {
         var hiddenFromLeft = [];
@@ -18,15 +18,17 @@
                 for(var i = 0; i < breadCrumbs.length; i++) {
                     if(newBreadCrumbs[i] == null) {
                         removeBreadCrumb();
-                    } else if(newBreadCrumbs[i].vcElement.id != breadCrumbs[i].vcElement.id) {
-                        for(var j = i; j < breadCrumbs.length; j++) {
-                            removeBreadCrumb();
+                    } else {
+                        if(newBreadCrumbs[i].vcElement.id != breadCrumbs[i].vcElement.id) {
+                            for(var j = i; j < breadCrumbs.length; j++) {
+                                removeBreadCrumb();
+                            }
+                            for(var j = i; j < newBreadCrumbs.length; j++) {
+                                addBreadCrumb(newBreadCrumbs[j].vcElement);
+                            }
+                            breadCrumbs = newBreadCrumbs;
+                            return;
                         }
-                        for(var j = i; j < newBreadCrumbs.length; j++) {
-                            addBreadCrumb(newBreadCrumbs[j].vcElement);
-                        }
-                        breadCrumbs = newBreadCrumbs;
-                        return;
                     }
                 }
                 moveToRightEdge();
@@ -50,15 +52,19 @@
                         if(elementOffset < 0) {
                             hiddenFromLeft.push(index);
                         }
-                    } else if(index == $("#breadcrumbs-table tr td").length - 1) {
-                        if(elementOffset + elementWidth > BreadCrumbs.visibleAreaWidth) {
-                            hiddenFromRight.push(index);
-                        }
                     } else {
-                        if(elementOffset + elementWidth / 3 < 0) {
-                            hiddenFromLeft.push(index);
-                        } else if(elementOffset + elementWidth * 2 / 3 > BreadCrumbs.visibleAreaWidth) {
-                            hiddenFromRight.push(index);
+                        if(index == $("#breadcrumbs-table tr td").length - 1) {
+                            if(elementOffset + elementWidth > BreadCrumbs.visibleAreaWidth) {
+                                hiddenFromRight.push(index);
+                            }
+                        } else {
+                            if(elementOffset + elementWidth / 3 < 0) {
+                                hiddenFromLeft.push(index);
+                            } else {
+                                if(elementOffset + elementWidth * 2 / 3 > BreadCrumbs.visibleAreaWidth) {
+                                    hiddenFromRight.push(index);
+                                }
+                            }
                         }
                     }
                 }
@@ -80,20 +86,24 @@
             if(index == null) {
                 updateHiddenBreadCrumbs();
                 switch(direction) {
-                    case "left":
+                    case "left": {
                         if(hiddenFromLeft.length != 0) {
                             index = hiddenFromLeft.pop();
                         } else {
                             return;
                         }
                         break;
-                    case "right":
+
+                    }
+                    case "right": {
                         if(hiddenFromRight.length != 0) {
                             index = hiddenFromRight.pop();
                         } else {
                             return;
                         }
                         break;
+
+                    }
                 }
             }
             $("#breadcrumbs-table tr").stop();
@@ -102,13 +112,17 @@
             var elementOffset = element.position().left + tableOffset;
             var offset = 0;
             switch(direction) {
-                case "left":
+                case "left": {
                     offset = -elementOffset;
                     break;
-                case "right":
+
+                }
+                case "right": {
                     var elementWidth = element.width();
                     offset = BreadCrumbs.visibleAreaWidth - elementOffset - elementWidth - 1;
                     break;
+
+                }
             }
             if(offset != 0) {
                 var str = "+=" + offset + "px";
@@ -183,21 +197,31 @@
                 text: "›"
             })));
             switch(element.regime) {
-                case "Cosmos":
+                case "Cosmos": {
                     $("#bc_link_" + element.id).addClass("breadcrumb-cosmos");
                     break;
-                case "Earth":
+
+                }
+                case "Earth": {
                     $("#bc_link_" + element.id).addClass("breadcrumb-earth");
                     break;
-                case "Life":
+
+                }
+                case "Life": {
                     $("#bc_link_" + element.id).addClass("breadcrumb-life");
                     break;
-                case "Pre-history":
+
+                }
+                case "Pre-history": {
                     $("#bc_link_" + element.id).addClass("breadcrumb-prehistory");
                     break;
-                case "Humanity":
+
+                }
+                case "Humanity": {
                     $("#bc_link_" + element.id).addClass("breadcrumb-humanity");
                     break;
+
+                }
             }
             $("#bc_" + length + " .breadcrumb-separator").hide();
             if(length > 0) {
@@ -227,8 +251,10 @@
                     index = 0;
                 }
                 showHiddenBreadCrumb("left", index);
-            } else if(movingLeftBreadCrumbs < CZ.Settings.navigateNextMaxCount) {
-                showHiddenBreadCrumb("left");
+            } else {
+                if(movingLeftBreadCrumbs < CZ.Settings.navigateNextMaxCount) {
+                    showHiddenBreadCrumb("left");
+                }
             }
         }
         BreadCrumbs.breadCrumbNavLeft = breadCrumbNavLeft;
@@ -247,8 +273,10 @@
                     index = $("#breadcrumbs-table tr td").length - 1;
                 }
                 showHiddenBreadCrumb("right", index);
-            } else if(movingRightBreadCrumbs < CZ.Settings.navigateNextMaxCount) {
-                showHiddenBreadCrumb("right");
+            } else {
+                if(movingRightBreadCrumbs < CZ.Settings.navigateNextMaxCount) {
+                    showHiddenBreadCrumb("right");
+                }
             }
         }
         BreadCrumbs.breadCrumbNavRight = breadCrumbNavRight;
@@ -260,8 +288,10 @@
             var elementWidth = $(selector).width();
             if(elementOffset < 0) {
                 showHiddenBreadCrumb("left", breadCrumbLinkID);
-            } else if(elementOffset + elementWidth > BreadCrumbs.visibleAreaWidth) {
-                showHiddenBreadCrumb("right", breadCrumbLinkID);
+            } else {
+                if(elementOffset + elementWidth > BreadCrumbs.visibleAreaWidth) {
+                    showHiddenBreadCrumb("right", breadCrumbLinkID);
+                }
             }
         }
         BreadCrumbs.clickOverBreadCrumb = clickOverBreadCrumb;
@@ -281,4 +311,6 @@
         }
     })(CZ.BreadCrumbs || (CZ.BreadCrumbs = {}));
     var BreadCrumbs = CZ.BreadCrumbs;
+
 })(CZ || (CZ = {}));
+

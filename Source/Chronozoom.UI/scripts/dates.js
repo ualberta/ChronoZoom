@@ -55,13 +55,20 @@ var CZ;
         Dates.getCoordinateFromYMD = getCoordinateFromYMD;
         function getYMDFromCoordinate(coord) {
             var sign = (coord === 0) ? 1 : coord / Math.abs(coord);
-            var day = 0, month = 0, year = 0;
-            var idxYear, countLeapYears = 0;
+            var day = 0;
+            var month = 0;
+            var year = 0;
+
+            var idxYear;
+            var countLeapYears = 0;
+
             year = (coord >= 0) ? Math.floor(coord) : Math.floor(coord) + 1;
             var daysPerYear = isLeapYear(year) ? 366 : 365;
-            var day, month;
+            var day;
+            var month;
+
             var countDays;
-            countDays = Math.abs(coord) - Math.abs(year) + sign * 1. / daysPerYear;
+            countDays = Math.abs(coord) - Math.abs(year) + sign * 1 / daysPerYear;
             if(sign < 0) {
                 countDays = 1 - countDays;
             }
@@ -114,18 +121,24 @@ var CZ;
             if(coordinate < -999999999) {
                 year.year = (year.year - 1) / (-1000000000);
                 year.regime = 'Ga';
-            } else if(coordinate < -999999) {
-                year.year = (year.year - 1) / (-1000000);
-                year.regime = 'Ma';
-            } else if(coordinate < -9999) {
-                year.year = (year.year - 1) / (-1000);
-                year.regime = 'Ka';
-            } else if(coordinate < 1) {
-                year.year = (year.year - 1) / (-1);
-                year.year = Math.ceil(year.year);
-                year.regime = 'BCE';
             } else {
-                year.year = Math.floor(year.year);
+                if(coordinate < -999999) {
+                    year.year = (year.year - 1) / (-1000000);
+                    year.regime = 'Ma';
+                } else {
+                    if(coordinate < -9999) {
+                        year.year = (year.year - 1) / (-1000);
+                        year.regime = 'Ka';
+                    } else {
+                        if(coordinate < 1) {
+                            year.year = (year.year - 1) / (-1);
+                            year.year = Math.ceil(year.year);
+                            year.regime = 'BCE';
+                        } else {
+                            year.year = Math.floor(year.year);
+                        }
+                    }
+                }
             }
             return year;
         }
@@ -133,18 +146,26 @@ var CZ;
         function convertYearToCoordinate(year, regime) {
             var coordinate = year;
             switch(regime.toLowerCase()) {
-                case "ga":
+                case "ga": {
                     coordinate = year * (-1000000000) + 1;
                     break;
-                case "ma":
+
+                }
+                case "ma": {
                     coordinate = year * (-1000000) + 1;
                     break;
-                case "ka":
+
+                }
+                case "ka": {
                     coordinate = year * (-1000) + 1;
                     break;
-                case "bce":
+
+                }
+                case "bce": {
                     coordinate = year * (-1) + 1;
                     break;
+
+                }
             }
             return coordinate;
         }
@@ -184,4 +205,6 @@ var CZ;
         Dates.numberofLeap = numberofLeap;
     })(CZ.Dates || (CZ.Dates = {}));
     var Dates = CZ.Dates;
+
 })(CZ || (CZ = {}));
+

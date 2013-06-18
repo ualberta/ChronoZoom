@@ -32,14 +32,14 @@ var CZ;
             };
             this.pointVirtualToScreen = function (px, py) {
                 return {
-                    x: (px - this.visible.centerX) / this.visible.scale + this.width / 2.0,
-                    y: (py - this.visible.centerY) / (this.aspectRatio * this.visible.scale) + this.height / 2.0
+                    x: (px - this.visible.centerX) / this.visible.scale + this.width / 2,
+                    y: (py - this.visible.centerY) / (this.aspectRatio * this.visible.scale) + this.height / 2
                 };
             };
             this.pointScreenToVirtual = function (px, py) {
                 return {
-                    x: (px - this.width / 2.0) * this.visible.scale + this.visible.centerX,
-                    y: this.visible.centerY - (this.height / 2.0 - py) * (this.aspectRatio * this.visible.scale)
+                    x: (px - this.width / 2) * this.visible.scale + this.visible.centerX,
+                    y: this.visible.centerY - (this.height / 2 - py) * (this.aspectRatio * this.visible.scale)
                 };
             };
             this.vectorScreenToVirtual = function (px, py) {
@@ -52,4 +52,6 @@ var CZ;
         Viewport.Viewport2d = Viewport2d;
     })(CZ.Viewport || (CZ.Viewport = {}));
     var Viewport = CZ.Viewport;
+
 })(CZ || (CZ = {}));
+

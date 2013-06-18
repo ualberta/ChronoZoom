@@ -20,10 +20,12 @@ var CZ;
                 var k = delta / h10;
                 if(k < 1.5) {
                     k = 1;
-                } else if(k < 3.5) {
-                    k = 2;
                 } else {
-                    k = 5;
+                    if(k < 3.5) {
+                        k = 2;
+                    } else {
+                        k = 5;
+                    }
                 }
                 var imin = Math.ceil(ymin / (k * h10));
                 var imax = Math.floor(ymax / (k * h10));
@@ -34,11 +36,13 @@ var CZ;
                         var h1 = h;
                         if(k1 == 5) {
                             k1 = 2;
-                        } else if(k1 == 2) {
-                            k1 = 1;
                         } else {
-                            h1--;
-                            k1 = 5;
+                            if(k1 == 2) {
+                                k1 = 1;
+                            } else {
+                                h1--;
+                                k1 = 5;
+                            }
                         }
                         var imin1 = Math.ceil(ymin / (k1 * Math.pow(10, h1)));
                         var imax1 = Math.floor(ymax / (k1 * Math.pow(10, h1)));
@@ -53,29 +57,33 @@ var CZ;
                             break;
                         }
                     }
-                } else if(actualLabelCount > labelCount) {
-                    while(true) {
-                        var k1 = k;
-                        var h1 = h;
-                        if(k1 == 5) {
-                            k1 = 1;
-                            h1++;
-                        } else if(k1 == 2) {
-                            k1 = 5;
-                        } else {
-                            k1 = 2;
-                        }
-                        var imin1 = Math.ceil(ymin / (k1 * Math.pow(10, h1)));
-                        var imax1 = Math.floor(ymax / (k1 * Math.pow(10, h1)));
-                        var actualLabelCount1 = imax1 - imin1 + 1;
-                        if(Math.abs(labelCount - actualLabelCount) > Math.abs(labelCount - actualLabelCount1) && actualLabelCount1 > 0) {
-                            imin = imin1;
-                            imax = imax1;
-                            k = k1;
-                            h = h1;
-                            h10 = Math.pow(10, h1);
-                        } else {
-                            break;
+                } else {
+                    if(actualLabelCount > labelCount) {
+                        while(true) {
+                            var k1 = k;
+                            var h1 = h;
+                            if(k1 == 5) {
+                                k1 = 1;
+                                h1++;
+                            } else {
+                                if(k1 == 2) {
+                                    k1 = 5;
+                                } else {
+                                    k1 = 2;
+                                }
+                            }
+                            var imin1 = Math.ceil(ymin / (k1 * Math.pow(10, h1)));
+                            var imax1 = Math.floor(ymax / (k1 * Math.pow(10, h1)));
+                            var actualLabelCount1 = imax1 - imin1 + 1;
+                            if(Math.abs(labelCount - actualLabelCount) > Math.abs(labelCount - actualLabelCount1) && actualLabelCount1 > 0) {
+                                imin = imin1;
+                                imax = imax1;
+                                k = k1;
+                                h = h1;
+                                h10 = Math.pow(10, h1);
+                            } else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -136,14 +144,22 @@ var CZ;
                 var x = dataSet.time;
                 var n = x.length;
                 var context = this.context;
-                var xmin = screenLeft, xmax = screenRight;
-                var ymin = 0, ymax = this.canvas.height;
+                var xmin = screenLeft;
+                var xmax = screenRight;
+
+                var ymin = 0;
+                var ymax = this.canvas.height;
+
                 dataSet.series.forEach(function (seria) {
                     context.strokeStyle = seria.appearanceSettings.stroke;
                     context.lineWidth = seria.appearanceSettings.thickness;
                     var y = seria.values;
                     context.beginPath();
-                    var x1, x2, y1, y2;
+                    var x1;
+                    var x2;
+                    var y1;
+                    var y2;
+
                     var i = 0;
                     var nextValuePoint = function () {
                         for(; i < n; i++) {
@@ -160,9 +176,17 @@ var CZ;
                         }
                     };
                     nextValuePoint();
-                    var c1, c2, c1_, c2_;
-                    var dx, dy;
-                    var x2_, y2_;
+                    var c1;
+                    var c2;
+                    var c1_;
+                    var c2_;
+
+                    var dx;
+                    var dy;
+
+                    var x2_;
+                    var y2_;
+
                     var m = 1;
                     for(i++; i < n; i++) {
                         if(isNaN(x[i]) || isNaN(y[i])) {
@@ -200,30 +224,42 @@ var CZ;
                                 if(x1 < xmin) {
                                     y1 += dy * (xmin - x1) / dx;
                                     x1 = xmin;
-                                } else if(x1 > xmax) {
-                                    y1 += dy * (xmax - x1) / dx;
-                                    x1 = xmax;
-                                } else if(y1 < ymin) {
-                                    x1 += dx * (ymin - y1) / dy;
-                                    y1 = ymin;
-                                } else if(y1 > ymax) {
-                                    x1 += dx * (ymax - y1) / dy;
-                                    y1 = ymax;
+                                } else {
+                                    if(x1 > xmax) {
+                                        y1 += dy * (xmax - x1) / dx;
+                                        x1 = xmax;
+                                    } else {
+                                        if(y1 < ymin) {
+                                            x1 += dx * (ymin - y1) / dy;
+                                            y1 = ymin;
+                                        } else {
+                                            if(y1 > ymax) {
+                                                x1 += dx * (ymax - y1) / dy;
+                                                y1 = ymax;
+                                            }
+                                        }
+                                    }
                                 }
                                 c1 = that.code(x1, y1, xmin, xmax, ymin, ymax);
                             } else {
                                 if(x2 < xmin) {
                                     y2 += dy * (xmin - x2) / dx;
                                     x2 = xmin;
-                                } else if(x2 > xmax) {
-                                    y2 += dy * (xmax - x2) / dx;
-                                    x2 = xmax;
-                                } else if(y2 < ymin) {
-                                    x2 += dx * (ymin - y2) / dy;
-                                    y2 = ymin;
-                                } else if(y2 > ymax) {
-                                    x2 += dx * (ymax - y2) / dy;
-                                    y2 = ymax;
+                                } else {
+                                    if(x2 > xmax) {
+                                        y2 += dy * (xmax - x2) / dx;
+                                        x2 = xmax;
+                                    } else {
+                                        if(y2 < ymin) {
+                                            x2 += dx * (ymin - y2) / dy;
+                                            y2 = ymin;
+                                        } else {
+                                            if(y2 > ymax) {
+                                                x2 += dx * (ymax - y2) / dy;
+                                                y2 = ymax;
+                                            }
+                                        }
+                                    }
                                 }
                                 c2 = that.code(x2, y2, xmin, xmax, ymin, ymax);
                             }
@@ -344,4 +380,6 @@ var CZ;
         UI.LineChart = LineChart;        
     })(CZ.UI || (CZ.UI = {}));
     var UI = CZ.UI;
+
 })(CZ || (CZ = {}));
+

@@ -15,8 +15,8 @@ var CZ;
             }
             var scaleY = scale * element.height / height;
             var vs = {
-                centerX: element.x + element.width / 2.0,
-                centerY: element.y + element.height / 2.0,
+                centerX: element.x + element.width / 2,
+                centerY: element.y + element.height / 2,
                 scale: Math.max(scaleX, scaleY)
             };
             return vs;
@@ -91,17 +91,17 @@ var CZ;
             return VCContent.addChild(element, new CanvasText(element.vc, layerid, id, vx, vy, baseline, vh, text, settings, vw), false);
         }
         VCContent.addText = addText;
-        ;
+        ; ;
         function addScrollText(element, layerid, id, vx, vy, vw, vh, text, z, settings) {
             return VCContent.addChild(element, new CanvasScrollTextItem(element.vc, layerid, id, vx, vy, vw, vh, text, z), false);
         }
         VCContent.addScrollText = addScrollText;
-        ;
+        ; ;
         function addMultiLineText(element, layerid, id, vx, vy, baseline, vh, text, lineWidth, settings) {
             return VCContent.addChild(element, new CanvasMultiLineTextItem(element.vc, layerid, id, vx, vy, vh, text, lineWidth, settings), false);
         }
         VCContent.addMultiLineText = addMultiLineText;
-        ;
+        ; ;
         function turnIsRenderedOff(element) {
             element.isRendered = false;
             if(element.onIsRenderedChanged) {
@@ -198,7 +198,7 @@ var CZ;
             }
             element.children = [];
         }
-        ;
+        ; ;
         function getChild(element, id) {
             var n = element.children.length;
             for(var i = 0; i < n; i++) {
@@ -209,7 +209,7 @@ var CZ;
             throw "There is no child with id [" + id + "]";
         }
         VCContent.getChild = getChild;
-        ;
+        ; ;
         function CanvasRootElement(vc, layerid, id, vx, vy, vw, vh) {
             this.base = CanvasElement;
             this.base(vc, layerid, id, vx, vy, vw, vh);
@@ -235,7 +235,7 @@ var CZ;
                 }
                 var n = this.children.length;
                 for(var i = 0; i < n; i++) {
-                    VCContent.render(this.children[i], contexts, visibleBox_v, viewport2d, 1.0);
+                    VCContent.render(this.children[i], contexts, visibleBox_v, viewport2d, 1);
                 }
                 if(this.vc.breadCrumbs.length > 0 && (this.vc.recentBreadCrumb == undefined || this.vc.breadCrumbs[vc.breadCrumbs.length - 1].vcElement.id != this.vc.recentBreadCrumb.vcElement.id)) {
                     this.vc.recentBreadCrumb = this.vc.breadCrumbs[vc.breadCrumbs.length - 1];
@@ -287,9 +287,9 @@ var CZ;
                 VCContent.addChild(self, self.content, false);
                 if(self.prevContent) {
                     if(!self.prevContent.opacity) {
-                        self.prevContent.opacity = 1.0;
+                        self.prevContent.opacity = 1;
                     }
-                    self.content.opacity = 0.0;
+                    self.content.opacity = 0;
                 }
                 self.zoomLevel = newContent.zoomLevel;
             };
@@ -326,7 +326,7 @@ var CZ;
                     var contentAppearanceAnimationStep = renderTimeDiff / 1600;
                     var doInvalidate = false;
                     var lopacity = this.prevContent.opacity;
-                    lopacity = Math.max(0.0, lopacity - contentAppearanceAnimationStep);
+                    lopacity = Math.max(0, lopacity - contentAppearanceAnimationStep);
                     if(lopacity != this.prevContent.opacity) {
                         doInvalidate = true;
                     }
@@ -337,7 +337,7 @@ var CZ;
                         this.prevContent.opacity = lopacity;
                     }
                     lopacity = this.content.opacity;
-                    lopacity = Math.min(1.0, lopacity + contentAppearanceAnimationStep);
+                    lopacity = Math.min(1, lopacity + contentAppearanceAnimationStep);
                     if(!doInvalidate && lopacity != this.content.opacity) {
                         doInvalidate = true;
                     }
@@ -420,7 +420,7 @@ var CZ;
                         } else {
                             ctx.lineWidth = 1;
                         }
-                        var lineWidth2 = ctx.lineWidth / 2.0;
+                        var lineWidth2 = ctx.lineWidth / 2;
                         if(this.settings.outline) {
                             p.x += lineWidth2;
                             p.y += lineWidth2;
@@ -487,7 +487,7 @@ var CZ;
             var headerWidth = timelineinfo.titleRect && CZ.Authoring.isEnabled ? timelineinfo.titleRect.width : 0;
             var marginLeft = timelineinfo.titleRect ? timelineinfo.titleRect.marginLeft : CZ.Settings.timelineHeaderMargin * timelineinfo.height;
             var marginTop = timelineinfo.titleRect ? timelineinfo.titleRect.marginTop : (1 - CZ.Settings.timelineHeaderMargin) * timelineinfo.height - headerSize;
-            var baseline = timelineinfo.top + marginTop + headerSize / 2.0;
+            var baseline = timelineinfo.top + marginTop + headerSize / 2;
             this.titleObject = addText(this, layerid, id + "__header__", timelineinfo.timeStart + marginLeft, timelineinfo.top + marginTop, baseline, headerSize, timelineinfo.header, {
                 fontName: CZ.Settings.timelineHeaderFontName,
                 fillStyle: CZ.Settings.timelineHeaderFontColor,
@@ -501,7 +501,7 @@ var CZ;
             this.tooltipEnabled = true;
             this.tooltipIsShown = false;
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1.0);
+                return zoomToElementHandler(this, e, 1);
             };
             this.onmousehover = function (pv, e) {
                 if(this.vc.currentlyHoveredTimeline != null && this.vc.currentlyHoveredTimeline.id != id) {
@@ -516,7 +516,7 @@ var CZ;
                 this.settings.strokeStyle = CZ.Settings.timelineHoveredBoxBorderColor;
                 this.settings.lineWidth = CZ.Settings.timelineHoveredLineWidth;
                 this.titleObject.settings.fillStyle = CZ.Settings.timelineHoveredHeaderFontColor;
-                this.settings.hoverAnimationDelta = 3 / 60.0;
+                this.settings.hoverAnimationDelta = 3 / 60;
                 this.vc.requestInvalidate();
                 if(this.titleObject.initialized == false) {
                     var vp = this.vc.getViewport();
@@ -536,21 +536,31 @@ var CZ;
                     }
                     if(this.tooltipIsShown == false) {
                         switch(this.regime) {
-                            case "Cosmos":
+                            case "Cosmos": {
                                 $(".bubbleInfo").attr("id", "cosmosRegimeBox");
                                 break;
-                            case "Earth":
+
+                            }
+                            case "Earth": {
                                 $(".bubbleInfo").attr("id", "earthRegimeBox");
                                 break;
-                            case "Life":
+
+                            }
+                            case "Life": {
                                 $(".bubbleInfo").attr("id", "lifeRegimeBox");
                                 break;
-                            case "Pre-history":
+
+                            }
+                            case "Pre-history": {
                                 $(".bubbleInfo").attr("id", "prehistoryRegimeBox");
                                 break;
-                            case "Humanity":
+
+                            }
+                            case "Humanity": {
                                 $(".bubbleInfo").attr("id", "humanityRegimeBox");
                                 break;
+
+                            }
                         }
                         $(".bubbleInfo span").text(this.title);
                         this.panelWidth = $('.bubbleInfo').outerWidth();
@@ -573,7 +583,7 @@ var CZ;
                 this.settings.strokeStyle = timelineinfo.strokeStyle ? timelineinfo.strokeStyle : CZ.Settings.timelineBorderColor;
                 this.settings.lineWidth = CZ.Settings.timelineLineWidth;
                 this.titleObject.settings.fillStyle = CZ.Settings.timelineHeaderFontColor;
-                this.settings.hoverAnimationDelta = -3 / 60.0;
+                this.settings.hoverAnimationDelta = -3 / 60;
                 this.vc.requestInvalidate();
             };
             this.base_render = this.render;
@@ -634,12 +644,12 @@ var CZ;
         }
         function CanvasCircle(vc, layerid, id, vxc, vyc, vradius, settings) {
             this.base = CanvasElement;
-            this.base(vc, layerid, id, vxc - vradius, vyc - vradius, 2.0 * vradius, 2.0 * vradius);
+            this.base(vc, layerid, id, vxc - vradius, vyc - vradius, 2 * vradius, 2 * vradius);
             this.settings = settings;
             this.isObservedNow = false;
             this.type = "circle";
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
-                var rad = this.width / 2.0;
+                var rad = this.width / 2;
                 var xc = this.x + rad;
                 var yc = this.y + rad;
                 var p = viewport2d.pointVirtualToScreen(xc, yc);
@@ -782,16 +792,20 @@ var CZ;
                                 }
                                 fontSize = viewport2d.heightVirtualToScreen(this.height);
                                 this.screenFontSize = fontSize;
-                            } else if(typeof this.settings.adjustWidth && this.settings.adjustWidth) {
-                                var nwidth = viewport2d.widthScreenToVirtual(size.width);
-                                if(this.settings.textAlign === 'center') {
-                                    this.x = this.x + (this.width - nwidth) / 2;
-                                } else if(this.settings.textAlign === 'right') {
-                                    this.x = this.x + this.width - nwidth;
+                            } else {
+                                if(typeof this.settings.adjustWidth && this.settings.adjustWidth) {
+                                    var nwidth = viewport2d.widthScreenToVirtual(size.width);
+                                    if(this.settings.textAlign === 'center') {
+                                        this.x = this.x + (this.width - nwidth) / 2;
+                                    } else {
+                                        if(this.settings.textAlign === 'right') {
+                                            this.x = this.x + this.width - nwidth;
+                                        }
+                                    }
+                                    this.width = nwidth;
+                                    p = viewport2d.pointVirtualToScreen(this.x, this.newY);
+                                    size_p.x = viewport2d.widthVirtualToScreen(this.width);
                                 }
-                                this.width = nwidth;
-                                p = viewport2d.pointVirtualToScreen(this.x, this.newY);
-                                size_p.x = viewport2d.widthVirtualToScreen(this.width);
                             }
                         }
                     }
@@ -800,9 +814,11 @@ var CZ;
                 if(this.settings.textAlign) {
                     ctx.textAlign = this.settings.textAlign;
                     if(this.settings.textAlign === 'center') {
-                        p.x = p.x + size_p.x / 2.0;
-                    } else if(this.settings.textAlign === 'right') {
-                        p.x = p.x + size_p.x;
+                        p.x = p.x + size_p.x / 2;
+                    } else {
+                        if(this.settings.textAlign === 'right') {
+                            p.x = p.x + size_p.x;
+                        }
                     }
                 }
                 if(!this.settings.wrapText) {
@@ -865,7 +881,7 @@ var CZ;
                         context.fillText(words.join(' '), x, y + (lineHeight * currentLine));
                     }
                 }
-                ;
+                ; ;
                 var p = viewport2d.pointVirtualToScreen(this.x, this.y);
                 ctx.fillStyle = settings.fillStyle;
                 ctx.font = size_p.y + "pt " + settings.fontName;
@@ -892,14 +908,16 @@ var CZ;
                         var ar1 = img.naturalWidth / img.naturalHeight;
                         if(ar0 > ar1) {
                             var imgWidth = ar1 * self.height;
-                            var offset = (self.width - imgWidth) / 2.0;
+                            var offset = (self.width - imgWidth) / 2;
                             self.x += offset;
                             self.width = imgWidth;
-                        } else if(ar0 < ar1) {
-                            var imgHeight = self.width / ar1;
-                            var offset = (self.height - imgHeight) / 2.0;
-                            self.y += offset;
-                            self.height = imgHeight;
+                        } else {
+                            if(ar0 < ar1) {
+                                var imgHeight = self.width / ar1;
+                                var offset = (self.height - imgHeight) / 2;
+                                self.y += offset;
+                                self.height = imgHeight;
+                            }
                         }
                     }
                     img['isLoaded'] = true;
@@ -1003,7 +1021,11 @@ var CZ;
                 var screenBottom = viewport2d.height;
                 var screenLeft = 0;
                 var screenRight = viewport2d.width;
-                var clipRectTop = 0, clipRectLeft = 0, clipRectBottom = size_p.y, clipRectRight = size_p.x;
+                var clipRectTop = 0;
+                var clipRectLeft = 0;
+                var clipRectBottom = size_p.y;
+                var clipRectRight = size_p.x;
+
                 var a1 = screenTop;
                 var a2 = screenBottom;
                 var b1 = p.y;
@@ -1159,14 +1181,16 @@ var CZ;
                         clearTimeout(self.timeoutHandles[i]);
                     }
                     self.viewer.openDzi(content.dzi);
-                } else if(content.failed) {
-                    self.showFallbackImage();
                 } else {
-                    if(self.nAttempts < CZ.Settings.seadragonMaxConnectionAttempts) {
-                        self.viewer.showMessage("Loading " + Math.round(100 * content.progress) + "% done.");
-                        self.timeoutHandles.push(setTimeout(self.requestDZI, CZ.Settings.seadragonRetryInterval));
-                    } else {
+                    if(content.failed) {
                         self.showFallbackImage();
+                    } else {
+                        if(self.nAttempts < CZ.Settings.seadragonMaxConnectionAttempts) {
+                            self.viewer.showMessage("Loading " + Math.round(100 * content.progress) + "% done.");
+                            self.timeoutHandles.push(setTimeout(self.requestDZI, CZ.Settings.seadragonRetryInterval));
+                        } else {
+                            self.showFallbackImage();
+                        }
                     }
                 }
             };
@@ -1235,7 +1259,7 @@ var CZ;
             var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
             var descrHeight = CZ.Settings.contentItemFontHeight * vh;
             var contentWidth = vw * CZ.Settings.contentItemContentWidth;
-            var leftOffset = (vw - contentWidth) / 2.0;
+            var leftOffset = (vw - contentWidth) / 2;
             var verticalMargin = vh * CZ.Settings.contentItemVerticalMargin;
             var mediaTop = vy + verticalMargin;
             var sourceVertMargin = verticalMargin * 0.4;
@@ -1262,7 +1286,7 @@ var CZ;
                 this.vc.requestInvalidate();
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1.0);
+                return zoomToElementHandler(this, e, 1);
             };
             var self = this;
             this.changeZoomLevel = function (curZl, newZl) {
@@ -1279,19 +1303,27 @@ var CZ;
                     var imageElem = null;
                     if(this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
                         imageElem = VCContent.addImage(container, layerid, mediaID, vx + leftOffset, mediaTop, contentWidth, mediaHeight, this.contentItem.uri);
-                    } else if(this.contentItem.mediaType.toLowerCase() === 'deepimage') {
-                        imageElem = VCContent.addSeadragonImage(container, layerid, mediaID, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
-                    } else if(this.contentItem.mediaType.toLowerCase() === 'video') {
-                        VCContent.addVideo(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
-                    } else if(this.contentItem.mediaType.toLowerCase() === 'audio') {
-                        mediaTop += CZ.Settings.contentItemAudioTopMargin * vh;
-                        mediaHeight = vh * CZ.Settings.contentItemAudioHeight;
-                        addAudio(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
-                    } else if(this.contentItem.mediaType.toLowerCase() === 'pdf') {
-                        VCContent.addPdf(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                    } else {
+                        if(this.contentItem.mediaType.toLowerCase() === 'deepimage') {
+                            imageElem = VCContent.addSeadragonImage(container, layerid, mediaID, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
+                        } else {
+                            if(this.contentItem.mediaType.toLowerCase() === 'video') {
+                                VCContent.addVideo(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                            } else {
+                                if(this.contentItem.mediaType.toLowerCase() === 'audio') {
+                                    mediaTop += CZ.Settings.contentItemAudioTopMargin * vh;
+                                    mediaHeight = vh * CZ.Settings.contentItemAudioHeight;
+                                    addAudio(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                                } else {
+                                    if(this.contentItem.mediaType.toLowerCase() === 'pdf') {
+                                        VCContent.addPdf(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                                    }
+                                }
+                            }
+                        }
                     }
                     var titleText = this.contentItem.title;
-                    addText(container, layerid, id + "__title__", vx + leftOffset, titleTop, titleTop + titleHeight / 2.0, 0.9 * titleHeight, titleText, {
+                    addText(container, layerid, id + "__title__", vx + leftOffset, titleTop, titleTop + titleHeight / 2, 0.9 * titleHeight, titleText, {
                         fontName: CZ.Settings.contentItemHeaderFontName,
                         fillStyle: CZ.Settings.contentItemHeaderFontColor,
                         textBaseline: 'middle',
@@ -1304,7 +1336,7 @@ var CZ;
                     var mediaSource = this.contentItem.mediaSource;
                     if(sourceText) {
                         var addSourceText = function (sx, sw, sy) {
-                            var sourceItem = addText(container, layerid, id + "__source__", sx, sy, sy + sourceHeight / 2.0, 0.9 * sourceHeight, sourceText, {
+                            var sourceItem = addText(container, layerid, id + "__source__", sx, sy, sy + sourceHeight / 2, 0.9 * sourceHeight, sourceText, {
                                 fontName: CZ.Settings.contentItemHeaderFontName,
                                 fillStyle: CZ.Settings.contentItemSourceFontColor,
                                 textBaseline: 'middle',
@@ -1366,11 +1398,13 @@ var CZ;
                             return null;
                         }
                         zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                    } else if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                        if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
-                            return null;
+                    } else {
+                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
+                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
+                                return null;
+                            }
+                            zl = CZ.Settings.contentItemThumbnailMinLevel;
                         }
-                        zl = CZ.Settings.contentItemThumbnailMinLevel;
                     }
                     var sz = 1 << zl;
                     var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
@@ -1412,7 +1446,7 @@ var CZ;
                 this.vc.requestInvalidate();
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1.0);
+                return zoomToElementHandler(this, e, 1);
             };
             this.onmouseenter = function (e) {
                 this.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
@@ -1451,7 +1485,7 @@ var CZ;
                 this.vc.RaiseCursorChanged();
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1.0);
+                return zoomToElementHandler(this, e, 1);
             };
             var bibliographyFlag = true;
             var infodot = this;
@@ -1489,146 +1523,148 @@ var CZ;
                     } else {
                         return null;
                     }
-                } else if(newZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                    if(curZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                        return null;
-                    }
-                    infodot.tooltipEnabled = false;
-                    if(infodot.tooltipIsShown == true) {
-                        CZ.Common.stopAnimationTooltip();
-                        infodot.tooltipIsShown = false;
-                    }
-                    var contentItem = null;
-                    if(infodot.contentItems.length > 0) {
-                        contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.y, 2 * innerRad, 2 * innerRad);
-                        var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
-                        if(items) {
-                            for(var i = 0; i < items.length; i++) {
-                                VCContent.addChild(contentItem, items[i], false);
+                } else {
+                    if(newZl >= CZ.Settings.infodotShowContentZoomLevel) {
+                        if(curZl >= CZ.Settings.infodotShowContentZoomLevel) {
+                            return null;
+                        }
+                        infodot.tooltipEnabled = false;
+                        if(infodot.tooltipIsShown == true) {
+                            CZ.Common.stopAnimationTooltip();
+                            infodot.tooltipIsShown = false;
+                        }
+                        var contentItem = null;
+                        if(infodot.contentItems.length > 0) {
+                            contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.y, 2 * innerRad, 2 * innerRad);
+                            var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
+                            if(items) {
+                                for(var i = 0; i < items.length; i++) {
+                                    VCContent.addChild(contentItem, items[i], false);
+                                }
                             }
                         }
-                    }
-                    if(contentItem == null) {
-                        return null;
-                    }
-                    var titleWidth = CZ.Settings.infodotTitleWidth * radv * 2;
-                    var titleHeight = CZ.Settings.infodotTitleHeight * radv * 2;
-                    var centralSquareSize = (270 / 2 + 5) / 450 * 2 * radv;
-                    var titleTop = vyc - centralSquareSize - titleHeight;
-                    var title = '';
-                    if(infodotDescription && infodotDescription.title && infodotDescription.date) {
-                        var exhibitDate = CZ.Dates.convertCoordinateToYear(infodotDescription.date);
-                        title = infodotDescription.title + '\n(' + exhibitDate.year + ' ' + exhibitDate.regime + ')';
-                    }
-                    var infodotTitle = addText(contentItem, layerid, id + "__title", time - titleWidth / 2, titleTop, titleTop, titleHeight, title, {
-                        fontName: CZ.Settings.contentItemHeaderFontName,
-                        fillStyle: CZ.Settings.contentItemHeaderFontColor,
-                        textBaseline: 'middle',
-                        textAlign: 'center',
-                        opacity: 1,
-                        wrapText: true,
-                        numberOfLines: 2
-                    }, titleWidth);
-                    if(CZ.Authoring.isEnabled) {
-                        var imageSize = (titleTop - infodot.y) * 0.75;
-                        var editButton = VCContent.addImage(infodot, layerid, id + "__edit", time - imageSize / 2, infodot.y + imageSize * 0.2, imageSize, imageSize, "/images/edit.svg");
-                        editButton.reactsOnMouse = true;
-                        editButton.onmouseclick = function () {
-                            CZ.Authoring.isActive = true;
-                            CZ.Authoring.mode = "editExhibit";
-                            CZ.Authoring.selectedExhibit = infodot;
+                        if(contentItem == null) {
+                            return null;
+                        }
+                        var titleWidth = CZ.Settings.infodotTitleWidth * radv * 2;
+                        var titleHeight = CZ.Settings.infodotTitleHeight * radv * 2;
+                        var centralSquareSize = (270 / 2 + 5) / 450 * 2 * radv;
+                        var titleTop = vyc - centralSquareSize - titleHeight;
+                        var title = '';
+                        if(infodotDescription && infodotDescription.title && infodotDescription.date) {
+                            var exhibitDate = CZ.Dates.convertCoordinateToYear(infodotDescription.date);
+                            title = infodotDescription.title + '\n(' + exhibitDate.year + ' ' + exhibitDate.regime + ')';
+                        }
+                        var infodotTitle = addText(contentItem, layerid, id + "__title", time - titleWidth / 2, titleTop, titleTop, titleHeight, title, {
+                            fontName: CZ.Settings.contentItemHeaderFontName,
+                            fillStyle: CZ.Settings.contentItemHeaderFontColor,
+                            textBaseline: 'middle',
+                            textAlign: 'center',
+                            opacity: 1,
+                            wrapText: true,
+                            numberOfLines: 2
+                        }, titleWidth);
+                        if(CZ.Authoring.isEnabled) {
+                            var imageSize = (titleTop - infodot.y) * 0.75;
+                            var editButton = VCContent.addImage(infodot, layerid, id + "__edit", time - imageSize / 2, infodot.y + imageSize * 0.2, imageSize, imageSize, "/images/edit.svg");
+                            editButton.reactsOnMouse = true;
+                            editButton.onmouseclick = function () {
+                                CZ.Authoring.isActive = true;
+                                CZ.Authoring.mode = "editExhibit";
+                                CZ.Authoring.selectedExhibit = infodot;
+                                return true;
+                            };
+                            editButton.onmouseenter = function () {
+                                infodot.settings.strokeStyle = "yellow";
+                            };
+                            editButton.onmouseleave = function () {
+                                infodot.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                            };
+                        }
+                        var biblBottom = vyc + centralSquareSize + 63 / 450 * 2 * radv;
+                        var biblHeight = CZ.Settings.infodotBibliographyHeight * radv * 2;
+                        var biblWidth = titleWidth / 3;
+                        var bibl = addText(contentItem, layerid, id + "__bibliography", time - biblWidth / 2, biblBottom - biblHeight, biblBottom - biblHeight / 2, biblHeight, "Bibliography", {
+                            fontName: CZ.Settings.contentItemHeaderFontName,
+                            fillStyle: CZ.Settings.timelineBorderColor,
+                            textBaseline: 'middle',
+                            textAlign: 'center',
+                            opacity: 1
+                        }, biblWidth);
+                        bibl.reactsOnMouse = true;
+                        bibl.onmouseclick = function (e) {
+                            this.vc.element.css('cursor', 'default');
+                            CZ.Bibliography.showBibliography({
+                                infodot: infodotDescription,
+                                contentItems: infodot.contentItems
+                            }, contentItem, id + "__bibliography");
                             return true;
                         };
-                        editButton.onmouseenter = function () {
-                            infodot.settings.strokeStyle = "yellow";
+                        bibl.onmouseenter = function (pv, e) {
+                            this.settings.fillStyle = CZ.Settings.infoDotHoveredBorderColor;
+                            this.vc.requestInvalidate();
+                            this.vc.element.css('cursor', 'pointer');
                         };
-                        editButton.onmouseleave = function () {
-                            infodot.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                        bibl.onmouseleave = function (pv, e) {
+                            this.settings.fillStyle = CZ.Settings.infoDotBorderColor;
+                            this.vc.requestInvalidate();
+                            this.vc.element.css('cursor', 'default');
                         };
-                    }
-                    var biblBottom = vyc + centralSquareSize + 63.0 / 450 * 2 * radv;
-                    var biblHeight = CZ.Settings.infodotBibliographyHeight * radv * 2;
-                    var biblWidth = titleWidth / 3;
-                    var bibl = addText(contentItem, layerid, id + "__bibliography", time - biblWidth / 2, biblBottom - biblHeight, biblBottom - biblHeight / 2, biblHeight, "Bibliography", {
-                        fontName: CZ.Settings.contentItemHeaderFontName,
-                        fillStyle: CZ.Settings.timelineBorderColor,
-                        textBaseline: 'middle',
-                        textAlign: 'center',
-                        opacity: 1
-                    }, biblWidth);
-                    bibl.reactsOnMouse = true;
-                    bibl.onmouseclick = function (e) {
-                        this.vc.element.css('cursor', 'default');
-                        CZ.Bibliography.showBibliography({
-                            infodot: infodotDescription,
-                            contentItems: infodot.contentItems
-                        }, contentItem, id + "__bibliography");
-                        return true;
-                    };
-                    bibl.onmouseenter = function (pv, e) {
-                        this.settings.fillStyle = CZ.Settings.infoDotHoveredBorderColor;
-                        this.vc.requestInvalidate();
-                        this.vc.element.css('cursor', 'pointer');
-                    };
-                    bibl.onmouseleave = function (pv, e) {
-                        this.settings.fillStyle = CZ.Settings.infoDotBorderColor;
-                        this.vc.requestInvalidate();
-                        this.vc.element.css('cursor', 'default');
-                    };
-                    var bid = window.location.hash.match("b=([a-z0-9_\-]+)");
-                    if(bid && bibliographyFlag) {
-                        CZ.Bibliography.showBibliography({
-                            infodot: infodotDescription,
-                            contentItems: infodot.contentItems
-                        }, contentItem, bid[1]);
-                    }
-                    if(contentItem) {
-                        infodot.hasContentItems = true;
-                        return {
-                            zoomLevel: newZl,
-                            content: contentItem
-                        };
-                    }
-                } else {
-                    infodot.tooltipEnabled = true;
-                    infodot.hasContentItems = false;
-                    if(infodot.contentItems.length == 0) {
-                        return null;
-                    }
-                    var zl = newZl;
-                    if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                        if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
+                        var bid = window.location.hash.match("b=([a-z0-9_\-]+)");
+                        if(bid && bibliographyFlag) {
+                            CZ.Bibliography.showBibliography({
+                                infodot: infodotDescription,
+                                contentItems: infodot.contentItems
+                            }, contentItem, bid[1]);
+                        }
+                        if(contentItem) {
+                            infodot.hasContentItems = true;
+                            return {
+                                zoomLevel: newZl,
+                                content: contentItem
+                            };
+                        }
+                    } else {
+                        infodot.tooltipEnabled = true;
+                        infodot.hasContentItems = false;
+                        if(infodot.contentItems.length == 0) {
                             return null;
                         }
-                    }
-                    if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
-                        if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
-                            return null;
+                        var zl = newZl;
+                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
+                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
+                                return null;
+                            }
                         }
-                        zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                    }
-                    if(zl < CZ.Settings.contentItemThumbnailMinLevel) {
+                        if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
+                            if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
+                                return null;
+                            }
+                            zl = CZ.Settings.contentItemThumbnailMaxLevel;
+                        }
+                        if(zl < CZ.Settings.contentItemThumbnailMinLevel) {
+                            return {
+                                zoomLevel: zl,
+                                content: new ContainerElement(vc, layerid, id + "__empty", time, vyc, 0, 0)
+                            };
+                        }
+                        var contentItem = infodot.contentItems[0];
+                        var sz = 1 << zl;
+                        var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
+                        var l = innerRad * 260 / 225;
                         return {
                             zoomLevel: zl,
-                            content: new ContainerElement(vc, layerid, id + "__empty", time, vyc, 0, 0)
+                            content: new CanvasImage(vc, layerid, id + "@" + zl, thumbnailUri, time - l / 2, vyc - l / 2, l, l)
                         };
                     }
-                    var contentItem = infodot.contentItems[0];
-                    var sz = 1 << zl;
-                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
-                    var l = innerRad * 260 / 225;
-                    return {
-                        zoomLevel: zl,
-                        content: new CanvasImage(vc, layerid, id + "@" + zl, thumbnailUri, time - l / 2.0, vyc - l / 2.0, l, l)
-                    };
                 }
             };
-            var _rad = 450.0 / 2.0;
-            var k = 1.0 / _rad;
-            var _wc = (252.0 + 0) * k;
-            var _hc = (262.0 + 0) * k;
+            var _rad = 450 / 2;
+            var k = 1 / _rad;
+            var _wc = (252 + 0) * k;
+            var _hc = (262 + 0) * k;
             var strokeWidth = 3 * k * radv;
-            var strokeLength = 24.0 * k * radv;
+            var strokeLength = 24 * k * radv;
             var xlt0 = -_wc / 2 * radv + time;
             var ylt0 = -_hc / 2 * radv + vyc;
             var xlt1 = _wc / 2 * radv + time;
@@ -1644,10 +1680,10 @@ var CZ;
                 var ylt0 = -_hc / 2 * radv + vyc;
                 var xlt1 = _wc / 2 * radv + time;
                 var ylt1 = _hc / 2 * radv + vyc;
-                var rad = this.width / 2.0;
+                var rad = this.width / 2;
                 var xc = this.x + rad;
                 var yc = this.y + rad;
-                var radp = size_p.x / 2.0;
+                var radp = size_p.x / 2;
                 var sl = viewport2d.widthVirtualToScreen(strokeLength);
                 var pl0 = viewport2d.pointVirtualToScreen(xlt0, ylt0);
                 var pl1 = viewport2d.pointVirtualToScreen(xlt1, ylt1);
@@ -1656,7 +1692,7 @@ var CZ;
             };
             this.isInside = function (point_v) {
                 var len2 = CZ.Common.sqr(point_v.x - this.x - (this.width / 2)) + CZ.Common.sqr(point_v.y - this.y - (this.height / 2));
-                var rad = this.width / 2.0;
+                var rad = this.width / 2;
                 return len2 <= rad * rad;
             };
             this.prototype = new CanvasCircle(vc, layerid, id, time, vyc, radv, {
@@ -1703,17 +1739,17 @@ var CZ;
             if(n <= 0) {
                 return null;
             }
-            var _rad = 450.0 / 2.0;
-            var k = 1.0 / _rad;
-            var _wc = 260.0 * k;
-            var _hc = 270.0 * k;
-            var _xlc = -_wc / 2 - 38.0 * k;
+            var _rad = 450 / 2;
+            var k = 1 / _rad;
+            var _wc = 260 * k;
+            var _hc = 270 * k;
+            var _xlc = -_wc / 2 - 38 * k;
             var _xrc = -_xlc;
-            var _lw = 60.0 * k;
+            var _lw = 60 * k;
             var _lh = _lw;
             var lw = _lw * rad;
             var lh = _lh * rad;
-            var _ytc = -_hc / 2 - 9.0 * k - _lh / 2;
+            var _ytc = -_hc / 2 - 9 * k - _lh / 2;
             var _ybc = -_ytc;
             var arrangeLeft = arrangeContentItemsInField(3, _lh);
             var arrangeRight = arrangeContentItemsInField(3, _lh);
@@ -1726,12 +1762,18 @@ var CZ;
                 var ci = contentItems[i];
                 if(i === 0) {
                     vcitems.push(new ContentItem(vc, layerid, ci.id, -_wc / 2 * rad + xc, -_hc / 2 * rad + yc, _wc * rad, _hc * rad, ci));
-                } else if(i >= 1 && i <= 3) {
-                    vcitems.push(new ContentItem(vc, layerid, ci.id, xl, yc + rad * arrangeLeft[(i - 1) % 3], lw, lh, ci));
-                } else if(i >= 4 && i <= 6) {
-                    vcitems.push(new ContentItem(vc, layerid, ci.id, xr, yc + rad * arrangeRight[(i - 1) % 3], lw, lh, ci));
-                } else if(i >= 7 && i <= 9) {
-                    vcitems.push(new ContentItem(vc, layerid, ci.id, xc + rad * arrangeBottom[(i - 1) % 3], yb, lw, lh, ci));
+                } else {
+                    if(i >= 1 && i <= 3) {
+                        vcitems.push(new ContentItem(vc, layerid, ci.id, xl, yc + rad * arrangeLeft[(i - 1) % 3], lw, lh, ci));
+                    } else {
+                        if(i >= 4 && i <= 6) {
+                            vcitems.push(new ContentItem(vc, layerid, ci.id, xr, yc + rad * arrangeRight[(i - 1) % 3], lw, lh, ci));
+                        } else {
+                            if(i >= 7 && i <= 9) {
+                                vcitems.push(new ContentItem(vc, layerid, ci.id, xc + rad * arrangeBottom[(i - 1) % 3], yb, lw, lh, ci));
+                            }
+                        }
+                    }
                 }
             }
             return vcitems;
@@ -1741,7 +1783,11 @@ var CZ;
                 return null;
             }
             var margin = 0.05 * dx;
-            var x1, x2, x3, x4;
+            var x1;
+            var x2;
+            var x3;
+            var x4;
+
             if(n % 2 == 0) {
                 x1 = -margin / 2 - dx;
                 x2 = margin / 2;
@@ -1777,4 +1823,6 @@ var CZ;
         }
     })(CZ.VCContent || (CZ.VCContent = {}));
     var VCContent = CZ.VCContent;
+
 })(CZ || (CZ = {}));
+

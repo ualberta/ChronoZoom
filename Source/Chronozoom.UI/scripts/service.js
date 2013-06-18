@@ -81,6 +81,7 @@ var CZ;
             }
             Map.contentItem = contentItem;
         })(Map || (Map = {}));
+
         var _serviceUrl = CZ.Settings.serverUrlHost + "/api/";
         function Request(urlBase) {
             var _url = urlBase;
@@ -112,7 +113,7 @@ var CZ;
             };
         }
         Service.Request = Request;
-        ;
+        ; ;
         Service.collectionName = "";
         Service.superCollectionName = "";
         function getTimelines(r) {
@@ -490,4 +491,6 @@ var CZ;
         Service.getProfile = getProfile;
     })(CZ.Service || (CZ.Service = {}));
     var Service = CZ.Service;
+
 })(CZ || (CZ = {}));
+

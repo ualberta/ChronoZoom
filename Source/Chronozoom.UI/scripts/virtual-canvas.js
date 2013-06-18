@@ -23,7 +23,7 @@ var CZ;
                             title: "initObject"
                         }
                     };
-                    self.cursorPosition = 0.0;
+                    self.cursorPosition = 0;
                     var layerDivs = self.element.children("div");
                     layerDivs.each(function (index) {
                         $(this).addClass("virtualCanvasLayerDiv unselectable").zIndex(index * 3);
@@ -38,15 +38,19 @@ var CZ;
                     });
                     self.element.bind('mousedown.' + this.widgetName, function (e) {
                         switch(e.which) {
-                            case 1:
+                            case 1: {
                                 self._mouseDown(e);
                                 break;
+
+                            }
                         }
                     });
                     self.element.bind('mouseup.' + this.widgetName, function (e) {
                         switch(e.which) {
-                            case 1:
+                            case 1: {
                                 self._mouseUp(e);
+
+                            }
                         }
                     });
                     self.element.bind('mouseleave.' + this.widgetName, function (e) {
@@ -140,12 +144,16 @@ var CZ;
                 updateTooltipPosition: function (posv) {
                     var scrPoint = this.viewport.pointVirtualToScreen(posv.x, posv.y);
                     var heigthOffset = 17;
-                    var length, height;
+                    var length;
+                    var height;
+
                     var obj = null;
                     if(CZ.Common.tooltipMode == 'infodot') {
                         obj = this.currentlyHoveredInfodot;
-                    } else if(CZ.Common.tooltipMode == 'timeline') {
-                        obj = this.currentlyHoveredTimeline;
+                    } else {
+                        if(CZ.Common.tooltipMode == 'timeline') {
+                            obj = this.currentlyHoveredTimeline;
+                        }
                     }
                     if(obj == null) {
                         return;
@@ -250,8 +258,10 @@ var CZ;
                         var obj = null;
                         if(CZ.Common.tooltipMode == 'infodot') {
                             obj = this.currentlyHoveredInfodot;
-                        } else if(CZ.Common.tooltipMode == 'timeline') {
-                            obj = this.currentlyHoveredTimeline;
+                        } else {
+                            if(CZ.Common.tooltipMode == 'timeline') {
+                                obj = this.currentlyHoveredTimeline;
+                            }
                         }
                         if(obj != null) {
                             if(obj.tooltipIsShown == false) {
@@ -404,7 +414,7 @@ var CZ;
                         if(self.requestNewFrame) {
                             self.requestInvalidate();
                         }
-                    }, 1000.0 / CZ.Settings.targetFps);
+                    }, 1000 / CZ.Settings.targetFps);
                 },
                 _findLca: function (tl, wnd) {
                     for(var i = 0; i < tl.children.length; i++) {
@@ -476,4 +486,6 @@ var CZ;
         VirtualCanvas.initialize = initialize;
     })(CZ.VirtualCanvas || (CZ.VirtualCanvas = {}));
     var VirtualCanvas = CZ.VirtualCanvas;
+
 })(CZ || (CZ = {}));
+

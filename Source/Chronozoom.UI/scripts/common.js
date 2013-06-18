@@ -144,14 +144,22 @@ var CZ;
                 return unescape(match[1]);
             } else {
                 switch(CZ.Settings.czDataSource) {
-                    case 'db':
+                    case 'db': {
                         return "/api/get";
-                    case 'relay':
+
+                    }
+                    case 'relay': {
                         return "ChronozoomRelay";
-                    case 'dump':
+
+                    }
+                    case 'dump': {
                         return "/dumps/beta-get.json";
-                    default:
+
+                    }
+                    default: {
                         return null;
+
+                    }
                 }
             }
         }
@@ -291,7 +299,11 @@ var CZ;
         }
         Common.setCookie = setCookie;
         function getCookie(c_name) {
-            var i, x, y, ARRcookies = document.cookie.split(";");
+            var i;
+            var x;
+            var y;
+            var ARRcookies = document.cookie.split(";");
+
             for(i = 0; i < ARRcookies.length; i++) {
                 x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
                 y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
@@ -323,4 +335,6 @@ var CZ;
         Common.viewportToViewBox = viewportToViewBox;
     })(CZ.Common || (CZ.Common = {}));
     var Common = CZ.Common;
+
 })(CZ || (CZ = {}));
+
