@@ -88,7 +88,6 @@ var CZ;
             CZ.Common.initialContent = url.content;
             $('#breadcrumbs-nav-left').click(CZ.BreadCrumbs.breadCrumbNavLeft);
             $('#breadcrumbs-nav-right').click(CZ.BreadCrumbs.breadCrumbNavRight);
-            $('#bookmarksCollapse').click(CZ.Tours.onBookmarksCollapse);
             $('#biblCloseButton').mouseout(function () {
                 CZ.Common.toggleOffImage('biblCloseButton', 'png');
             }).mouseover(function () {

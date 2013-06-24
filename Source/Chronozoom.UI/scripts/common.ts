@@ -215,30 +215,22 @@ module CZ {
 
         //loading the data from the service
         export function loadData() {
-            return CZ.Data.getTimelines(null).then(
-                function (response) {
-                    if (!response) {
-                        return;
-                    }
-
-                    ProcessContent(response);
-                    vc.virtualCanvas("updateViewport");
-
-                    if (CZ.Common.initialContent) {
-                        CZ.Service.getContentPath(CZ.Common.initialContent).then(
-                            function (response) {
-                                window.location.hash = response;
-                            },
-                            function (error) {
-                                console.log("Error connecting to service:\n" + error.responseText);
-                            }
-                        );
-                    }
-                },
-                function (error) {
-                    console.log("Error connecting to service:\n" + error.responseText);
-                }
-            );
+          var url = 'Dumps/dino.json';
+          return $.ajax({ //main content fetching
+              cache: false,
+              type: "GET",
+              async: true,
+              dataType: "json",
+              url: url,
+              success: function (result) {
+                  content = result;
+                  ProcessContent(result);
+                  Common.vc.virtualCanvas("updateViewport");
+              },
+              error: function (xhr) {
+                  alert("Error connecting to service: " + xhr.responseText);
+              }
+          });
         }
 
         function ProcessContent(content) {

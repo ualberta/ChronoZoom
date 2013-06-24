@@ -138,12 +138,10 @@ var CZ;
             };
             var requestTimer = null;
             this.getMissingData = function (vbox, lca) {
-                if(typeof CZ.Authoring === 'undefined' || CZ.Authoring.isActive === false) {
-                    window.clearTimeout(requestTimer);
-                    requestTimer = window.setTimeout(function () {
-                        getMissingTimelines(vbox, lca);
-                    }, 1000);
-                }
+                window.clearTimeout(requestTimer);
+                requestTimer = window.setTimeout(function () {
+                    getMissingTimelines(vbox, lca);
+                }, 1000);
             };
             function getMissingTimelines(vbox, lca) {
                 CZ.Data.getTimelines({
@@ -196,7 +194,7 @@ var CZ;
                 });
             }
             gesturesSource.Subscribe(function (gesture) {
-                if(typeof gesture != "undefined" && !CZ.Authoring.isActive) {
+                if(typeof gesture != "undefined") {
                     var isAnimationActive = self.activeAnimation;
                     var oldId = isAnimationActive ? self.activeAnimation.ID : undefined;
                     self.updateRecentViewport();

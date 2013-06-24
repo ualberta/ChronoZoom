@@ -877,9 +877,6 @@ module CZ {
         }
 
         export function Merge(src, dest) {
-            // skip dynamic layout during active authoring session
-            if (typeof CZ.Authoring !== 'undefined' && CZ.Authoring.isActive)
-                return;
 
             if (src && dest) {
                 if (dest.id === "__root__") {

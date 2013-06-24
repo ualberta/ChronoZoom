@@ -19,9 +19,6 @@ var CZ;
                 var URL = getURL();
                 nav += '@x=' + rx + "&y=" + ry + "&w=" + rw + "&h=" + rh;
                 if(typeof URL.hash.params != 'undefined') {
-                    if(typeof URL.hash.params['tour'] != 'undefined') {
-                        nav += "&tour=" + URL.hash.params["tour"];
-                    }
                     if(typeof URL.hash.params['bookmark'] != 'undefined') {
                         nav += "&bookmark=" + URL.hash.params["bookmark"];
                     }

@@ -120,10 +120,6 @@ var CZ;
         }
         Common.compareVisibles = compareVisibles;
         function setVisibleByUserDirectly(visible) {
-            CZ.Tours.pauseTourAtAnyAnimation = false;
-            if(CZ.Tours.tour != undefined && CZ.Tours.tour.state == "play") {
-                CZ.Tours.tourPause();
-            }
             return setVisible(visible);
         }
         Common.setVisibleByUserDirectly = setVisibleByUserDirectly;
@@ -164,27 +160,21 @@ var CZ;
             }
         }
         function loadData() {
-            return CZ.Data.getTimelines(null).then(function (response) {
-                if(!response) {
-                    return;
+            var url = 'Dumps/dino.json';
+            return $.ajax({
+                cache: false,
+                type: "GET",
+                async: true,
+                dataType: "json",
+                url: url,
+                success: function (result) {
+                    content = result;
+                    ProcessContent(result);
+                    Common.vc.virtualCanvas("updateViewport");
+                },
+                error: function (xhr) {
+                    alert("Error connecting to service: " + xhr.responseText);
                 }
-                ProcessContent(response);
-                Common.vc.virtualCanvas("updateViewport");
-                if(CZ.Common.initialContent) {
-                    CZ.Service.getContentPath(CZ.Common.initialContent).then(function (response) {
-                        window.location.hash = response;
-                    }, function (error) {
-                        console.log("Error connecting to service:\n" + error.responseText);
-                    });
-                }
-                CZ.Service.getTours().then(function (response) {
-                    CZ.Tours.parseTours(response);
-                    CZ.Tours.initializeToursContent();
-                }, function (error) {
-                    console.log("Error connecting to service:\n" + error.responseText);
-                });
-            }, function (error) {
-                console.log("Error connecting to service:\n" + error.responseText);
             });
         }
         Common.loadData = loadData;

@@ -109,8 +109,6 @@ module CZ {
             $('#breadcrumbs-nav-right')
                 .click(CZ.BreadCrumbs.breadCrumbNavRight);
 
-            $('#bookmarksCollapse')
-                .click(CZ.Tours.onBookmarksCollapse);
 
             $('#biblCloseButton')
                 .mouseout(() => { CZ.Common.toggleOffImage('biblCloseButton', 'png'); })

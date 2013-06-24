@@ -4,9 +4,6 @@ var CZ;
         Search.isSearchWindowVisible = false;
         var delayedSearchRequest = null;
         function onSearchClicked() {
-            if(CZ.Tours.isTourWindowVisible && CZ.Tours.onTourClicked) {
-                CZ.Tours.onTourClicked();
-            }
             if(Search.isSearchWindowVisible) {
                 $(".search-icon").removeClass("active");
                 $("#search").hide('slide', {
@@ -54,19 +51,17 @@ var CZ;
         }
         Search.initializeSearch = initializeSearch;
         function navigateToElement(e) {
-            if(!CZ.Authoring.isActive) {
-                var animId = CZ.Common.setVisibleByUserDirectly(e.newvisible);
-                if(animId) {
-                    CZ.Common.setNavigationStringTo = {
-                        element: e.element,
-                        id: animId
-                    };
-                }
+            var animId = CZ.Common.setVisibleByUserDirectly(e.newvisible);
+            if(animId) {
+                CZ.Common.setNavigationStringTo = {
+                    element: e.element,
+                    id: animId
+                };
             }
         }
         Search.navigateToElement = navigateToElement;
         function navigateToBookmark(bookmark) {
-            if(bookmark && !CZ.Authoring.isActive) {
+            if(bookmark) {
                 var visible = CZ.UrlNav.navStringToVisible(bookmark, CZ.Common.vc);
                 if(visible) {
                     var animId = CZ.Common.setVisibleByUserDirectly(visible);

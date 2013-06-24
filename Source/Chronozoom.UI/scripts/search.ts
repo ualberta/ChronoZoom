@@ -71,16 +71,14 @@ module CZ {
 
 
         export function navigateToElement(e) {
-            if (!CZ.Authoring.isActive) {
-                var animId = CZ.Common.setVisibleByUserDirectly(e.newvisible);
-                if (animId) {
-                    CZ.Common.setNavigationStringTo = { element: e.element, id: animId };
-                }
-            }
+            var animId = CZ.Common.setVisibleByUserDirectly(e.newvisible);
+            if (animId) {
+                CZ.Common.setNavigationStringTo = { element: e.element, id: animId };
+            }   
         }
 
         export function navigateToBookmark(bookmark) {
-            if (bookmark && !CZ.Authoring.isActive) {
+            if (bookmark) {
                 var visible = CZ.UrlNav.navStringToVisible(bookmark, CZ.Common.vc);
                 if (visible) {
                     var animId = CZ.Common.setVisibleByUserDirectly(visible);
