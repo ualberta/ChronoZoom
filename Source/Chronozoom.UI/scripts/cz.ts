@@ -300,12 +300,10 @@ module CZ {
             });
 
             $(window).bind('resize', function () {
-                timeSeriesChart.updateCanvasHeight();
                 CZ.Common.updateLayout();
 
                 //updating timeSeries chart
                 var vp = CZ.Common.vc.virtualCanvas("getViewport");
-                updateTimeSeriesChart(vp);
             });
 
             var vp = CZ.Common.vc.virtualCanvas("getViewport");

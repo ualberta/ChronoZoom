@@ -196,6 +196,8 @@ module CZ {
 
             if (timeline.timelines instanceof Array) {
                 timeline.timelines.forEach(function (tl) {
+                    // LANE: trying to change timeline position
+                    // tl.realY -= (res.max-res.min);
                     tl.realY -= res.min;
                 });
             }
@@ -268,7 +270,7 @@ module CZ {
                         unsequencedContent.push(tl);
                 });
             }
-
+/*
             if (timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (eb) {
                     eb.size = exhibitSize;
@@ -292,7 +294,7 @@ module CZ {
                         unsequencedContent.push(eb);
                 });
             }
-
+*/
             sequencedContent.sort(function (l, r) {
                 return l.Sequence - r.Sequence;
             });
@@ -406,11 +408,11 @@ module CZ {
 
 
             return {
-                width: width - 1.25 * height, // decrease text width for saving place for edit icon
+                width: width, // LANE: removed decrease text width for saving place for edit icon
                 height: height,
                 marginTop: tlHeight - height - margin,
                 marginLeft: margin,
-                bboxWidth: width + 2 * margin - 1.25 * height, // decrease bbox width for saving place for edit icon
+                bboxWidth: width + 2 * margin, // LANE: removed decrease bbox width for saving place for edit icon
                 bboxHeight: height + 2 * margin
             };
         }

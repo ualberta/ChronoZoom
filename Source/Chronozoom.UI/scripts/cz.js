@@ -233,10 +233,8 @@ var CZ;
                 CZ.BreadCrumbs.updateBreadCrumbsLabels(breadCrumbsEvent.breadCrumbs);
             });
             $(window).bind('resize', function () {
-                CZ.timeSeriesChart.updateCanvasHeight();
                 CZ.Common.updateLayout();
                 var vp = CZ.Common.vc.virtualCanvas("getViewport");
-                updateTimeSeriesChart(vp);
             });
             var vp = CZ.Common.vc.virtualCanvas("getViewport");
             CZ.Common.vc.virtualCanvas("setVisible", CZ.VCContent.getVisibleForElement({

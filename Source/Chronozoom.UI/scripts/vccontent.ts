@@ -621,6 +621,121 @@ module CZ {
 
         }
 
+        /*  A timespan element that can be added to a VirtualCanvas.
+        @param layerid   (any type) id of the layer for this element
+        @param id   (any type) id of an element
+        @param vx   (number) x of left top corner in virtual space
+        @param vy   (number) y of left top corner in virtual space
+        @param vw   (number) width of a bounding box in virtual space
+        @param vh   (number) height of a bounding box in virtual space
+        @param settings  ({strokeStyle,lineWidth,fillStyle,outline:boolean}) Parameters of the rectangle appearance
+        */
+        export function CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings) {
+            this.base = CanvasElement;
+            this.base(vc, layerid, id, vx, vy, vw, vh);
+            this.settings = settings;
+            this.type = "rectangle";
+
+
+            /* Renders a time span.
+            @param ctx              (context2d) Canvas context2d to render on.
+            @param visibleBox_v     ({Left,Right,Top,Bottom}) describes visible region in the virtual space
+            @param viewport2d       (Viewport2d) current viewport
+            @param size_p           ({x,y}) size of bounding box of this element in pixels
+            @remarks The method is implemented for each particular VirtualCanvas element.
+            */
+            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                var p = viewport2d.pointVirtualToScreen(this.x, this.y);    // top left point
+                var p2 = viewport2d.pointVirtualToScreen(this.x + this.width, this.y + this.height); // bottom right point
+                var left = Math.max(0, p.x);
+                var top = Math.max(0, p.y);
+                var right = Math.min(viewport2d.width, p2.x);
+                var bottom = Math.min(viewport2d.height, p2.y);
+                if (left < right && top < bottom) {
+
+                    ctx.globalAlpha = opacity;
+                    if (this.settings.strokeStyle) {
+                        ctx.strokeStyle = this.settings.strokeStyle;
+                        if (this.settings.lineWidth) {
+                            if (this.settings.isLineWidthVirtual) { // in virtual coordinates
+                                ctx.lineWidth = viewport2d.widthVirtualToScreen(this.settings.lineWidth);
+                            } else {
+                                ctx.lineWidth = this.settings.lineWidth; // in pixels
+                            }
+                        }
+                        else ctx.lineWidth = 1;
+                        ctx.lineWidth = 2;
+                        var lineWidth2 = ctx.lineWidth * 2.0;
+                        if (this.settings.outline) {
+                            p.x += lineWidth2;
+                            p.y += lineWidth2;
+                            top += lineWidth2;
+                            bottom -= lineWidth2;
+                            left += lineWidth2;
+                            right -= lineWidth2;
+                            p2.x -= lineWidth2;
+                            p2.y -= lineWidth2;
+                        }
+                        // LANE: Changed this from a rectangle to a line
+                        // left border
+                        if (p.x > 0) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, bottom-Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
+                            ctx.lineTo(p.x, bottom+Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
+                            ctx.stroke();
+                        }
+                        // top border
+                        if (p.y > 0 && false) {
+                            ctx.beginPath();
+                            ctx.moveTo(left - lineWidth2, p.y);
+                            ctx.lineTo(right + lineWidth2, p.y);
+                            ctx.stroke();
+                        }
+
+                        // right border
+                        if (p2.x < viewport2d.width) {
+                            ctx.beginPath();
+                            ctx.moveTo(p2.x, bottom-Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
+                            ctx.lineTo(p2.x, bottom+Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
+                            ctx.stroke();
+                        }
+                        
+                        var lineLength = (right-left)*0.4;
+                        if((right-left) < 400)
+                            lineLength = right-left;
+                        //bottom left border
+                        if (p2.y < viewport2d.height) {
+                            ctx.beginPath();
+                            ctx.moveTo(left, p2.y);
+                            ctx.lineTo(left+lineLength, p2.y);
+                            ctx.stroke();
+                        }
+                        //bottom right border
+                        if (p2.y < viewport2d.height) {
+                            ctx.beginPath();
+                            ctx.moveTo(right-lineLength, p2.y);
+                            ctx.lineTo(right, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            };
+
+            this.intersects = function (rect) {
+                return !(this.x + this.width < rect.x || this.x > rect.x + rect.width || this.y + this.height < rect.y || this.y > rect.y + rect.height);
+            };
+
+            this.contains = function (rect) {
+                return (rect.x > this.x && rect.x + rect.width < this.x + this.width && rect.y > this.y && rect.y + rect.height < this.y + this.height);
+            };
+
+            this.isVisibleOnScreen = function (scale) {
+                return this.width / scale >= CZ.Settings.minTimelineWidth;
+            }
+
+            this.prototype = new CanvasElement(vc, layerid, id, vx, vy, vw, vh);
+        }
+
         /*  A rectangle element that can be added to a VirtualCanvas.
         @param layerid   (any type) id of the layer for this element
         @param id   (any type) id of an element
@@ -747,7 +862,7 @@ module CZ {
         @param settings  ({strokeStyle,lineWidth,fillStyle}) Parameters of the rectangle appearance
         */
         function CanvasTimeline(vc, layerid, id, vx, vy, vw, vh, settings, timelineinfo) {
-            this.base = CanvasRectangle;
+            this.base = CanvasTimespan;
             this.base(vc, layerid, id, vx, vy, vw, vh);
             this.guid = timelineinfo.guid;
             this.type = 'timeline';
@@ -765,11 +880,11 @@ module CZ {
 
             var headerSize = timelineinfo.titleRect ? timelineinfo.titleRect.height : CZ.Settings.timelineHeaderSize * timelineinfo.height;
             var headerWidth = timelineinfo.titleRect ? timelineinfo.titleRect.width : 0;
-            var marginLeft = timelineinfo.titleRect ? timelineinfo.titleRect.marginLeft : CZ.Settings.timelineHeaderMargin * timelineinfo.height; // size of left and top margins (e.g. if timeline is for 100 years, relative margin timelineHeaderMargin=0.05, then absolute margin is 5 years).
+            var marginLeft = width/2 - headerWidth/2; // size of left and top margins (e.g. if timeline is for 100 years, relative margin timelineHeaderMargin=0.05, then absolute margin is 5 years).
             var marginTop = timelineinfo.titleRect ? timelineinfo.titleRect.marginTop : (1 - CZ.Settings.timelineHeaderMargin) * timelineinfo.height - headerSize;
             var baseline = timelineinfo.top + marginTop + headerSize / 2.0;
 
-            this.titleObject = addText(this, layerid, id + "__header__", timelineinfo.timeStart + marginLeft, timelineinfo.top + marginTop, baseline, headerSize,
+            this.titleObject = addText(this, layerid, id + "__header__", timelineinfo.timeStart+marginLeft, timelineinfo.top+marginTop, baseline, headerSize,
                 timelineinfo.header, {
                     fontName: CZ.Settings.timelineHeaderFontName,
                     fillStyle: CZ.Settings.timelineHeaderFontColor,
@@ -934,7 +1049,7 @@ module CZ {
                 }
             }
 
-            this.prototype = new CanvasRectangle(vc, layerid, id, vx, vy, vw, vh, settings);
+            this.prototype = new CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings);
 
         }
 
@@ -1141,6 +1256,7 @@ module CZ {
                         this.screenFontSize = fontSize; // try to save fontSize
 
                     } else { // no wrap
+
                         ctx.font = fontSize + "pt " + this.settings.fontName; // assign it here to measure text in next lines
 
                         this.screenFontSize = fontSize; // try to save fontSize
@@ -1186,6 +1302,9 @@ module CZ {
                     else if (this.settings.textAlign === 'right')
                         p.x = p.x + size_p.x;
                 }
+
+                // LANE: overriding font size
+                fontSize = 18;
 
                 if (!this.settings.wrapText) {
                     if (this.settings.textBaseline)

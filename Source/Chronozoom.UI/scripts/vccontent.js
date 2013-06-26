@@ -380,6 +380,92 @@ var CZ;
             };
             this.prototype = new CanvasElement(vc, layerid, id, vx, vy, vw, vh);
         }
+        function CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings) {
+            this.base = CanvasElement;
+            this.base(vc, layerid, id, vx, vy, vw, vh);
+            this.settings = settings;
+            this.type = "rectangle";
+            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                var p = viewport2d.pointVirtualToScreen(this.x, this.y);
+                var p2 = viewport2d.pointVirtualToScreen(this.x + this.width, this.y + this.height);
+                var left = Math.max(0, p.x);
+                var top = Math.max(0, p.y);
+                var right = Math.min(viewport2d.width, p2.x);
+                var bottom = Math.min(viewport2d.height, p2.y);
+                if(left < right && top < bottom) {
+                    ctx.globalAlpha = opacity;
+                    if(this.settings.strokeStyle) {
+                        ctx.strokeStyle = this.settings.strokeStyle;
+                        if(this.settings.lineWidth) {
+                            if(this.settings.isLineWidthVirtual) {
+                                ctx.lineWidth = viewport2d.widthVirtualToScreen(this.settings.lineWidth);
+                            } else {
+                                ctx.lineWidth = this.settings.lineWidth;
+                            }
+                        } else {
+                            ctx.lineWidth = 1;
+                        }
+                        ctx.lineWidth = 2;
+                        var lineWidth2 = ctx.lineWidth * 2;
+                        if(this.settings.outline) {
+                            p.x += lineWidth2;
+                            p.y += lineWidth2;
+                            top += lineWidth2;
+                            bottom -= lineWidth2;
+                            left += lineWidth2;
+                            right -= lineWidth2;
+                            p2.x -= lineWidth2;
+                            p2.y -= lineWidth2;
+                        }
+                        if(p.x > 0) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, bottom - Math.round((bottom - top) * -CZ.Settings.timelineHeaderMargin * 2));
+                            ctx.lineTo(p.x, bottom + Math.round((bottom - top) * -CZ.Settings.timelineHeaderMargin * 2));
+                            ctx.stroke();
+                        }
+                        if(p.y > 0 && false) {
+                            ctx.beginPath();
+                            ctx.moveTo(left - lineWidth2, p.y);
+                            ctx.lineTo(right + lineWidth2, p.y);
+                            ctx.stroke();
+                        }
+                        if(p2.x < viewport2d.width) {
+                            ctx.beginPath();
+                            ctx.moveTo(p2.x, bottom - Math.round((bottom - top) * -CZ.Settings.timelineHeaderMargin * 2));
+                            ctx.lineTo(p2.x, bottom + Math.round((bottom - top) * -CZ.Settings.timelineHeaderMargin * 2));
+                            ctx.stroke();
+                        }
+                        var lineLength = (right - left) * 0.4;
+                        if((right - left) < 400) {
+                            lineLength = right - left;
+                        }
+                        if(p2.y < viewport2d.height) {
+                            ctx.beginPath();
+                            ctx.moveTo(left, p2.y);
+                            ctx.lineTo(left + lineLength, p2.y);
+                            ctx.stroke();
+                        }
+                        if(p2.y < viewport2d.height) {
+                            ctx.beginPath();
+                            ctx.moveTo(right - lineLength, p2.y);
+                            ctx.lineTo(right, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            };
+            this.intersects = function (rect) {
+                return !(this.x + this.width < rect.x || this.x > rect.x + rect.width || this.y + this.height < rect.y || this.y > rect.y + rect.height);
+            };
+            this.contains = function (rect) {
+                return (rect.x > this.x && rect.x + rect.width < this.x + this.width && rect.y > this.y && rect.y + rect.height < this.y + this.height);
+            };
+            this.isVisibleOnScreen = function (scale) {
+                return this.width / scale >= CZ.Settings.minTimelineWidth;
+            };
+            this.prototype = new CanvasElement(vc, layerid, id, vx, vy, vw, vh);
+        }
+        VCContent.CanvasTimespan = CanvasTimespan;
         function CanvasRectangle(vc, layerid, id, vx, vy, vw, vh, settings) {
             this.base = CanvasElement;
             this.base(vc, layerid, id, vx, vy, vw, vh);
@@ -471,7 +557,7 @@ var CZ;
         }
         VCContent.CanvasRectangle = CanvasRectangle;
         function CanvasTimeline(vc, layerid, id, vx, vy, vw, vh, settings, timelineinfo) {
-            this.base = CanvasRectangle;
+            this.base = CanvasTimespan;
             this.base(vc, layerid, id, vx, vy, vw, vh);
             this.guid = timelineinfo.guid;
             this.type = 'timeline';
@@ -485,7 +571,7 @@ var CZ;
             var width = timelineinfo.timeEnd - timelineinfo.timeStart;
             var headerSize = timelineinfo.titleRect ? timelineinfo.titleRect.height : CZ.Settings.timelineHeaderSize * timelineinfo.height;
             var headerWidth = timelineinfo.titleRect ? timelineinfo.titleRect.width : 0;
-            var marginLeft = timelineinfo.titleRect ? timelineinfo.titleRect.marginLeft : CZ.Settings.timelineHeaderMargin * timelineinfo.height;
+            var marginLeft = width / 2 - headerWidth / 2;
             var marginTop = timelineinfo.titleRect ? timelineinfo.titleRect.marginTop : (1 - CZ.Settings.timelineHeaderMargin) * timelineinfo.height - headerSize;
             var baseline = timelineinfo.top + marginTop + headerSize / 2;
             this.titleObject = addText(this, layerid, id + "__header__", timelineinfo.timeStart + marginLeft, timelineinfo.top + marginTop, baseline, headerSize, timelineinfo.header, {
@@ -619,7 +705,7 @@ var CZ;
                     });
                 }
             };
-            this.prototype = new CanvasRectangle(vc, layerid, id, vx, vy, vw, vh, settings);
+            this.prototype = new CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings);
         }
         function CanvasCircle(vc, layerid, id, vxc, vyc, vradius, settings) {
             this.base = CanvasElement;
@@ -800,6 +886,7 @@ var CZ;
                         }
                     }
                 }
+                fontSize = 18;
                 if(!this.settings.wrapText) {
                     if(this.settings.textBaseline) {
                         ctx.textBaseline = this.settings.textBaseline;

@@ -25,16 +25,16 @@
         export var fallbackImageUri = '/images/Temp-Thumbnail2.png'; // the image that is shown when thumbnail loading fails (e.g. database is unavailable)
 
         // Styles of timelines
-        export var timelineHeaderMargin = 1.0 / 18.0;  // size of left margins, relative to height of the timeline.
-        export var timelineHeaderSize = 1.0 / 9.0;    // header's font size, relative to height of the timeline
-        export var timelineTooltipMaxHeaderSize = 5; // timeline tooltip appears, when its title screen size less than this constant
-        export var timelineHeaderFontName = 'Arial';    // header's font size, relative to height of the timeline
+        export var timelineHeaderMargin = -1.0/10.0;  // size of left margins, relative to height of the timeline.
+        export var timelineHeaderSize = 1.0 / 4.0;    // header's font size, relative to height of the timeline
+        export var timelineTooltipMaxHeaderSize = 8; // timeline tooltip appears, when its title screen size less than this constant
+        export var timelineHeaderFontName = 'OSPDIN';    // header's font size, relative to height of the timeline
         export var timelineHeaderFontColor = 'rgb(232,232,232)';
         export var timelineHoveredHeaderFontColor = 'white';
         export var timelineStrokeStyle = 'rgb(232,232,232)'; // border line style
         export var timelineLineWidth = 1;        // border line width (pixels)
         export var timelineHoveredLineWidth = 1; // in px
-        export var timelineMinAspect = 0.2; //minimal timeline.height / timeline.width
+        export var timelineMinAspect = 0.75; //minimal timeline.height / timeline.width
         export var timelineContentMargin = 0.01; //determines margin for child elements of timeline. Margin = timelineWidth * timelineContentMargin
         export var timelineBorderColor = 'rgb(232,232,232)';
         export var timelineHoveredBoxBorderColor = 'rgb(232,232,232)';

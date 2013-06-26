@@ -211,30 +211,6 @@ var CZ;
                     }
                 });
             }
-            if(timeline.exhibits instanceof Array) {
-                timeline.exhibits.forEach(function (eb) {
-                    eb.size = exhibitSize;
-                    eb.left = eb.x - eb.size / 2;
-                    eb.right = eb.x + eb.size / 2;
-                    eb.realHeight = exhibitSize;
-                    if(eb.left < timeline.left) {
-                        eb.left = timeline.left;
-                        eb.right = eb.left + eb.size;
-                        eb.isDeposed = true;
-                    } else {
-                        if(eb.right > timeline.right) {
-                            eb.right = timeline.right;
-                            eb.left = timeline.right - eb.size;
-                            eb.isDeposed = true;
-                        }
-                    }
-                    if(eb.Sequence) {
-                        sequencedContent.push(eb);
-                    } else {
-                        unsequencedContent.push(eb);
-                    }
-                });
-            }
             sequencedContent.sort(function (l, r) {
                 return l.Sequence - r.Sequence;
             });
@@ -340,11 +316,11 @@ var CZ;
                 height = width * 100 / size.width;
             }
             return {
-                width: width - 1.25 * height,
+                width: width,
                 height: height,
                 marginTop: tlHeight - height - margin,
                 marginLeft: margin,
-                bboxWidth: width + 2 * margin - 1.25 * height,
+                bboxWidth: width + 2 * margin,
                 bboxHeight: height + 2 * margin
             };
         }
