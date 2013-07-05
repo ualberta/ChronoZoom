@@ -18,13 +18,14 @@
         })();
     </script>
 
-    <link rel="stylesheet" type="text/css" href="/css/cz.css" />
+    <link rel="stylesheet" type="text/css" href="/css/dino-cz.css" />
 
-    <link rel="stylesheet" type="text/css" href="/css/fonts.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'>
 
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <script type="text/javascript" src="/scripts/external/jquery.slider.js"></script>
 
     <script type="text/javascript" src="/scripts/external/jquery.cookie.js"></script>
     <script type="text/javascript" src="/scripts/external/rx.js"></script>
@@ -75,74 +76,29 @@
 </head>
 <body>
     <div id="content">
-        <div id="axis" style="position: relative;">
-        </div>
+        
 
-        <div id="vc-container">
+        <div id="vc-container" >
             <div id="vc">
-                <div id="layerTimelines" class="unselectable">
+                <div id="layerTimelines" onselectstart="return false;">
                 </div>
                 <!--for popup's-->
                 <p class="bubbleInfo" style="display: inline-block; z-index: 3000;" id="defaultBox">
                     <span></span>
                 </p>
                 <!--//////////-->
-                <div id="layerInfodots" class="unselectable">
+                <div id="layerInfodots" onselectstart="return false;">
                 </div>
-                <div id="iframe_layer" class="unselectable">
+                <div id="iframe_layer" onselectstart="return false;">
                 </div>
-            </div>
-            <div id="timeSeriesContainer" style="display: none;"></div>
-        </div>
-
-        <div id="search" class="czWindow" style="z-index: 2010; max-height: 250px; display: none">
-            <div class="header unselectable">
-                Search
-            </div>
-            <div>
-                <input id="searchTextBox" class="czTextBox emptyTextBox" style="margin: 10px 10px 10px 10px; width: 190px"
-                    value="type here..." />
-            </div>
-            <div class="searchResults" style="height: auto; max-height: 140px">
-            </div>
-            <div>
-                <img src="/images/loading.gif" style="width: 190px; margin-left: 10px; margin-bottom: 10px; height: 20px; display: none;" alt="Searching..." id="loadingImage" />
-            </div>
-        </div>
-
-        <div id="tours" class="czWindow unselectable" style="display: none">
-            <div class="header unselectable">
-                Tours
-            </div>
-            <div id="tours-narration" class="narration unselectable">
-                Narration: <span id="tours-narration-on" class="narration-selected">ON</span> |
-                <span id="tours-narration-off">OFF</span>
-            </div>
-            <div id="tours-content" class="content">
-            </div>
-        </div>
-
-
-        <div id="auth-edit-tours-form" class="cz-form cz-form-tour-edit unselectable" onselectstart="return false;">
-        </div>
-
-        <div id="bookmarks" class="bookmarksWindow unselectable" style="display: none">
-            <img id="bookmarksCollapse" src="/images/collapse-left.png" class="headerButton" />
-            <div class="header">
-            </div>
-            <div class="slideHeader">
-            </div>
-            <div class="slideText">
-            </div>
-            <div class="slideFooter">
             </div>
         </div>
 
         <div id="bibliographyBack" class="biblBack">
             <div id="bibliographyOut" class="biblOuterWindow">
                 <div id="bibliography" class="biblWindow">
-                    <img class="closeButton unselectable" id="biblCloseButton" src="/images/close_off.png" alt="Close" />
-                    <div class="title">
+                    <img class="closeButton unselectable" id="biblCloseButton" src="/images/close_off.png" alt="Close" onselectstart="return false;" />
+                    <div class="title" onselectstart="return false;">
                         <span>Infodot name</span> &gt; Bibliography
                     </div>
                     <div class="sources">
@@ -151,8 +107,10 @@
             </div>
         </div>
     </div>
-
+        <div id="axis">
+        </div>
     <div id="footer">
+        <div id="bottom-bar">
         <div class="breadcrumbs-nav fleft">
             <div id="breadcrumbs-nav-left">&#171;</div>
         </div>
@@ -164,8 +122,96 @@
         <div class="breadcrumbs-nav fleft">
             <div id="breadcrumbs-nav-right" class="">&#187;</div>
         </div>
-        <div class="clearer"></div>
-    </div>
+        
+        <ul id="controls">
+             
+           <li class="control"><a id="timeline-btn" class="control-btn" href="#">Timelines</a></li>
+             <li class="control"><a id="events-btn" class="control-btn" href="#">Events</a></li>
+        </ul>
 
+        <div class="clearer"></div>
+      </div>
+      <nav id="ev-navigation" class="hidden">
+        <ul>
+            <li class="about"><a class="time-link" id="00000000-0000-0000-2000-000000000000" href="#">The Ediacaran Fauna</a></li>
+          <li class="products"><a class="time-link" id="00000000-0000-0000-3000-000000000000" href="#">The First Dinosaurs</a></li>
+          <li class="blog"><a class="time-link" id="00000000-0000-0000-1000-000000000000" href="#">End-Cretaceous Mass Extinction</a></li>
+        </ul>
+      </nav>
+      <nav id="navigation" class="hidden">
+        <ul>
+            <li class="about"><a class="time-link" id="00000000-0000-0000-0000-000000000000" href="#">All of Time</a></li>
+          <li class="about"><a class="time-link" id="c3f0ba48-f852-4683-9254-134017521ea" href="#">Hadean Eon</a></li>
+          <li class="products"><a class="time-link" id="c3f0ba48-ed86-4683-9254-134017521ea" href="#">Archean Eon</a></li>
+          <li class="blog"><a class="time-link" id="c3f0ba48-ed86-4683-8667-134017521ea" href="#">Proterozoic Eon</a></li>
+          <li class="resources"><a class="time-link" id="096717fd-64db-4416-92a7-6d35c83777d5" href="#/t096717fd-64db-4416-92a7-6d35c83777d5">Phanerozoic Eon</a>
+            <ul>
+              <li><a class="time-link" id="1f793bf4-ed86-4683-8667-13f4190321ea" href="#">Paleozoic Era</a>
+                <ul>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000001" href="#">Cambrian</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000002" href="#">Ordovician</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000003" href="#">Silurian</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000004" href="#">Devonian</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000005" href="#">Carboniferous</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000006" href="#">Permian</a></li>
+                </ul>
+              </li>
+              <li><a class="time-link" id="4a4897e0-ce40-4fe2-be92-5e1000466f91" href="#">Mesozoic Era</a>
+                <ul>
+                  <li><a class="time-link" id="5f793bf4-ec86-4683-8667-10f4190321ea" href="#">Triassic</a></li>
+                  <li><a class="time-link" id="e66246f6-647f-46ef-ac29-ab58b93b87ab" href="#">Jurassic</a></li>
+                  <li><a class="time-link" id="31fc1030-5e28-4bb6-b8cb-ad0c81f444fa" href="#">Cretaceous</a></li>
+                </ul>
+              </li>
+              <li><a class="time-link" id="1f793bf4-ed86-4683-8667-13f017521ea" href="#">Cenozoic Era</a>
+                <ul>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000010" href="#">Paleogene</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000011" href="#">Neogene</a></li>
+                  <li><a class="time-link" id="00000000-0000-0000-0000-000000000012" href="#">Quarternary</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+          $('#navigation').slider();
+          
+          $('html').bind('click',function(event) {
+            console.log(event);
+            $('#navigation, #ev-navigation').addClass('hidden');
+            $('#timeline-btn, #events-btn').removeClass('active');
+          });
+          
+          $('#timeline-btn').click(function(event) {
+            $('#navigation').toggleClass('hidden');
+            $('#ev-navigation').addClass('hidden');
+            $('#events-btn').removeClass('active');
+            $(this).toggleClass('active');
+            event.stopPropagation();
+          });
+          
+          $('#events-btn').click(function(event) {
+            $('#ev-navigation').toggleClass('hidden');
+            $('#navigation').addClass('hidden');
+            $('#timeline-btn').removeClass('active');
+            $(this).toggleClass('active');
+            event.stopPropagation();
+          });
+          
+          setTimeout(function() {
+            
+          }, 500);
+          
+          $('#navigation').find('a.time-link').click(function() {
+            CZ.Search.goToSearchResult('t'+$(this).attr('id'));
+          });
+          $('#ev-navigation').find('a.time-link').click(function() {
+            CZ.Search.goToSearchResult('e'+$(this).attr('id'));
+          });
+        });
+    </script>
 </body>
 </html>

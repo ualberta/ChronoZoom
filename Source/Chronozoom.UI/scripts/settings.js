@@ -19,8 +19,8 @@ var CZ;
         Settings.fallbackImageUri = '/images/Temp-Thumbnail2.png';
         Settings.timelineHeaderMargin = -1 / 10;
         Settings.timelineHeaderSize = 1 / 4;
-        Settings.timelineTooltipMaxHeaderSize = 8;
-        Settings.timelineHeaderFontName = 'OSPDIN';
+        Settings.timelineTooltipMaxHeaderSize = 10;
+        Settings.timelineHeaderFontName = 'Open Sans Condensed';
         Settings.timelineHeaderFontColor = 'rgb(232,232,232)';
         Settings.timelineHoveredHeaderFontColor = 'white';
         Settings.timelineStrokeStyle = 'rgb(232,232,232)';
@@ -32,26 +32,52 @@ var CZ;
         Settings.timelineHoveredBoxBorderColor = 'rgb(232,232,232)';
         Settings.timelineBreadCrumbBorderOffset = 50;
         Settings.timelineCenterOffsetAcceptableImplicity = 0.00001;
+        Settings.timelineEndTicks = 8;
+        Settings.fixedTimelineHeight = 50;
+        Settings.fixedTimelineOffset = 10;
+        Settings.fixedTimelineFontMap = [
+            0, 
+            24, 
+            20, 
+            18, 
+            16, 
+            14, 
+            12, 
+            12, 
+            12
+        ];
+        Settings.fixedTimelineHeightMap = [
+            62, 
+            50, 
+            40, 
+            42, 
+            36, 
+            32, 
+            30
+        ];
+        Settings.fixedTimelineHeadingThreshold = 100;
+        Settings.timelineFixedHeadingWidth = 120;
+        Settings.fixedTimelineTooltipThreshold = 30;
         Settings.infodotShowContentZoomLevel = 9;
         Settings.infodotShowContentThumbZoomLevel = 2;
-        Settings.infoDotHoveredBorderWidth = 40 / 450;
-        Settings.infoDotBorderWidth = 27 / 450;
+        Settings.infoDotHoveredBorderWidth = 0;
+        Settings.infoDotBorderWidth = 0;
         Settings.infodotTitleWidth = 200 / 489;
         Settings.infodotTitleHeight = 60 / 489;
         Settings.infodotBibliographyHeight = 10 / 489;
-        Settings.infoDotBorderColor = 'rgb(232,232,232)';
-        Settings.infoDotHoveredBorderColor = 'white';
+        Settings.infoDotBorderColor = 'rgba(0,0,0,0)';
+        Settings.infoDotHoveredBorderColor = 'rgba(0,0,0,0)';
         Settings.infoDotFillColor = 'rgb(92,92,92)';
         Settings.infoDotTinyContentImageUri = '/images/tinyContent.png';
         Settings.infodotMaxContentItemsCount = 10;
         Settings.mediaContentElementZIndex = 100;
-        Settings.contentItemDescriptionNumberOfLines = 10;
+        Settings.contentItemDescriptionNumberOfLines = 18;
         Settings.contentItemShowContentZoomLevel = 9;
         Settings.contentItemThumbnailMinLevel = 3;
         Settings.contentItemThumbnailMaxLevel = 7;
         Settings.contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
         Settings.contentItemTopTitleHeight = 47 / 540;
-        Settings.contentItemContentWidth = 480 / 520;
+        Settings.contentItemContentWidth = 680 / 520;
         Settings.contentItemVerticalMargin = 13 / 540;
         Settings.contentItemMediaHeight = 260 / 540;
         Settings.contentItemSourceHeight = 10 / 540;
@@ -59,28 +85,28 @@ var CZ;
         Settings.contentItemSourceHoveredFontColor = 'white';
         Settings.contentItemAudioHeight = 40 / 540;
         Settings.contentItemAudioTopMargin = 120 / 540;
-        Settings.contentItemFontHeight = 140 / 540;
+        Settings.contentItemFontHeight = 300 / 540;
         Settings.contentItemHeaderFontName = 'Arial';
         Settings.contentItemHeaderFontColor = 'white';
         Settings.contentItemBoundingBoxBorderWidth = 13 / 520;
-        Settings.contentItemBoundingBoxFillColor = 'rgb(36,36,36)';
-        Settings.contentItemBoundingBoxBorderColor = undefined;
-        Settings.contentItemBoundingHoveredBoxBorderColor = 'white';
+        Settings.contentItemBoundingBoxFillColor = 'rgba(255,255,0,0.2)';
+        Settings.contentItemBoundingBoxBorderColor = 'white';
+        Settings.contentItemBoundingHoveredBoxBorderColor = 'red';
         Settings.contentAppearanceAnimationStep = 0.01;
         Settings.infoDotZoomConstraint = 0.005;
         Settings.infoDotAxisFreezeThreshold = 0.75;
         Settings.maxPermitedTimeRange = {
-            left: -13700000000,
+            left: -4600000000,
             right: 0
         };
         Settings.deeperZoomConstraints = [
             {
-                left: -14000000000,
-                right: -1000000000,
+                left: -4599999999,
+                right: -542000000,
                 scale: 1000
             }, 
             {
-                left: -1000000000,
+                left: -542000000,
                 right: -1000000,
                 scale: 1
             }, 
@@ -128,7 +154,7 @@ var CZ;
         Settings.rectangleRadius = 3;
         Settings.axisTextSize = 12;
         Settings.axisTextFont = "Arial";
-        Settings.axisStrokeColor = "rgb(221,221,221)";
+        Settings.axisStrokeColor = "rgb(0,232,255)";
         Settings.axisHeight = 47;
         Settings.horizontalTextMargin = 20;
         Settings.verticalTextMargin = 15;

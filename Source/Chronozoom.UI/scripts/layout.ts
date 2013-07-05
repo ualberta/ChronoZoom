@@ -270,7 +270,7 @@ module CZ {
                         unsequencedContent.push(tl);
                 });
             }
-/*
+
             if (timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (eb) {
                     eb.size = exhibitSize;
@@ -294,7 +294,7 @@ module CZ {
                         unsequencedContent.push(eb);
                 });
             }
-*/
+
             sequencedContent.sort(function (l, r) {
                 return l.Sequence - r.Sequence;
             });
@@ -408,11 +408,11 @@ module CZ {
 
 
             return {
-                width: width, // LANE: removed decrease text width for saving place for edit icon
+                width: width - 1.25 * height, // decrease text width for saving place for edit icon
                 height: height,
                 marginTop: tlHeight - height - margin,
                 marginLeft: margin,
-                bboxWidth: width + 2 * margin, // LANE: removed decrease bbox width for saving place for edit icon
+                bboxWidth: width + 2 * margin - 1.25 * height, // decrease bbox width for saving place for edit icon
                 bboxHeight: height + 2 * margin
             };
         }
@@ -420,6 +420,20 @@ module CZ {
         function Convert(parent, timeline) {
             //Creating timeline
             var tlColor = GetTimelineColor(timeline);
+
+            // LANE: Let's track the depth of the timeline
+            if(typeof(parent.type) === "undefined") {
+                timeline.depth = 1;
+            } else {
+                if(parent.type === "timeline")
+                    timeline.depth = parent.settings.depth+1;
+            }
+
+            // LANE: we want fixed Y positions for timelines
+            if(typeof(parent.type) !== "undefined") {
+
+            }
+
             var t1 = CZ.VCContent.addTimeline(parent, "layerTimelines", 't' + timeline.id,
             {
                 isBuffered: timeline.timelines instanceof Array,
@@ -434,8 +448,11 @@ module CZ {
                 strokeStyle: tlColor,
                 regime: timeline.Regime,
                 endDate: timeline.endDate,
-                opacity: 0
+                opacity: 0,
+                depth: timeline.depth
             });
+
+
 
             //Creating Infodots
             if (timeline.exhibits instanceof Array) {
@@ -449,7 +466,7 @@ module CZ {
                         }
                     }
 
-                    var infodot1 = CZ.VCContent.addInfodot(t1, "layerInfodots", 'e' + childInfodot.id,
+                    var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id,
                             (childInfodot.left + childInfodot.right) / 2.0, childInfodot.y, 0.8 * childInfodot.size / 2.0, contentItems,
                             {
                                 isBuffered: false,
@@ -569,7 +586,9 @@ module CZ {
 
         // converts a scenegraph element in absolute coords to relative coords
         function convertRelativeToAbsoluteCoords(el, delta) {
+            console.log(el);
             if (!delta) return;
+
             if (typeof el.y !== 'undefined') {
                 el.y += delta;
                 el.newY += delta;
@@ -868,8 +887,10 @@ module CZ {
                     dest.isBuffered = dest.isBuffered || (src.timelines instanceof Array);
 
                     // dest now contains all src children
-                    for (var i = 0; i < dest.children.length; i++)
-                        convertRelativeToAbsoluteCoords(dest.children[i], dest.newY);
+                    for (var i = 0; i < dest.children.length; i++) {
+                        convertRelativeToAbsoluteCoords(dest.children[i], convertRelativeToAbsoluteCoords(dest.children[i], dest.newY));
+                    }
+                        
                 } else {
                     dest.delta = 0;
                 }

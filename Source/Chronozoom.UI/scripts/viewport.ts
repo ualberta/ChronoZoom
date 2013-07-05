@@ -89,6 +89,7 @@
                     y: this.aspectRatio * this.visible.scale * py
                 };
             };
+
         }
     }
 }

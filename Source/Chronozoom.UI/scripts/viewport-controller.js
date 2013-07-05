@@ -34,7 +34,7 @@ var CZ;
             function ZoomViewport(viewport, zoomGesture) {
                 var oldVisible = viewport.visible;
                 var x = zoomGesture.xOrigin + (viewport.width / 2 - zoomGesture.xOrigin) * zoomGesture.scaleFactor;
-                var y = zoomGesture.yOrigin + (viewport.height / 2 - zoomGesture.yOrigin) * zoomGesture.scaleFactor;
+                var y = (viewport.height / 2);
                 var newCenter = viewport.pointScreenToVirtual(x, y);
                 viewport.visible.centerX = newCenter.x;
                 viewport.visible.centerY = newCenter.y;

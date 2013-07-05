@@ -68,13 +68,6 @@ var CZ;
             }
         };
         $(document).ready(function () {
-            window.console = window.console || (function () {
-                var c = {
-                };
-                c.log = c.warn = c.debug = c.info = c.log = c.error = c.time = c.dir = c.profile = c.clear = c.exception = c.trace = c.assert = function () {
-                };
-                return c;
-            })();
             $('.bubbleInfo').hide();
             var canvasIsEmpty;
             CZ.Common.initialize();

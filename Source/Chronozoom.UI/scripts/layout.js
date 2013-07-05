@@ -211,6 +211,30 @@ var CZ;
                     }
                 });
             }
+            if(timeline.exhibits instanceof Array) {
+                timeline.exhibits.forEach(function (eb) {
+                    eb.size = exhibitSize;
+                    eb.left = eb.x - eb.size / 2;
+                    eb.right = eb.x + eb.size / 2;
+                    eb.realHeight = exhibitSize;
+                    if(eb.left < timeline.left) {
+                        eb.left = timeline.left;
+                        eb.right = eb.left + eb.size;
+                        eb.isDeposed = true;
+                    } else {
+                        if(eb.right > timeline.right) {
+                            eb.right = timeline.right;
+                            eb.left = timeline.right - eb.size;
+                            eb.isDeposed = true;
+                        }
+                    }
+                    if(eb.Sequence) {
+                        sequencedContent.push(eb);
+                    } else {
+                        unsequencedContent.push(eb);
+                    }
+                });
+            }
             sequencedContent.sort(function (l, r) {
                 return l.Sequence - r.Sequence;
             });
@@ -316,17 +340,26 @@ var CZ;
                 height = width * 100 / size.width;
             }
             return {
-                width: width,
+                width: width - 1.25 * height,
                 height: height,
                 marginTop: tlHeight - height - margin,
                 marginLeft: margin,
-                bboxWidth: width + 2 * margin,
+                bboxWidth: width + 2 * margin - 1.25 * height,
                 bboxHeight: height + 2 * margin
             };
         }
         Layout.GenerateTitleObject = GenerateTitleObject;
         function Convert(parent, timeline) {
             var tlColor = GetTimelineColor(timeline);
+            if(typeof (parent.type) === "undefined") {
+                timeline.depth = 1;
+            } else {
+                if(parent.type === "timeline") {
+                    timeline.depth = parent.settings.depth + 1;
+                }
+            }
+            if(typeof (parent.type) !== "undefined") {
+            }
             var t1 = CZ.VCContent.addTimeline(parent, "layerTimelines", 't' + timeline.id, {
                 isBuffered: timeline.timelines instanceof Array,
                 guid: timeline.id,
@@ -340,7 +373,8 @@ var CZ;
                 strokeStyle: tlColor,
                 regime: timeline.Regime,
                 endDate: timeline.endDate,
-                opacity: 0
+                opacity: 0,
+                depth: timeline.depth
             });
             if(timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (childInfodot) {
@@ -351,7 +385,7 @@ var CZ;
                             contentItems[i].guid = contentItems[i].id;
                         }
                     }
-                    var infodot1 = CZ.VCContent.addInfodot(t1, "layerInfodots", 'e' + childInfodot.id, (childInfodot.left + childInfodot.right) / 2, childInfodot.y, 0.8 * childInfodot.size / 2, contentItems, {
+                    var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id, (childInfodot.left + childInfodot.right) / 2, childInfodot.y, 0.8 * childInfodot.size / 2, contentItems, {
                         isBuffered: false,
                         guid: childInfodot.id,
                         title: childInfodot.title,
@@ -447,6 +481,7 @@ var CZ;
             }
         }
         function convertRelativeToAbsoluteCoords(el, delta) {
+            console.log(el);
             if(!delta) {
                 return;
             }
@@ -702,7 +737,7 @@ var CZ;
                         dest.titleObject = dest.children[0];
                         dest.isBuffered = dest.isBuffered || (src.timelines instanceof Array);
                         for(var i = 0; i < dest.children.length; i++) {
-                            convertRelativeToAbsoluteCoords(dest.children[i], dest.newY);
+                            convertRelativeToAbsoluteCoords(dest.children[i], convertRelativeToAbsoluteCoords(dest.children[i], dest.newY));
                         }
                     } else {
                         dest.delta = 0;

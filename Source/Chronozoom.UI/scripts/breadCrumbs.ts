@@ -234,7 +234,7 @@ module CZ {
                     .append($("<span></span>", {
                         id: "bc_",
                         class: "breadcrumb-separator",
-                        text: "›"
+                        html: "&raquo;"
                     })));
 
             // select color of the text for this breadcrumb

@@ -27,8 +27,8 @@
         // Styles of timelines
         export var timelineHeaderMargin = -1.0/10.0;  // size of left margins, relative to height of the timeline.
         export var timelineHeaderSize = 1.0 / 4.0;    // header's font size, relative to height of the timeline
-        export var timelineTooltipMaxHeaderSize = 8; // timeline tooltip appears, when its title screen size less than this constant
-        export var timelineHeaderFontName = 'OSPDIN';    // header's font size, relative to height of the timeline
+        export var timelineTooltipMaxHeaderSize = 10; // timeline tooltip appears, when its title screen size less than this constant
+        export var timelineHeaderFontName = 'Open Sans Condensed';    // header's font size, relative to height of the timeline
         export var timelineHeaderFontColor = 'rgb(232,232,232)';
         export var timelineHoveredHeaderFontColor = 'white';
         export var timelineStrokeStyle = 'rgb(232,232,232)'; // border line style
@@ -41,27 +41,36 @@
         export var timelineBreadCrumbBorderOffset = 50; // maximum allowed offset of timeline from canvas edge to show breadcrumb
         export var timelineCenterOffsetAcceptableImplicity = 0.00001; // acceptable implicity in position of center of canvas inside timeline
 
+        export var timelineEndTicks = 8; // Height for ticks
+        export var fixedTimelineHeight = 50; // Fixed timeline height
+        export var fixedTimelineOffset = 10; // offset from the bottom of the viewport
+        export var fixedTimelineFontMap = [0,24,20,18,16,14,12,12,12];
+        export var fixedTimelineHeightMap = [62,50,40,42,36,32,30];
+        export var fixedTimelineHeadingThreshold = 100;
+        export var timelineFixedHeadingWidth = 120;
+        export var fixedTimelineTooltipThreshold = 30
+
         export var infodotShowContentZoomLevel = 9; // zoom level (log_2 of size in pixel) when all content is shown
         export var infodotShowContentThumbZoomLevel = 2; // zoom level (log_2 of size in pixel) when thumbnails for all content items are shown
-        export var infoDotHoveredBorderWidth = 40.0 / 450; // in virtual coordinates
-        export var infoDotBorderWidth = 27.0 / 450; // in virtual coordinates
+        export var infoDotHoveredBorderWidth = 0; // in virtual coordinates
+        export var infoDotBorderWidth = 0; // in virtual coordinates
         export var infodotTitleWidth = 200.0 / 489;
         export var infodotTitleHeight = 60.0 / 489;
         export var infodotBibliographyHeight = 10.0 / 489;
-        export var infoDotBorderColor = 'rgb(232,232,232)'; // color of infdot's circle border
-        export var infoDotHoveredBorderColor = 'white'; // color of infdot's circle border when mouse cursor is over it
+        export var infoDotBorderColor = 'rgba(0,0,0,0)'; // color of infdot's circle border
+        export var infoDotHoveredBorderColor = 'rgba(0,0,0,0)'; // color of infdot's circle border when mouse cursor is over it
         export var infoDotFillColor = 'rgb(92,92,92)'; // color of infdot's circle border
         export var infoDotTinyContentImageUri = '/images/tinyContent.png';
         export var infodotMaxContentItemsCount = 10;
 
         export var mediaContentElementZIndex = 100;
-        export var contentItemDescriptionNumberOfLines = 10;
+        export var contentItemDescriptionNumberOfLines = 18;
         export var contentItemShowContentZoomLevel = 9; // zoom level (log_2 of size in pixel) when all content is shown
         export var contentItemThumbnailMinLevel = 3; // miminimal available thumbnail in the database
         export var contentItemThumbnailMaxLevel = 7; // maximal available thumbnail in the database
         export var contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
         export var contentItemTopTitleHeight = 47.0 / 540;
-        export var contentItemContentWidth = 480.0 / 520;
+        export var contentItemContentWidth = 680.0 / 520;
         export var contentItemVerticalMargin = 13.0 / 540;
         export var contentItemMediaHeight = 260.0 / 540;
         export var contentItemSourceHeight = 10.0 / 540;
@@ -69,27 +78,27 @@
         export var contentItemSourceHoveredFontColor = 'white';
         export var contentItemAudioHeight = 40.0 / 540;
         export var contentItemAudioTopMargin = 120.0 / 540;
-        export var contentItemFontHeight = 140.0 / 540;
+        export var contentItemFontHeight = 300.0 / 540;
         export var contentItemHeaderFontName = 'Arial';    // header's font name
         export var contentItemHeaderFontColor = 'white';    // header's font size, relative to height of the timeline
         // See also contentItemDescriptionText class in the Styles/cz.css which decorates the description block in a content item
 
 
         export var contentItemBoundingBoxBorderWidth = 13.0 / 520; // in virtual coordinates
-        export var contentItemBoundingBoxFillColor = 'rgb(36,36,36)'; // in pixels
-        export var contentItemBoundingBoxBorderColor = undefined; // in pixels
-        export var contentItemBoundingHoveredBoxBorderColor = 'white'; // in pixels
+        export var contentItemBoundingBoxFillColor = 'rgba(255,255,0,0.2)'; // in pixels
+        export var contentItemBoundingBoxBorderColor = 'white'; // in pixels
+        export var contentItemBoundingHoveredBoxBorderColor = 'red'; // in pixels
 
         export var contentAppearanceAnimationStep = 0.01;
 
         //navigation constraints
         export var infoDotZoomConstraint = 0.005; //an zooming limit into the infodot (the fraction of infodot diameter)
         export var infoDotAxisFreezeThreshold = 0.75; // the minimum fraction of the viewport that the infodot should take to make the axis to be freezed
-        export var maxPermitedTimeRange = { left: -13700000000, right: 0 }; //a maximum range in virtual coordinates that is permited to observed with a CZ
+        export var maxPermitedTimeRange = { left: -4600000000, right: 0 }; //a maximum range in virtual coordinates that is permited to observed with a CZ
         export var deeperZoomConstraints = //the array of the constraints of the deep zoom level and teir corresponding intervals
         [
-            { left: -14000000000, right: -1000000000, scale: 1000 }, //billions of years zoom in constraint
-            { left: -1000000000, right: -1000000, scale: 1 }, //millions of years zoom in constraint
+            { left: -4599999999, right: -542000000, scale: 1000 }, //billions of years zoom in constraint
+            { left: -542000000, right: -1000000, scale: 1 }, //millions of years zoom in constraint
             { left: -1000000, right: -12000, scale: 0.001 }, //thousand of years zoom in constraint
             { left: -12000 /*approx 10k BC */, right: 0, scale: 0.00006 } //single day zoom in constraint in human history scale
         ];
@@ -110,7 +119,7 @@
         export var rectangleRadius = 3; // radius of rounded edges of rectangles
         export var axisTextSize = 12; // size of text
         export var axisTextFont = "Arial"; // font of text
-        export var axisStrokeColor = "rgb(221,221,221)"; // color of text
+        export var axisStrokeColor = "rgb(0,232,255)"; // color of text
         export var axisHeight = 47; // full height of axis
         export var horizontalTextMargin = 20; // left and right margin for background text
         export var verticalTextMargin = 15; // margin for text lines

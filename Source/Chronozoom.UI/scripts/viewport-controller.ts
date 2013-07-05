@@ -75,6 +75,8 @@ module CZ {
             @param viewport     (Viewport2D)    The viewport to transform
             @param gesture      (PanGesture) The gesture to apply
             */
+
+            // LANE: Changed to allow only horizontal panning
             function PanViewport(viewport, panGesture) {
                 var virtualOffset = viewport.vectorScreenToVirtual(panGesture.xOffset, panGesture.yOffset);
                 var oldVisible = viewport.visible;
@@ -86,10 +88,11 @@ module CZ {
             @param viewport     (Viewport2D)    The viewport to transform
             @param gesture      (ZoomGesture) The gesture to apply
             */
+            // LANE: Changed so y is always middle of viewport
             function ZoomViewport(viewport, zoomGesture) {
                 var oldVisible = viewport.visible;
                 var x = zoomGesture.xOrigin + (viewport.width / 2.0 - zoomGesture.xOrigin) * zoomGesture.scaleFactor;
-                var y = zoomGesture.yOrigin + (viewport.height / 2.0 - zoomGesture.yOrigin) * zoomGesture.scaleFactor
+                var y = (viewport.height / 2.0);
                 var newCenter = viewport.pointScreenToVirtual(x, y);
                 viewport.visible.centerX = newCenter.x;
                 viewport.visible.centerY = newCenter.y;

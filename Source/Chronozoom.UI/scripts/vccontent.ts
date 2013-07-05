@@ -212,6 +212,10 @@ module CZ {
             return addChild(element, new CanvasText(element.vc, layerid, id, vx, vy, baseline, vh, text, settings, vw), false);
         };
 
+        export function addFixedHeading(element, layerid, id, vx, vy, baseline, vh, text, settings, vw?) {
+            return addChild(element, new CanvasFixedHeading(element.vc, layerid, id, vx, vy, baseline, vh, text, settings, vw), false);
+        };
+
         export function addScrollText(element, layerid, id, vx, vy, vw, vh, text, z, settings) {
             return addChild(element, new CanvasScrollTextItem(element.vc, layerid, id, vx, vy, vw, vh, text, z), false);
         };
@@ -636,6 +640,9 @@ module CZ {
             this.settings = settings;
             this.type = "rectangle";
 
+            var lineY = -CZ.Settings.fixedTimelineOffset;
+            var sideTicks = CZ.Settings.timelineEndTicks;
+            var tlOffset;
 
             /* Renders a time span.
             @param ctx              (context2d) Canvas context2d to render on.
@@ -644,14 +651,21 @@ module CZ {
             @param size_p           ({x,y}) size of bounding box of this element in pixels
             @remarks The method is implemented for each particular VirtualCanvas element.
             */
+
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                lineY = (this.settings.depth * -CZ.Settings.fixedTimelineHeight) - CZ.Settings.fixedTimelineOffset;
+                tlOffset = (viewport2d.height+lineY);
+
                 var p = viewport2d.pointVirtualToScreen(this.x, this.y);    // top left point
                 var p2 = viewport2d.pointVirtualToScreen(this.x + this.width, this.y + this.height); // bottom right point
                 var left = Math.max(0, p.x);
                 var top = Math.max(0, p.y);
                 var right = Math.min(viewport2d.width, p2.x);
                 var bottom = Math.min(viewport2d.height, p2.y);
-                if (left < right && top < bottom) {
+
+                // LANE: Checking depth
+                // console.log(id + ': ' + this.settings.depth);
+                if (left < right) {
 
                     ctx.globalAlpha = opacity;
                     if (this.settings.strokeStyle) {
@@ -666,6 +680,7 @@ module CZ {
                         else ctx.lineWidth = 1;
                         ctx.lineWidth = 2;
                         var lineWidth2 = ctx.lineWidth * 2.0;
+
                         if (this.settings.outline) {
                             p.x += lineWidth2;
                             p.y += lineWidth2;
@@ -676,47 +691,74 @@ module CZ {
                             p2.x -= lineWidth2;
                             p2.y -= lineWidth2;
                         }
-                        // LANE: Changed this from a rectangle to a line
-                        // left border
-                        if (p.x > 0) {
-                            ctx.beginPath();
-                            ctx.moveTo(p.x, bottom-Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
-                            ctx.lineTo(p.x, bottom+Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
-                            ctx.stroke();
-                        }
-                        // top border
-                        if (p.y > 0 && false) {
-                            ctx.beginPath();
-                            ctx.moveTo(left - lineWidth2, p.y);
-                            ctx.lineTo(right + lineWidth2, p.y);
-                            ctx.stroke();
+
+                        // calculate opacity based off of width
+                        var pLineWidth = right - left;
+                        var lineOpacity = 1;
+                        if(pLineWidth < 400) {
+                            lineOpacity = Math.min((pLineWidth / 400)+0.2,1);
+                            if(pLineWidth <= 10) {
+                                lineOpacity = 0;
+                            }
                         }
 
-                        // right border
-                        if (p2.x < viewport2d.width) {
-                            ctx.beginPath();
-                            ctx.moveTo(p2.x, bottom-Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
-                            ctx.lineTo(p2.x, bottom+Math.round((bottom - top)*-CZ.Settings.timelineHeaderMargin*2));
-                            ctx.stroke();
+                        ctx.globalAlpha = lineOpacity;
+
+                        if(pLineWidth > 10) {
+
+                            // LANE: Changed this from a rectangle to a line
+                            // left border
+                            if (p.x > 0) {
+                                ctx.beginPath();
+                                ctx.moveTo(p.x, tlOffset-sideTicks);
+                                ctx.lineTo(p.x, tlOffset+sideTicks);
+                                ctx.stroke();
+                            }
+
+                            // right border
+                            if (p2.x < viewport2d.width) {
+                                ctx.beginPath();
+                                ctx.moveTo(p2.x, tlOffset-sideTicks);
+                                ctx.lineTo(p2.x, tlOffset+sideTicks);
+                                ctx.stroke();
+                            }
+                            
+                            var lineLength = CZ.Settings.timelineFixedHeadingWidth/2;
+                            if(this.settings.spanGap > 0)
+                                lineLength = this.settings.spanGap/2;
+                            
+                            // middle line
+                            if(((right-left) - lineLength*2) > 0) {
+                                if(right > (right-(((right-left)/2)-lineLength-5))) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(right-(((right-left)/2)-lineLength-5), viewport2d.height+lineY);
+                                    ctx.lineTo(right, viewport2d.height+lineY);
+                                    ctx.stroke();
+                                }
+                                if(left < (left+(((right-left)/2)-lineLength-5))) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(left, viewport2d.height+lineY);
+                                    ctx.lineTo(left+(((right-left)/2)-lineLength-5), viewport2d.height+lineY);
+                                    ctx.stroke();
+                                }
+                            } else {
+                                ctx.beginPath();
+                                ctx.moveTo(left, viewport2d.height+lineY);
+                                ctx.lineTo(right, viewport2d.height+lineY);
+                                ctx.stroke();
+                            }
+
                         }
                         
-                        var lineLength = (right-left)*0.4;
-                        if((right-left) < 400)
-                            lineLength = right-left;
-                        //bottom left border
-                        if (p2.y < viewport2d.height) {
-                            ctx.beginPath();
-                            ctx.moveTo(left, p2.y);
-                            ctx.lineTo(left+lineLength, p2.y);
-                            ctx.stroke();
-                        }
-                        //bottom right border
-                        if (p2.y < viewport2d.height) {
-                            ctx.beginPath();
-                            ctx.moveTo(right-lineLength, p2.y);
-                            ctx.lineTo(right, p2.y);
-                            ctx.stroke();
-                        }
+                        // JUNE 27: DRAW A RECTANGLE TO COVER THE HOVER AREA
+                        //ctx.globalAlpha = 1;
+                        //ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                        //ctx.fillRect(p.x, p.y, p2.x-p.x, p2.y - p.y);
+
+                        //ctx.fillRect(p.x, tlOffset-sideTicks, p2.x-p.x, sideTicks*2);
+
+                        //console.log(id + ': ' + viewport2d.heightScreenToVirtual(p2.y - p.y));
+
                     }
                 }
             };
@@ -760,6 +802,9 @@ module CZ {
             @remarks The method is implemented for each particular VirtualCanvas element.
             */
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+
+
+
                 var p = viewport2d.pointVirtualToScreen(this.x, this.y);
                 var p2 = viewport2d.pointVirtualToScreen(this.x + this.width, this.y + this.height);
                 var left = Math.max(0, p.x);
@@ -797,7 +842,10 @@ module CZ {
                             }
                         }
                         else ctx.lineWidth = 1;
+
                         var lineWidth2 = ctx.lineWidth / 2.0;
+                        lineY = (this.settings.depth * -CZ.Settings.fixedTimelineHeight) - CZ.Settings.fixedTimelineOffset;
+
                         if (this.settings.outline) {
                             p.x += lineWidth2;
                             p.y += lineWidth2;
@@ -817,8 +865,8 @@ module CZ {
                         }
                         if (p.y > 0) {
                             ctx.beginPath();
-                            ctx.moveTo(left - lineWidth2, p.y);
-                            ctx.lineTo(right + lineWidth2, p.y);
+                            ctx.moveTo(left - lineWidth2, lineY);
+                            ctx.lineTo(right + lineWidth2, lineY);
                             ctx.stroke();
                         }
                         if (p2.x < viewport2d.width) {
@@ -829,8 +877,8 @@ module CZ {
                         }
                         if (p2.y < viewport2d.height) {
                             ctx.beginPath();
-                            ctx.moveTo(left - lineWidth2, p2.y);
-                            ctx.lineTo(right + lineWidth2, p2.y);
+                            ctx.moveTo(left - lineWidth2, lineY);
+                            ctx.lineTo(right + lineWidth2, lineY);
                             ctx.stroke();
                         }
                     }
@@ -872,6 +920,7 @@ module CZ {
             this.parent = undefined;
             this.currentlyObservedTimelineEvent = vc.currentlyObservedTimelineEvent;
             this.settings.outline = true;
+
             this.type = 'timeline';
 
             this.endDate = timelineinfo.endDate;
@@ -1053,6 +1102,248 @@ module CZ {
 
         }
 
+        /*  A Timeline element that can be added to a VirtualCanvas (Rect + caption + bread crumbs tracing).
+        @param layerid   (any type) id of the layer for this element
+        @param id   (any type) id of an element
+        @param vx   (number) x of left top corner in virtual space
+        @param vy   (number) y of left top corner in virtual space
+        @param vw   (number) width of a bounding box in virtual space
+        @param vh   (number) height of a bounding box in virtual space
+        @param settings  ({strokeStyle,lineWidth,fillStyle}) Parameters of the rectangle appearance
+        */
+        function CanvasFixedTimeline(vc, layerid, id, vx, vy, vw, vh, settings, timelineinfo) {
+            
+            // LANE: Fixing the timeline to the bottom of the window
+            var vp2d = vc.viewport;
+            var newHeight = vp2d.heightScreenToVirtual(30);
+
+            this.base = CanvasTimespan; // the fixed timeline uses TimeSpan as a base
+            this.base(vc, layerid, id, vx, vy, vw, vh);
+            this.guid = timelineinfo.guid;
+            this.type = 'timeline';
+
+
+
+            this.isBuffered = timelineinfo.isBuffered;
+            this.settings = settings;
+            this.parent = undefined;
+            this.currentlyObservedTimelineEvent = vc.currentlyObservedTimelineEvent;
+            this.settings.outline = true;
+            
+            this.type = 'timeline';
+
+            this.endDate = timelineinfo.endDate;
+
+            var width = timelineinfo.timeEnd - timelineinfo.timeStart;
+
+            
+
+
+            var headerSize = timelineinfo.titleRect ? timelineinfo.titleRect.height : CZ.Settings.timelineHeaderSize * timelineinfo.height;
+            var headerWidth = timelineinfo.titleRect ? timelineinfo.titleRect.width : 0;
+            var marginLeft = 0; // size of left and top margins (e.g. if timeline is for 100 years, relative margin timelineHeaderMargin=0.05, then absolute margin is 5 years).
+            var marginTop = timelineinfo.titleRect ? timelineinfo.titleRect.marginTop : (1 - CZ.Settings.timelineHeaderMargin) * timelineinfo.height - headerSize;
+            var baseline = timelineinfo.top + marginTop + headerSize / 2.0;
+
+            this.titleObject = addFixedHeading(this, layerid, id + "__header__", timelineinfo.timeStart+marginLeft, timelineinfo.top+marginTop, baseline, headerSize,
+                timelineinfo.header, {
+                    fontName: CZ.Settings.timelineHeaderFontName,
+                    fillStyle: CZ.Settings.timelineHeaderFontColor,
+                    textBaseline: 'middle',
+                    depth: timelineinfo.depth,
+                    timeStart: timelineinfo.timeStart,
+                    timeEnd: timelineinfo.timeEnd
+                }, headerWidth);
+
+            this.settings.spanGap = 0;
+            if(this.titleObject.headingWidth)
+                this.settings.spanGap = this.titleObject.headingWidth;
+
+            this.title = this.titleObject.text;
+            this.regime = timelineinfo.regime;
+            this.settings.gradientOpacity = 0;
+            this.settings.gradientFillStyle = timelineinfo.gradientFillStyle || timelineinfo.strokeStyle ? timelineinfo.strokeStyle : CZ.Settings.timelineBorderColor;
+            //this.opacity = timelineinfo.opacity;
+
+            this.reactsOnMouse = true;
+
+            this.tooltipEnabled = true; //enable tooltips to timelines
+            this.tooltipIsShown = false; // indicates whether tooltip is shown or not
+
+            this.isVisible = function(visibleBox_v) {
+                return true;
+            }
+
+            /* Checks whether the given point (virtual) is inside the object */
+            this.isInside = function (point_v) {
+                var sideTicks = CZ.Settings.timelineEndTicks;
+                lineY = (this.settings.depth * -CZ.Settings.fixedTimelineHeight) - CZ.Settings.fixedTimelineOffset;                var tlOffset = (vc.viewport.height+lineY);
+                // LANE: TODO: I don't know why 18 works here, but it does.  Find a better method.
+                if(vc.viewport.widthVirtualToScreen(this.width) < 18) {
+                    return false;
+                } else {
+                    var point_s = vc.viewport.pointVirtualToScreen(point_v.x, point_v.y);
+                    var insideBool = point_v.x >= this.x && point_v.x <= this.x + this.width &&
+                    point_s.y <= tlOffset+sideTicks;
+                    return insideBool;
+                }
+                
+            };
+
+
+            this.onmouseclick = function (e) { return zoomToElementHandler(this, e, 1.0); };
+            this.onmousehover = function (pv, e) {
+                //previous timeline also hovered and mouse leave don't appear, hide it
+                //if infodot is null or undefined, we should stop animation
+                //if it's ok, infodot's tooltip don't wink
+                if (this.vc.currentlyHoveredTimeline != null && this.vc.currentlyHoveredTimeline.id != id) {
+                    try {
+                        this.vc.currentlyHoveredInfodot.id;
+                    }
+                    catch (ex) {
+                        CZ.Common.stopAnimationTooltip();
+                        this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
+                    }
+                }
+
+                //make currentTimeline to this
+                this.vc.currentlyHoveredTimeline = this;
+
+                this.settings.strokeStyle = CZ.Settings.timelineHoveredBoxBorderColor;
+                this.settings.lineWidth = CZ.Settings.timelineHoveredLineWidth;
+                this.titleObject.settings.fillStyle = CZ.Settings.timelineHoveredHeaderFontColor;
+                this.settings.hoverAnimationDelta = 3 / 60.0;
+                this.vc.requestInvalidate();
+
+                //if title is not in visible region, try to eval its screenFontSize using 
+                //formula based on height of its parent timeline
+                if (this.titleObject.initialized == false) {
+                    var vp = this.vc.getViewport();
+                    this.titleObject.screenFontSize = CZ.Settings.timelineHeaderSize * vp.heightVirtualToScreen(this.height);
+                }
+
+                //if timeline title is small, show tooltip
+                if (vc.viewport.widthVirtualToScreen(this.width) <= CZ.Settings.fixedTimelineHeadingThreshold)
+                    this.tooltipEnabled = true;
+                else
+                    this.tooltipEnabled = false;
+
+                if (CZ.Common.tooltipMode != "infodot") {
+
+                    CZ.Common.tooltipMode = "timeline";
+
+                    if (this.tooltipEnabled == false) {
+                        CZ.Common.stopAnimationTooltip();
+                        this.tooltipIsShown = false;
+                        return;
+                    }
+
+                    // show tooltip if it is enabled and is not shown yet
+                    if (this.tooltipIsShown == false) {
+                        switch (this.regime) {
+                            case "Cosmos": $(".bubbleInfo").attr("id", "cosmosRegimeBox");
+                                break;
+
+                            case "Earth": $(".bubbleInfo").attr("id", "earthRegimeBox");
+                                break;
+
+                            case "Life": $(".bubbleInfo").attr("id", "lifeRegimeBox");
+                                break;
+
+                            case "Pre-history": $(".bubbleInfo").attr("id", "prehistoryRegimeBox");
+                                break;
+
+                            case "Humanity": $(".bubbleInfo").attr("id", "humanityRegimeBox");
+                                break;
+                        }
+
+                        $(".bubbleInfo span").text(this.title);
+                        this.panelWidth = $('.bubbleInfo').outerWidth(); // complete width of tooltip panel
+                        this.panelHeight = $('.bubbleInfo').outerHeight(); // complete height of tooltip panel  
+
+                        this.tooltipIsShown = true;
+                        CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
+                    }
+                }
+            };
+            this.onmouseunhover = function (pv, e) {
+                if (this.vc.currentlyHoveredTimeline != null && this.vc.currentlyHoveredTimeline.id == id) {
+                    this.vc.currentlyHoveredTimeline = null;
+
+                    if ((this.tooltipIsShown == true) && (CZ.Common.tooltipMode=="timeline")) {
+                        CZ.Common.tooltipMode = "default";
+                        CZ.Common.stopAnimationTooltip();
+                        $(".bubbleInfo").attr("id", "defaultBox");
+                        this.tooltipIsShown = false;    
+                    }
+                }    
+
+                this.settings.strokeStyle = timelineinfo.strokeStyle ? timelineinfo.strokeStyle : CZ.Settings.timelineBorderColor;
+                this.settings.lineWidth = CZ.Settings.timelineLineWidth;
+                this.titleObject.settings.fillStyle = CZ.Settings.timelineHeaderFontColor;
+                this.settings.hoverAnimationDelta = -3 / 60.0;
+                this.vc.requestInvalidate();
+            };
+
+            //saving render call before overriding it
+            this.base_render = this.render;
+
+            /* Renders a timeline.
+            @param ctx              (context2d) Canvas context2d to render on.
+            @param visibleBox_v     ({Left,Right,Top,Bottom}) describes visible region in the virtual space
+            @param viewport2d       (Viewport2d) current viewport
+            @param size_p           ({x,y}) size of bounding box of this element in pixels
+            @remarks The method is implemented for each particular VirtualCanvas element.
+            */
+            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+
+                this.titleObject.initialized = false; //disable CanvasText initialized (rendered) option by default
+
+                if (this.settings.hoverAnimationDelta) {
+                    this.settings.gradientOpacity = Math.min(1, Math.max(0, this.settings.gradientOpacity + this.settings.hoverAnimationDelta));
+                }
+
+                this.settings.spanGap = this.titleObject.headingWidth;
+
+                //rendering itself
+                this.base_render(ctx, visibleBox, viewport2d, size_p, opacity);
+
+                if (this.settings.hoverAnimationDelta) {
+                    if (this.settings.gradientOpacity == 0 || this.settings.gradientOpacity == 1)
+                        this.settings.hoverAnimationDelta = undefined;
+                    else
+                        this.vc.requestInvalidate();
+                }
+
+                var p = viewport2d.pointVirtualToScreen(this.x, this.y);
+                var p2 = { x: p.x + size_p.x, y: p.y + size_p.y };
+
+                // is center of canvas inside timeline
+                var isCenterInside = viewport2d.visible.centerX - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.x + this.width &&
+                                     viewport2d.visible.centerX + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.x &&
+                                     viewport2d.visible.centerY - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.y + this.height &&
+                                     viewport2d.visible.centerY + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.y;
+
+                // is timeline inside "breadcrumb offset box"
+                var isVisibleInTheRectangle = ((p.x < CZ.Settings.timelineBreadCrumbBorderOffset && p2.x > viewport2d.width - CZ.Settings.timelineBreadCrumbBorderOffset) ||
+                                (p.y < CZ.Settings.timelineBreadCrumbBorderOffset && p2.y > viewport2d.height - CZ.Settings.timelineBreadCrumbBorderOffset));
+
+                if (isVisibleInTheRectangle && isCenterInside) {
+                    var length = vc.breadCrumbs.length;
+                    if (length > 1)
+                        if (vc.breadCrumbs[length - 1].vcElement.parent.id == this.parent.id)
+                            return;
+                    vc.breadCrumbs.push(
+                    {
+                        vcElement: this
+                    });
+                }
+            }
+
+            this.prototype = new CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings);
+
+        }
+
         /*  A circle element that can be added to a VirtualCanvas.
         @param layerid   (any type) id of the layer for this element
         @param id        (any type) id of an element
@@ -1089,6 +1380,8 @@ module CZ {
                 ctx.globalAlpha = opacity;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, radp, 0, Math.PI * 2, true);
+                ctx.fillStyle = this.settings.fillStyle;
+                ctx.fill();
 
                 if (this.settings.strokeStyle) {
                     ctx.strokeStyle = this.settings.strokeStyle;
@@ -1101,10 +1394,6 @@ module CZ {
                     }
                     else ctx.lineWidth = 1;
                     ctx.stroke();
-                }
-                if (this.settings.fillStyle) {
-                    ctx.fillStyle = this.settings.fillStyle;
-                    ctx.fill();
                 }
             };
 
@@ -1337,6 +1626,68 @@ module CZ {
             this.prototype = new CanvasElement(vc, layerid, id, vx, vy, wv ? wv : 0, vh);
         }
 
+        // LANE: Extending CanvasText for headings.
+        function CanvasFixedHeading(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv) {
+            this.base = CanvasText;
+            this.base(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv); 
+            this.settings = settings;
+            this.text = text;
+            this.headingWidth = -1;
+
+            this.isVisible = function (visibleBox_v) {
+                // visible timeline width
+                var sWidth = vc.viewport.widthVirtualToScreen(Math.min(visibleBox_v.Right,this.settings.timeEnd) - Math.max(visibleBox_v.Left,this.settings.timeStart));
+                // todo: have different heading widths per depth
+                if (sWidth > this.headingWidth && this.headingWidth > 0) {
+                    return (sWidth - this.headingWidth) > 5;
+                } // else we yet do not know the width, it needs to render
+                else if (this.headingWidth < 0) {
+                    return true;
+                }
+                return false;
+            };
+
+            this.render = function(ctx, visibleBox, viewport2d, size_p, opacity) {
+                var lineY = (this.settings.depth * -CZ.Settings.fixedTimelineHeight) - CZ.Settings.fixedTimelineOffset;                var tlOffset = (viewport2d.height+lineY);
+                var p = viewport2d.pointVirtualToScreen(this.x, this.newY);
+                //var bp = viewport2d.pointVirtualToScreen(this.x, this.newBaseline).y;
+
+                fontSize = CZ.Settings.fixedTimelineFontMap[this.settings.depth];
+                ctx.font = fontSize + "pt " + CZ.Settings.timelineHeaderFontName; // assign it here to measure text in next lines
+
+                var size = ctx.measureText(this.text);
+                this.headingWidth = Math.max(0,size.width);
+                size_p.x = size.width;
+                this.width = viewport2d.widthScreenToVirtual(size.width);
+
+
+                var headingOffset = size.width;
+
+                //if(this.settings.timeStart >= visibleBox.Left)
+
+                var screenLeft = viewport2d.pointVirtualToScreen(Math.max(visibleBox.Left,this.settings.timeStart),this.y).x;
+
+                var visibleWidth = 
+                    Math.min(visibleBox.Right,this.settings.timeEnd) - Math.max(visibleBox.Left,this.settings.timeStart);
+
+                var visibleScreenWidth = viewport2d.widthVirtualToScreen(visibleWidth);
+
+                var xPos = screenLeft+(visibleScreenWidth-headingOffset)/2;
+                
+
+                // LANE: overriding font size
+                
+                if (this.settings.textBaseline)
+                    ctx.textBaseline = this.settings.textBaseline;
+
+                ctx.fillStyle = 'rgba(255,2555,255,1)';
+
+                drawText(this.text, ctx, xPos, tlOffset, fontSize, this.settings.fontName);
+            }
+
+            this.prototype = new CanvasText(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv); 
+        }
+
         /*  A multiline text element on a virtual canvas.
         @param layerid   (any type) id of the layer for this element
         @param id   (any type) id of an element
@@ -1428,7 +1779,7 @@ module CZ {
                         var ar1 = img.naturalWidth / img.naturalHeight;
                         if (ar0 > ar1) {
                             // vh ~ img.height, vw is to be adjusted
-                            var imgWidth = ar1 * self.height;
+                            var imgWidth = self.height / ar0;
                             var offset = (self.width - imgWidth) / 2.0;
                             self.x += offset;
                             self.width = imgWidth;
@@ -1440,6 +1791,8 @@ module CZ {
                             self.height = imgHeight;
                         }
                     }
+
+
 
                     img['isLoaded'] = true;
                     if (self.onLoad) self.onLoad();
@@ -1465,9 +1818,27 @@ module CZ {
 
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
                 if (!this.img.isLoaded) return;
-                var p = viewport2d.pointVirtualToScreen(this.x, this.y);
+                var p = viewport2d.pointVirtualToScreen(vx+vw/2, vy+vh/2);
                 ctx.globalAlpha = opacity;
-                ctx.drawImage(this.img, p.x, p.y, size_p.x, size_p.y);
+                //ctx.drawImage(this.img, p.x, p.y, size_p.x, size_p.y);
+
+                var imageStrokeWidth = 2;
+                var imageStrokeColor = 'rgb(255,255,255)'
+
+
+
+
+                ctx.drawImage(this.img, p.x-size_p.x/2, p.y-size_p.y/2, size_p.x, size_p.y);
+                                //ctx.save();
+                ctx.beginPath();
+                ctx.rect(p.x-size_p.x/2, p.y-size_p.y/2, size_p.x, size_p.y);
+                //ctx.arc(p.x + imageWidth/2 + circleRadius, p.y + circleRadius, circleRadius, 0, Math.PI * 2, true);
+                //ctx.clip();
+                //ctx.drawImage(this.img, p.x, p.y, imageWidth, imageHeight);
+                //ctx.restore();
+                ctx.lineWidth = imageStrokeWidth;
+                ctx.strokeStyle = imageStrokeColor;
+                ctx.stroke();
             };
             this.onRemove = function () {
                 this.img.removeEventListener("load", onCanvasImageLoad, false);
@@ -1478,6 +1849,21 @@ module CZ {
             };
 
             this.prototype = new CanvasElement(vc, layerid, id, vx, vy, vw, vh);
+        }
+
+        function CanvasBorderImage(vc, layerid, id, imageSource, vx, vy, vw, vh, onload?) {
+            this.base = CanvasImage;
+            this.base(vc, layerid, id, imageSource, vx, vy, vw, vh, onload);
+        
+            // save image load
+            this.base_onCanvasImageLoad = this.onCanvasImageLoad
+            var self = this;
+
+            var onCanvasImageLoad = function (s) { // in FireFox "s" doesn't contain any reference to the image, so we use closure here
+                //this.base_onCanvasImageLoad(s);
+
+
+            this.prototype = new CanvasImage(vc, layerid, id, imageSource, vx, vy, vw, vh, onload);
         }
 
         /*  Represents an image on a virtual canvas with support of dynamic level of detail.
@@ -1860,7 +2246,7 @@ module CZ {
             self.requestDZI();
 
             this.prototype = new CanvasDomItem(vc, layerid, id, vx, vy, vw, vh, z);
-        }
+        } }
 
         /*******************************************************************************************************/
         /* Timelines                                                                                           */
@@ -1875,11 +2261,12 @@ module CZ {
         */
         export function addTimeline(element, layerid, id, timelineinfo) {
             var width = timelineinfo.timeEnd - timelineinfo.timeStart;
-            var timeline = addChild(element, new CanvasTimeline(element.vc, layerid, id,
+            var timeline = addChild(element, new CanvasFixedTimeline(element.vc, layerid, id,
                                     timelineinfo.timeStart, timelineinfo.top,
                                     width, timelineinfo.height, {
                                         strokeStyle: timelineinfo.strokeStyle ? timelineinfo.strokeStyle : CZ.Settings.timelineStrokeStyle,
                                         lineWidth: CZ.Settings.timelineLineWidth,
+                                        depth: timelineinfo.depth,
                                         fillStyle: timelineinfo.fillStyle,
                                         opacity: typeof timelineinfo.opacity !== 'undefined' ? timelineinfo.opacity : 1
                                     }, timelineinfo), true);
@@ -1904,6 +2291,137 @@ module CZ {
         - pdf
         */
         function ContentItem(vc, layerid, id, vx, vy, vw, vh, contentItem) {
+            this.base = CanvasDynamicLOD;
+            this.base(vc, layerid, id, vx, vy, vw, vh);
+            this.guid = contentItem.id;
+            this.type = 'contentItem';
+            this.contentItem = contentItem;
+
+            // Building content of the item
+            var titleHeight = vh * CZ.Settings.contentItemTopTitleHeight * 0.8;
+            var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
+            var descrHeight = CZ.Settings.contentItemFontHeight * vh;
+
+            var contentWidth = vw * CZ.Settings.contentItemContentWidth;
+            var leftOffset = (vw - contentWidth) / 2.0;
+            var verticalMargin = vh * CZ.Settings.contentItemVerticalMargin;
+
+            var mediaTop = vy + verticalMargin;  //vy + titleHeight + 2 * verticalMargin;
+            var sourceVertMargin = verticalMargin * 0.4;
+            var sourceTop = mediaTop + mediaHeight + sourceVertMargin;
+            var sourceRight = vx + vw - leftOffset;
+            var sourceHeight = vh * CZ.Settings.contentItemSourceHeight * 0.8;
+            var titleTop = sourceTop + verticalMargin + sourceHeight;
+
+            this.reactsOnMouse = true;
+
+            this.onmouseenter = function (e) {
+                //rect.settings.strokeStyle = CZ.Settings.contentItemBoundingHoveredBoxBorderColor;
+                this.vc.currentlyHoveredContentItem = this;
+                this.vc.requestInvalidate();
+            };
+
+            this.onmouseleave = function (e) {
+                //rect.settings.strokeStyle = CZ.Settings.contentItemBoundingBoxBorderColor;
+                this.vc.currentlyHoveredContentItem = null;
+                this.isMouseIn = false;
+                this.vc.requestInvalidate();
+            };
+            this.onmouseclick = function (e) {
+                return zoomToElementHandler(this, e, 1.0);
+            };
+
+            var self = this;
+            this.changeZoomLevel = function (curZl, newZl) {
+                var vy = self.newY;
+                var mediaTop = vy + verticalMargin;
+                var sourceTop = mediaTop + mediaHeight + sourceVertMargin;
+                var titleTop = mediaTop;
+
+                if (newZl >= CZ.Settings.contentItemShowContentZoomLevel) { // building content for an infodot
+                    if (curZl >= CZ.Settings.contentItemShowContentZoomLevel) return null;
+
+                    var container = new ContainerElement(vc, layerid, id + "__content", vx, vy, vw, vh);
+
+                    // Media
+                    var mediaID = id + "__media__";
+                    var imageElem = null;
+                    if (this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
+                        imageElem = addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
+                                    // Bounding rectangle
+                        //imageElem.imageElem.width
+                        return {
+                            zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
+                            content: container
+                        };
+                    }
+                    else if (this.contentItem.mediaType.toLowerCase() === 'deepimage') {
+                        imageElem = addSeadragonImage(container, layerid, mediaID, vx-vw/4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
+                    } else if (this.contentItem.mediaType.toLowerCase() === 'video') {
+                        addVideo(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                    }
+                    else if (this.contentItem.mediaType.toLowerCase() === 'audio') {
+                        mediaTop += CZ.Settings.contentItemAudioTopMargin * vh;
+                        mediaHeight = vh * CZ.Settings.contentItemAudioHeight;
+                        addAudio(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                    }
+                    else if (this.contentItem.mediaType.toLowerCase() === 'pdf') {
+                        addPdf(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
+                    }
+
+                    /* Maybe display this in a dom element? 
+                    // Title                    
+                    var titleText = this.contentItem.title;
+                    addText(container, layerid, id + "__title__", vx + vw/100, titleTop, titleTop + titleHeight / 2.0,
+                            0.9 * titleHeight, titleText, {
+                                fontName: CZ.Settings.contentItemHeaderFontName,
+                                fillStyle: CZ.Settings.contentItemHeaderFontColor,
+                                textBaseline: 'middle',
+                                textAlign: 'left',
+                                opacity: 1,
+                                wrapText: true,
+                                numberOfLines: 1
+                            },
+                            contentWidth);
+
+                    // Description
+                    var descrTop = titleTop + titleHeight + verticalMargin;
+                    var descr = addScrollText(container, layerid, id + "__description__", vx + vw/100, descrTop,
+                                    contentWidth/3,
+                                    descrHeight,
+                                    this.contentItem.description, 30,
+                                    {});
+                    */
+
+                    return {
+                        zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
+                        content: container
+                    };
+                } else { // building thumbnails
+                    var zl = newZl;
+                    if (zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
+                        if (curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.contentItemShowContentZoomLevel)
+                            return null; // we already show this level
+                        zl = CZ.Settings.contentItemThumbnailMaxLevel;
+                    }
+                    else if (zl <= CZ.Settings.contentItemThumbnailMinLevel) {
+                        if (curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) return null;
+                        zl = CZ.Settings.contentItemThumbnailMinLevel;
+                    }
+                    var sz = 1 << zl;
+                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
+
+                    return {
+                        zoomLevel: newZl,
+                        content: new CanvasImage(vc, layerid, id + "@" + 1, thumbnailUri, vx, vy, vw, vh)
+                    };
+                }
+            };
+
+            this.prototype = new CanvasDynamicLOD(vc, layerid, id, vx, vy, vw, vh);
+        }
+
+        function SimpleItem(vc, layerid, id, vx, vy, vw, vh, contentItem) {
             this.base = CanvasDynamicLOD;
             this.base(vc, layerid, id, vx, vy, vw, vh);
             this.guid = contentItem.id;
@@ -1954,7 +2472,7 @@ module CZ {
                 var vy = self.newY;
                 var mediaTop = vy + verticalMargin;
                 var sourceTop = mediaTop + mediaHeight + sourceVertMargin;
-                var titleTop = sourceTop + verticalMargin + sourceHeight;
+                var titleTop = mediaTop;
 
                 if (newZl >= CZ.Settings.contentItemShowContentZoomLevel) { // building content for an infodot
                     if (curZl >= CZ.Settings.contentItemShowContentZoomLevel) return null;
@@ -1965,10 +2483,10 @@ module CZ {
                     var mediaID = id + "__media__";
                     var imageElem = null;
                     if (this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
-                        imageElem = addImage(container, layerid, mediaID, vx + leftOffset, mediaTop, contentWidth, mediaHeight, this.contentItem.uri);
+                        imageElem = addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
                     }
                     else if (this.contentItem.mediaType.toLowerCase() === 'deepimage') {
-                        imageElem = addSeadragonImage(container, layerid, mediaID, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
+                        imageElem = addSeadragonImage(container, layerid, mediaID, vx-vw/4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
                     } else if (this.contentItem.mediaType.toLowerCase() === 'video') {
                         addVideo(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
                     }
@@ -1982,62 +2500,28 @@ module CZ {
                     }
 
                     // Title
+                    var virtualMargin = vc.getViewport().widthScreenToVirtual(10);
+                    
                     var titleText = this.contentItem.title;
-                    addText(container, layerid, id + "__title__", vx + leftOffset, titleTop, titleTop + titleHeight / 2.0,
+                    addText(container, layerid, id + "__title__", vx + vw/100, titleTop, titleTop + titleHeight / 2.0,
                             0.9 * titleHeight, titleText, {
                                 fontName: CZ.Settings.contentItemHeaderFontName,
                                 fillStyle: CZ.Settings.contentItemHeaderFontColor,
                                 textBaseline: 'middle',
-                                textAlign: 'center',
+                                textAlign: 'left',
                                 opacity: 1,
                                 wrapText: true,
                                 numberOfLines: 1
                             },
                             contentWidth);
+                    
 
-                    // Source
-                    var sourceText = this.contentItem.attribution;
-                    var mediaSource = this.contentItem.mediaSource;
-                    if (sourceText) {
-                        var addSourceText = function (sx, sw, sy) {
-                            var sourceItem = addText(container, layerid, id + "__source__", sx, sy, sy + sourceHeight / 2.0,
-                            0.9 * sourceHeight, sourceText, {
-                                fontName: CZ.Settings.contentItemHeaderFontName,
-                                fillStyle: CZ.Settings.contentItemSourceFontColor,
-                                textBaseline: 'middle',
-                                textAlign: 'right',
-                                opacity: 1,
-                                adjustWidth: true
-                            }, sw);
-
-                            if (mediaSource) { // we've got a URL here
-                                sourceItem.reactsOnMouse = true;
-                                sourceItem.onmouseclick = function (e) {
-                                    vc.element.css('cursor', 'default');
-                                    window.open(mediaSource);
-                                    return true;
-                                };
-                                sourceItem.onmouseenter = function (pv, e) {
-                                    this.settings.fillStyle = CZ.Settings.contentItemSourceHoveredFontColor;
-                                    this.vc.requestInvalidate();
-                                    this.vc.element.css('cursor', 'pointer');
-                                };
-                                sourceItem.onmouseleave = function (pv, e) {
-                                    this.settings.fillStyle = CZ.Settings.contentItemSourceFontColor;
-                                    this.vc.requestInvalidate();
-                                    this.vc.element.css('cursor', 'default');
-                                };
-                            }
-                        }
-
-                        addSourceText(vx + leftOffset, contentWidth, sourceTop);
-                    }
 
 
                     // Description
                     var descrTop = titleTop + titleHeight + verticalMargin;
-                    var descr = addScrollText(container, layerid, id + "__description__", vx + leftOffset, descrTop,
-                                    contentWidth,
+                    var descr = addScrollText(container, layerid, id + "__description__", vx + vw/100, descrTop,
+                                    contentWidth/3,
                                     descrHeight,
                                     this.contentItem.description, 30,
                                     {});
@@ -2069,6 +2553,203 @@ module CZ {
             };
 
             this.prototype = new CanvasDynamicLOD(vc, layerid, id, vx, vy, vw, vh);
+        }
+
+        /* Simplified Infodot */
+        function CanvasEvent(vc, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
+            this.base = CanvasCircle;
+            this.base(vc, layerid, id, time, vyc, radv,
+                { strokeStyle: 'rgba(0,0,0,0)', lineWidth: 0, fillStyle: 'rgba(0,0,0,0)', isLineWidthVirtual: true });
+            this.guid = infodotDescription.guid;
+            this.type = 'infodot';
+
+            this.isBuffered = infodotDescription.isBuffered;
+            this.contentItems = contentItems;
+            this.hasContentItems = false;
+            this.infodotDescription = infodotDescription;
+            this.title = infodotDescription.title;
+            this.opacity = typeof infodotDescription.opacity !== 'undefined' ? infodotDescription.opacity : 1;
+
+            contentItems.sort(function (a, b) {
+                return a.order - b.order;
+            });
+
+            var vyc = this.newY + radv;
+            var innerRad = radv - CZ.Settings.infoDotHoveredBorderWidth * radv;
+            this.outerRad = radv;
+
+            this.reactsOnMouse = false;
+
+            this.tooltipEnabled = true; // indicates whether tooltip is enabled for this infodot at this moment or not
+            this.tooltipIsShown = false; // indicates whether tooltip is shown or not
+
+
+            // Building dynamic LOD content
+            var infodot = this;
+            var root = new CanvasDynamicLOD(vc, layerid, id + "_dlod", time - innerRad, vyc - innerRad, 2 * innerRad, 2 * innerRad);
+            root.removeWhenInvisible = true;
+            addChild(this, root, false);
+
+            root.firstLoad = true;
+            root.changeZoomLevel = function (curZl, newZl) {
+                var vyc = infodot.newY + radv;
+
+                // Showing only thumbnails for every content item of the infodot
+                if (newZl >= CZ.Settings.infodotShowContentThumbZoomLevel && newZl < CZ.Settings.infodotShowContentZoomLevel) {
+                    var URL = CZ.UrlNav.getURL();
+                    if (typeof URL.hash.params != 'undefined' && typeof URL.hash.params['b'] != 'undefined')
+                        bibliographyFlag = false;
+
+                    if (curZl >= CZ.Settings.infodotShowContentThumbZoomLevel && curZl < CZ.Settings.infodotShowContentZoomLevel)
+                        return null;
+
+                    // Tooltip is enabled now.
+                    infodot.tooltipEnabled = true;
+
+                    var contentItem = null;
+
+                    if (infodot.contentItems.length > 0) {
+
+                        contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.newY, 2 * innerRad, 2 * innerRad);
+                        var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
+                        if (items)
+                            for (var i = 0; i < items.length; i++)
+                                addChild(contentItem, items[i], false);
+                    }
+
+                    if (contentItem) {
+                        infodot.hasContentItems = true;
+                        return {
+                            zoomLevel: newZl,
+                            content: contentItem
+                        };
+                    }
+                    else
+                        return null;
+                }
+                // Showing all content items, bibliography link and title of the infodot
+                else if (newZl >= CZ.Settings.infodotShowContentZoomLevel) {
+                    if (curZl >= CZ.Settings.infodotShowContentZoomLevel)
+                        return null;
+
+                    // Tooltip is disabled now.
+                    infodot.tooltipEnabled = false;
+
+                    // stop active fadein animation and hide tooltip
+                    if (infodot.tooltipIsShown == true) {
+                        CZ.Common.stopAnimationTooltip();
+                        infodot.tooltipIsShown = false;
+                    }
+
+                    var contentItem = null;
+
+                    if (infodot.contentItems.length > 0) {
+                        contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.y, 2 * innerRad, 2 * innerRad);
+                        var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
+                        if (items)
+                            for (var i = 0; i < items.length; i++)
+                                addChild(contentItem, items[i], false);
+                    }
+                    if (contentItem == null)
+                        return null;
+
+                    if (contentItem) {
+                        infodot.hasContentItems = true;
+                        return {
+                            zoomLevel: newZl,
+                            content: contentItem
+                        };
+                    }
+                }
+                // Showing thumbnails
+                else {
+                    // Tooltip is enabled now.
+                    infodot.tooltipEnabled = true;
+
+                    infodot.hasContentItems = false;
+                    if (infodot.contentItems.length == 0)
+                        return null;
+
+                    var zl = newZl;
+
+                    if (zl <= CZ.Settings.contentItemThumbnailMinLevel) {
+                        if (curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) return null;
+                    }
+                    if (zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
+                        if (curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) return null; // we are already showing the largest thumbnail available
+                        zl = CZ.Settings.contentItemThumbnailMaxLevel;
+                    }
+                    if (zl < CZ.Settings.contentItemThumbnailMinLevel) {
+                        return { zoomLevel: zl,
+                            content: new ContainerElement(vc, layerid, id + "__empty", time, vyc, 0, 0)
+                        };
+                    }
+                    var contentItem = infodot.contentItems[0];
+                    var sz = 1 << zl;
+                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
+                    var l = innerRad * 260 / 225;
+                    return {
+                        zoomLevel: zl,
+                        content: new CanvasImage(vc, layerid, id + "@" + zl, thumbnailUri, time - l / 2.0, vyc - l / 2.0, l, l)
+                    };
+                }
+
+            };
+
+            // Applying Jessica's proportions
+            var _rad = 450.0 / 2.0;
+            var k = 1.0 / _rad;
+            var _wc = (252.0 + 0) * k;
+            var _hc = (262.0 + 0) * k;
+            var strokeWidth = 3 * k * radv;
+            var strokeLength = 24.0 * k * radv;
+            var xlt0 = -_wc / 2 * radv + time;
+            var ylt0 = -_hc / 2 * radv + vyc;
+            var xlt1 = _wc / 2 * radv + time;
+            var ylt1 = _hc / 2 * radv + vyc;
+
+            /* Renders an infodot.
+            @param ctx              (context2d) Canvas context2d to render on.
+            @param visibleBox_v     ({Left,Right,Top,Bottom}) describes visible region in the virtual space
+            @param viewport2d       (Viewport2d) current viewport
+            @param size_p           ({x,y}) size of bounding box of this element in pixels
+            @remarks The method is implemented for each particular VirtualCanvas element.
+            */
+            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                this.prototype.render.call(this, ctx, visibleBox, viewport2d, size_p, opacity); // rendering the circle
+
+                var sw = viewport2d.widthVirtualToScreen(strokeWidth);
+                if (sw < 0.5) return;
+
+                var vyc = infodot.y + radv;
+                var xlt0 = -_wc / 2 * radv + time;
+                var ylt0 = -_hc / 2 * radv + vyc;
+                var xlt1 = _wc / 2 * radv + time;
+                var ylt1 = _hc / 2 * radv + vyc;
+
+                var rad = this.width / 2.0;
+                var xc = this.x + rad;
+                var yc = this.y + rad;
+                var radp = size_p.x / 2.0;
+
+                var sl = viewport2d.widthVirtualToScreen(strokeLength);
+                var pl0 = viewport2d.pointVirtualToScreen(xlt0, ylt0);
+                var pl1 = viewport2d.pointVirtualToScreen(xlt1, ylt1);
+
+                ctx.lineWidth = sw;
+                ctx.strokeStyle = CZ.Settings.contentItemBoundingBoxFillColor;
+            };
+
+            /* Checks whether the given point (virtual) is inside the object
+               (should take into account the shape) */
+            this.isInside = function (point_v) {
+                var len2 = CZ.Common.sqr(point_v.x - this.x - (this.width / 2)) + CZ.Common.sqr(point_v.y - this.y - (this.height / 2));
+                var rad = this.width / 2.0;
+                return len2 <= rad * rad;
+            };
+
+            this.prototype = new CanvasCircle(vc, layerid, id, time, vyc, radv,
+                { strokeStyle: CZ.Settings.infoDotBorderColor, lineWidth: CZ.Settings.infoDotBorderWidth * radv, fillStyle: CZ.Settings.infoDotFillColor, isLineWidthVirtual: true });
         }
 
         /*  An Infodot element that can be added to a VirtualCanvas.
@@ -2200,6 +2881,7 @@ module CZ {
                     var contentItem = null;
 
                     if (infodot.contentItems.length > 0) {
+
                         contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.newY, 2 * innerRad, 2 * innerRad);
                         var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
                         if (items)
@@ -2242,66 +2924,6 @@ module CZ {
                     }
                     if (contentItem == null)
                         return null;
-
-                    var titleWidth = CZ.Settings.infodotTitleWidth * radv * 2;
-                    var titleHeight = CZ.Settings.infodotTitleHeight * radv * 2;
-                    var centralSquareSize = (270 / 2 + 5) / 450 * 2 * radv;
-                    var titleTop = vyc - centralSquareSize - titleHeight;
-                    var title = '';
-
-                    if (infodotDescription && infodotDescription.title && infodotDescription.date) {
-                        var exhibitDate = CZ.Dates.convertCoordinateToYear(infodotDescription.date);
-                        title = infodotDescription.title + '\n(' + exhibitDate.year + ' ' + exhibitDate.regime + ')';
-                    }
-
-                    var infodotTitle = addText(contentItem, layerid, id + "__title", time - titleWidth / 2, titleTop, titleTop, titleHeight,
-                        title, {
-                            fontName: CZ.Settings.contentItemHeaderFontName,
-                            fillStyle: CZ.Settings.contentItemHeaderFontColor,
-                            textBaseline: 'middle',
-                            textAlign: 'center',
-                            opacity: 1,
-                            wrapText: true,
-                            numberOfLines: 2
-                        }, titleWidth);
-
-
-
-                    var biblBottom = vyc + centralSquareSize + 63.0 / 450 * 2 * radv;
-                    var biblHeight = CZ.Settings.infodotBibliographyHeight * radv * 2;
-                    var biblWidth = titleWidth / 3;
-                    var bibl = addText(contentItem, layerid, id + "__bibliography", time - biblWidth / 2, biblBottom - biblHeight, biblBottom - biblHeight / 2, biblHeight,
-                        "Bibliography", {
-                            fontName: CZ.Settings.contentItemHeaderFontName,
-                            fillStyle: CZ.Settings.timelineBorderColor,
-                            textBaseline: 'middle',
-                            textAlign: 'center',
-                            opacity: 1
-                        }, biblWidth);
-                    bibl.reactsOnMouse = true;
-                    bibl.onmouseclick = function (e) {
-                        this.vc.element.css('cursor', 'default');
-                        CZ.Bibliography.showBibliography({ infodot: infodotDescription, contentItems: infodot.contentItems }, contentItem, id + "__bibliography");
-                        return true;
-                    };
-                    bibl.onmouseenter = function (pv, e) {
-                        this.settings.fillStyle = CZ.Settings.infoDotHoveredBorderColor;
-                        this.vc.requestInvalidate();
-                        this.vc.element.css('cursor', 'pointer');
-                    };
-                    bibl.onmouseleave = function (pv, e) {
-                        this.settings.fillStyle = CZ.Settings.infoDotBorderColor;
-                        this.vc.requestInvalidate();
-                        this.vc.element.css('cursor', 'default');
-                    };
-
-                    //Parse url for parameter b (bibliography).
-                    var bid = window.location.hash.match("b=([a-z0-9_\-]+)");
-                    if (bid && bibliographyFlag) {
-                        //bid[0] - source string
-                        //bid[1] - found match
-                        CZ.Bibliography.showBibliography({ infodot: infodotDescription, contentItems: infodot.contentItems }, contentItem, bid[1]);
-                    }
 
                     if (contentItem) {
                         infodot.hasContentItems = true;
@@ -2435,8 +3057,14 @@ module CZ {
         @returns         root of the content item tree
         */
         export function addInfodot(element, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
-            var infodot = new CanvasInfodot(element.vc, layerid, id, time, vyc, radv, contentItems, infodotDescription);
+            var infodot = new CanvasInfodot(element.vc, layerid, id
+                , time, vyc, radv, contentItems, infodotDescription);
             return addChild(element, infodot, true);
+        }
+
+        export function addEvent(element, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
+            var eventItem = new CanvasEvent(element.vc, layerid, id, time, vyc, radv, contentItems, infodotDescription);
+            return addChild(element, eventItem, true);
         }
 
         function buildVcContentItems(contentItems, xc, yc, rad, vc, layerid) {
@@ -2472,7 +3100,7 @@ module CZ {
             for (var i = 0, len = Math.min(10, n); i < len; i++) {
                 var ci = contentItems[i];
                 if (i === 0) { // center
-                    vcitems.push(new ContentItem(vc, layerid, ci.id, -_wc / 2 * rad + xc, -_hc / 2 * rad + yc, _wc * rad, _hc * rad, ci));
+                    vcitems.push(new ContentItem(vc, layerid, ci.id, xc - rad, yc - rad, rad*2, rad*2, ci));
                 } else if (i >= 1 && i <= 3) { // left
                     vcitems.push(new ContentItem(vc, layerid, ci.id, xl, yc + rad * arrangeLeft[(i - 1) % 3], lw, lh, ci));
                 } else if (i >= 4 && i <= 6) { // right

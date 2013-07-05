@@ -194,7 +194,7 @@ var CZ;
             })).append($("<span></span>", {
                 id: "bc_",
                 class: "breadcrumb-separator",
-                text: "›"
+                html: "&raquo;"
             })));
             switch(element.regime) {
                 case "Cosmos": {
