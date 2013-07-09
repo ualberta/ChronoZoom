@@ -58,7 +58,7 @@ var CZ;
         Settings.fixedTimelineHeadingThreshold = 100;
         Settings.timelineFixedHeadingWidth = 120;
         Settings.fixedTimelineTooltipThreshold = 30;
-        Settings.infodotShowContentZoomLevel = 9;
+        Settings.infodotShowContentZoomLevel = 11;
         Settings.infodotShowContentThumbZoomLevel = 2;
         Settings.infoDotHoveredBorderWidth = 0;
         Settings.infoDotBorderWidth = 0;
@@ -72,8 +72,8 @@ var CZ;
         Settings.infodotMaxContentItemsCount = 10;
         Settings.mediaContentElementZIndex = 100;
         Settings.contentItemDescriptionNumberOfLines = 18;
-        Settings.contentItemShowContentZoomLevel = 9;
-        Settings.contentItemThumbnailMinLevel = 3;
+        Settings.contentItemShowContentZoomLevel = 10;
+        Settings.contentItemThumbnailMinLevel = 4;
         Settings.contentItemThumbnailMaxLevel = 7;
         Settings.contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
         Settings.contentItemTopTitleHeight = 47 / 540;
@@ -130,8 +130,8 @@ var CZ;
         Settings.thresholdHeight = 10;
         Settings.thresholdWidth = 8;
         Settings.thresholdColors = [
-            'rgb(173,71,155)', 
-            'rgb(177,121,180)', 
+            'rgb(0, 232, 255)', 
+            'rgb(0, 232, 255)', 
             'rgb(220,123,154)', 
             'rgb(71,168,168)', 
             'rgb(95,187,71)', 

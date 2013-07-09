@@ -402,13 +402,13 @@ var CZ;
         }
         function GetTimelineColor(timeline) {
             if(timeline.Regime == "Cosmos") {
-                return "rgba(152, 108, 157, 1.0)";
+                return "rgba(225, 219, 5, 1.0)";
             } else {
                 if(timeline.Regime == "Earth") {
                     return "rgba(81, 127, 149, 1.0)";
                 } else {
                     if(timeline.Regime == "Life") {
-                        return "rgba(73, 150, 73, 1.0)";
+                        return "#23836d";
                     } else {
                         if(timeline.Regime == "Pre-history") {
                             return "rgba(237, 145, 50, 1.0)";

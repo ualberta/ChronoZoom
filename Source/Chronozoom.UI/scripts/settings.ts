@@ -50,7 +50,7 @@
         export var timelineFixedHeadingWidth = 120;
         export var fixedTimelineTooltipThreshold = 30
 
-        export var infodotShowContentZoomLevel = 9; // zoom level (log_2 of size in pixel) when all content is shown
+        export var infodotShowContentZoomLevel = 11; // zoom level (log_2 of size in pixel) when all content is shown
         export var infodotShowContentThumbZoomLevel = 2; // zoom level (log_2 of size in pixel) when thumbnails for all content items are shown
         export var infoDotHoveredBorderWidth = 0; // in virtual coordinates
         export var infoDotBorderWidth = 0; // in virtual coordinates
@@ -65,8 +65,8 @@
 
         export var mediaContentElementZIndex = 100;
         export var contentItemDescriptionNumberOfLines = 18;
-        export var contentItemShowContentZoomLevel = 9; // zoom level (log_2 of size in pixel) when all content is shown
-        export var contentItemThumbnailMinLevel = 3; // miminimal available thumbnail in the database
+        export var contentItemShowContentZoomLevel = 10; // zoom level (log_2 of size in pixel) when all content is shown
+        export var contentItemThumbnailMinLevel = 4; // miminimal available thumbnail in the database
         export var contentItemThumbnailMaxLevel = 7; // maximal available thumbnail in the database
         export var contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
         export var contentItemTopTitleHeight = 47.0 / 540;
@@ -112,7 +112,7 @@
         export var strokeWidth = 3; // width of ticks and lines
         export var thresholdHeight = 10; // height of threshold when not active
         export var thresholdWidth = 8;
-        export var thresholdColors = ['rgb(173,71,155)', 'rgb(177,121,180)', 'rgb(220,123,154)', 'rgb(71,168,168)', 'rgb(95,187,71)', 'rgb(242,103,63)', 'rgb(247,144,63)', 'rgb(251,173,45)'];
+        export var thresholdColors = ['rgb(0, 232, 255)', 'rgb(0, 232, 255)', 'rgb(220,123,154)', 'rgb(71,168,168)', 'rgb(95,187,71)', 'rgb(242,103,63)', 'rgb(247,144,63)', 'rgb(251,173,45)'];
         export var thresholdTextColors = ['rgb(36,1,56)', 'rgb(60,31,86)', 'rgb(85,33,85)', 'rgb(0,56,100)', 'rgb(0,73,48)', 'rgb(125,25,33)', 'rgb(126,51,0)', 'rgb(92,70,14)'];
         export var thresholdsDelayTime = 1000; // Time in milliseconds for all thresholds to stay on the screen after mouse is out
         export var thresholdsAnimationTime = 500; // Time in milliseconds for all thresholds to open or close

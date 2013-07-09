@@ -1253,8 +1253,9 @@ var CZ;
                 }
                 var p = viewport2d.pointVirtualToScreen(vx + vw / 2, vy + vh / 2);
                 ctx.globalAlpha = opacity;
-                var imageStrokeWidth = 2;
-                var imageStrokeColor = 'rgb(255,255,255)';
+                var imageScale = size_p.x / this.img.width;
+                var imageStrokeWidth = imageScale * 10;
+                var imageStrokeColor = 'white';
                 ctx.drawImage(this.img, p.x - size_p.x / 2, p.y - size_p.y / 2, size_p.x, size_p.y);
                 ctx.beginPath();
                 ctx.rect(p.x - size_p.x / 2, p.y - size_p.y / 2, size_p.x, size_p.y);
@@ -1575,6 +1576,7 @@ var CZ;
             this.guid = contentItem.id;
             this.type = 'contentItem';
             this.contentItem = contentItem;
+            console.log(contentItem.date);
             var titleHeight = vh * CZ.Settings.contentItemTopTitleHeight * 0.8;
             var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
             var descrHeight = CZ.Settings.contentItemFontHeight * vh;
@@ -1598,7 +1600,7 @@ var CZ;
                 this.vc.requestInvalidate();
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1);
+                return zoomToElementHandler(this, e, 0.35);
             };
             var self = this;
             this.changeZoomLevel = function (curZl, newZl) {
@@ -1615,10 +1617,6 @@ var CZ;
                     var imageElem = null;
                     if(this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
                         imageElem = VCContent.addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
-                        return {
-                            zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
-                            content: container
-                        };
                     } else {
                         if(this.contentItem.mediaType.toLowerCase() === 'deepimage') {
                             imageElem = VCContent.addSeadragonImage(container, layerid, mediaID, vx - vw / 4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
@@ -1638,6 +1636,12 @@ var CZ;
                             }
                         }
                     }
+                    $('#info-heading').text(this.contentItem.title);
+                    $('#info-content').css('top', ($('#info-header').outerHeight() + 33) + 'px');
+                    $('#info-content').html('<p>' + this.contentItem.description + '</p>');
+                    setTimeout(function () {
+                        $('#info-box').removeClass('info-box-hidden');
+                    }, 200);
                     return {
                         zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
                         content: container
@@ -1658,10 +1662,13 @@ var CZ;
                         }
                     }
                     var sz = 1 << zl;
-                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
+                    var thumbnailUri = '/Images/thumbs/' + contentItem.guid + '.jpg';
+                    var container = new ContainerElement(vc, layerid, id + "__content", vx, vy, vw, vh);
+                    VCContent.addImage(container, layerid, id + "@" + 1, vx, vy, vw, vh, thumbnailUri);
+                    $('#info-box').addClass('info-box-hidden');
                     return {
                         zoomLevel: newZl,
-                        content: new CanvasImage(vc, layerid, id + "@" + 1, thumbnailUri, vx, vy, vw, vh)
+                        content: container
                     };
                 }
             };
@@ -1805,9 +1812,55 @@ var CZ;
             var vyc = this.newY + radv;
             var innerRad = radv - CZ.Settings.infoDotHoveredBorderWidth * radv;
             this.outerRad = radv;
-            this.reactsOnMouse = false;
+            this.reactsOnMouse = true;
             this.tooltipEnabled = true;
-            this.tooltipIsShown = false;
+            this.tooltipIsShown = true;
+            this.onmousehover = function (pv, e) {
+                this.vc.currentlyHoveredInfodot = this;
+                this.vc.requestInvalidate();
+            };
+            this.onmouseclick = function (e) {
+                return zoomToElementHandler(this, e, 1);
+            };
+            this.onmouseenter = function (e) {
+                this.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
+                this.settings.lineWidth = 0;
+                this.vc.requestInvalidate();
+                if(this.vc.currentlyHoveredTimeline != null) {
+                    CZ.Common.stopAnimationTooltip();
+                    this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
+                }
+                $(".bubbleInfo span").text(infodotDescription.title);
+                this.panelWidth = $('.bubbleInfo').outerWidth();
+                this.panelHeight = $('.bubbleInfo').outerHeight();
+                CZ.Common.tooltipMode = "infodot";
+                if((this.tooltipEnabled == true) && (this.tooltipIsShown == false)) {
+                    this.tooltipIsShown = true;
+                    $(".bubbleInfo").attr("id", "defaultBox");
+                    CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
+                }
+                this.vc.cursorPosition = time;
+                this.vc.currentlyHoveredInfodot = this;
+                this.vc._setConstraintsByInfodotHover(this);
+                this.vc.RaiseCursorChanged();
+            };
+            this.onmouseleave = function (e) {
+                this.isMouseIn = false;
+                this.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                this.settings.lineWidth = CZ.Settings.infoDotBorderWidth * radv;
+                this.vc.requestInvalidate();
+                if(this.tooltipIsShown == true) {
+                    CZ.Common.stopAnimationTooltip();
+                }
+                this.tooltipIsShown = false;
+                CZ.Common.tooltipMode = "default";
+                this.vc.currentlyHoveredInfodot = undefined;
+                this.vc._setConstraintsByInfodotHover(undefined);
+                this.vc.RaiseCursorChanged();
+            };
+            this.onmouseclick = function (e) {
+            };
+            var bibliographyFlag = true;
             var infodot = this;
             var root = new CanvasDynamicLOD(vc, layerid, id + "_dlod", time - innerRad, vyc - innerRad, 2 * innerRad, 2 * innerRad);
             root.removeWhenInvisible = true;
@@ -1815,7 +1868,9 @@ var CZ;
             root.firstLoad = true;
             root.changeZoomLevel = function (curZl, newZl) {
                 var vyc = infodot.newY + radv;
-                if(newZl >= CZ.Settings.infodotShowContentThumbZoomLevel && newZl < CZ.Settings.infodotShowContentZoomLevel) {
+                var canvasEventYear = Math.round(CZ.Dates.convertCoordinateToYear(infodot.infodotDescription.date).year);
+                $('#info-date').text(canvasEventYear + ' Million Years Ago');
+                if(newZl < CZ.Settings.infodotShowContentZoomLevel) {
                     var URL = CZ.UrlNav.getURL();
                     if(typeof URL.hash.params != 'undefined' && typeof URL.hash.params['b'] != 'undefined') {
                         bibliographyFlag = false;
@@ -1918,6 +1973,13 @@ var CZ;
             var ylt0 = -_hc / 2 * radv + vyc;
             var xlt1 = _wc / 2 * radv + time;
             var ylt1 = _hc / 2 * radv + vyc;
+            var self = this;
+            this.isVisible = function (visibleBox_v) {
+                var objRight = this.x + this.width;
+                var objBottom = this.y + this.height;
+                var visVal = Math.max(this.x, visibleBox_v.Left) <= Math.min(objRight, visibleBox_v.Right) && Math.max(this.y, visibleBox_v.Top) <= Math.min(objBottom, visibleBox_v.Bottom);
+                return visVal;
+            };
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
                 this.prototype.render.call(this, ctx, visibleBox, viewport2d, size_p, opacity);
                 var sw = viewport2d.widthVirtualToScreen(strokeWidth);
@@ -2229,6 +2291,7 @@ var CZ;
             var vcitems = [];
             for(var i = 0, len = Math.min(10, n); i < len; i++) {
                 var ci = contentItems[i];
+                ci.date = xc + rad / 2;
                 if(i === 0) {
                     vcitems.push(new ContentItem(vc, layerid, ci.id, xc - rad, yc - rad, rad * 2, rad * 2, ci));
                 } else {

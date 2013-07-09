@@ -52,7 +52,7 @@
 			    	"end" : -485000000.0,
 			    	"exhibits" : [ ],
 			    	"id" : "00000000-0000-0000-0000-000000000001",
-			    	"start" : -541000000.0,
+			    	"start" : -542000000.0,
 			    	"timelines" : null,
 			    	"title" : "Cambrian"
 			    }, {
@@ -178,11 +178,11 @@
 		                "attribution" : "",
 		                "description" : "The first skeletal fossils of dinosaurs come from Ischigualasto Provincial Park in Argentina. Within the park, the remains of several dinosaurs, including the theropod Herrerasaurus, the sauropodomorph Eoraptor, and the ornithischian Pisanosaurus, are found. However, dinosaur fossils make up only a small part of the fossil remains found here. Other groups, such as the bizarre herbivorous rhynchosaurs and large predators like the crocodilian relative Saurosuchus were much more common, as well as much larger than most of the dinosaurs. However, by the beginning of the Jurassic, most of these other non-dinosaur groups were on the decline or already extinct, while the dinosaurs came to dominate the landscape.",
 		                "id" : "e454db51-e2d6-4cd0-b47e-84d391a6ebf4",
-		                "mediaSource" : "http://chronoviewer.com/Images/Triassic_Argentina.jpg",
+		                "mediaSource" : "/Images/Triassic_Argentina.jpg",
 		                "mediaType" : "Picture",
 		                "parentExhibitId" : "00000000-0000-0000-3000-000000000000",
 		                "title" : "The First Dinosaurs",
-		                "uri" : "http://chronoviewer.com/Images/Triassic_Argentina.jpg"
+		                "uri" : "/Images/Triassic_Argentina.jpg"
 		          } ],
 		          "id" : "00000000-0000-0000-3000-000000000000",
 		          "parentTimelineId" : "4a4897e0-ce40-4fe2-be92-5e1000466f91",
@@ -197,7 +197,7 @@
 		                "mediaType" : "Picture",
 		                "parentExhibitId" : "00000000-0000-0000-1000-000000000000",
 		                "title" : "End-Cretaceous Mass Extinction",
-		                "uri" : "http://chronoviewer.com/Images/mass-extinction.jpg"
+		                "uri" : "/Images/mass-extinction.jpg"
 		          } ],
 		          "id" : "00000000-0000-0000-1000-000000000000",
 		          "parentTimelineId" : "4a4897e0-ce40-4fe2-be92-5e1000466f91",
@@ -311,7 +311,7 @@
 		          "mediaType" : "Picture",
 		          "parentExhibitId" : "00000000-0000-0000-2000-000000000000",
 		          "title" : "The Ediacaran Fauna",
-		          "uri" : "http://chronoviewer.com/Images/fauna.jpg"
+		          "uri" : "/Images/fauna.jpg"
 		    } ],
 		    "id" : "00000000-0000-0000-2000-000000000000",
 		    "parentTimelineId" : "c3f0ba48-ed86-4683-8667-134017521ea",
@@ -371,7 +371,7 @@
 		  "id" : "c3f0ba48-f852-4683-9254-134017521ea",
 		  "start" : -4600000000.0,
 		  "timelines" : null,
-		  "title" : "Headeon"
+		  "title" : "Hadean"
 		} ],
 	"title" : "History of Earth"
 }

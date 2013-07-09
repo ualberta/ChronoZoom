@@ -1822,11 +1822,9 @@ module CZ {
                 ctx.globalAlpha = opacity;
                 //ctx.drawImage(this.img, p.x, p.y, size_p.x, size_p.y);
 
-                var imageStrokeWidth = 2;
-                var imageStrokeColor = 'rgb(255,255,255)'
-
-
-
+                var imageScale = size_p.x / this.img.width;
+                var imageStrokeWidth = imageScale * 10;
+                var imageStrokeColor = 'white';
 
                 ctx.drawImage(this.img, p.x-size_p.x/2, p.y-size_p.y/2, size_p.x, size_p.y);
                                 //ctx.save();
@@ -2297,6 +2295,8 @@ module CZ {
             this.type = 'contentItem';
             this.contentItem = contentItem;
 
+            console.log(contentItem.date);
+
             // Building content of the item
             var titleHeight = vh * CZ.Settings.contentItemTopTitleHeight * 0.8;
             var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
@@ -2328,7 +2328,7 @@ module CZ {
                 this.vc.requestInvalidate();
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1.0);
+                return zoomToElementHandler(this, e, 0.35);
             };
 
             var self = this;
@@ -2348,12 +2348,6 @@ module CZ {
                     var imageElem = null;
                     if (this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
                         imageElem = addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
-                                    // Bounding rectangle
-                        //imageElem.imageElem.width
-                        return {
-                            zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
-                            content: container
-                        };
                     }
                     else if (this.contentItem.mediaType.toLowerCase() === 'deepimage') {
                         imageElem = addSeadragonImage(container, layerid, mediaID, vx-vw/4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
@@ -2368,6 +2362,7 @@ module CZ {
                     else if (this.contentItem.mediaType.toLowerCase() === 'pdf') {
                         addPdf(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
                     }
+
 
                     /* Maybe display this in a dom element? 
                     // Title                    
@@ -2392,6 +2387,10 @@ module CZ {
                                     this.contentItem.description, 30,
                                     {});
                     */
+                    $('#info-heading').text(this.contentItem.title);
+                    $('#info-content').css('top', ($('#info-header').outerHeight()+33)+'px');
+                    $('#info-content').html('<p>'+this.contentItem.description+'</p>');
+                    setTimeout(function() { $('#info-box').removeClass('info-box-hidden') }, 200);
 
                     return {
                         zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
@@ -2409,11 +2408,35 @@ module CZ {
                         zl = CZ.Settings.contentItemThumbnailMinLevel;
                     }
                     var sz = 1 << zl;
-                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
+                    var thumbnailUri = '/Images/thumbs/' + contentItem.guid + '.jpg';
+
+                    var container = new ContainerElement(vc, layerid, id + "__content", vx, vy, vw, vh);
+
+                    addImage(container, layerid, id + "@" + 1, vx, vy, vw, vh, thumbnailUri);
+
+
+
+                    // Title       
+                    /*             
+                    var titleText = this.contentItem.title;
+                    addText(container, layerid, id + "__title__", vx + vw/100, titleTop, titleTop + titleHeight / 2.0,
+                            0.9 * titleHeight, titleText, {
+                                fontName: CZ.Settings.contentItemHeaderFontName,
+                                fillStyle: CZ.Settings.contentItemHeaderFontColor,
+                                textBaseline: 'middle',
+                                textAlign: 'left',
+                                opacity: 1,
+                                wrapText: true,
+                                numberOfLines: 1
+                            },
+                            contentWidth);
+                    */
+
+                    $('#info-box').addClass('info-box-hidden');
 
                     return {
                         zoomLevel: newZl,
-                        content: new CanvasImage(vc, layerid, id + "@" + 1, thumbnailUri, vx, vy, vw, vh)
+                        content: container
                     };
                 }
             };
@@ -2562,6 +2585,7 @@ module CZ {
                 { strokeStyle: 'rgba(0,0,0,0)', lineWidth: 0, fillStyle: 'rgba(0,0,0,0)', isLineWidthVirtual: true });
             this.guid = infodotDescription.guid;
             this.type = 'infodot';
+            
 
             this.isBuffered = infodotDescription.isBuffered;
             this.contentItems = contentItems;
@@ -2578,11 +2602,81 @@ module CZ {
             var innerRad = radv - CZ.Settings.infoDotHoveredBorderWidth * radv;
             this.outerRad = radv;
 
-            this.reactsOnMouse = false;
+            this.reactsOnMouse = true;
 
             this.tooltipEnabled = true; // indicates whether tooltip is enabled for this infodot at this moment or not
-            this.tooltipIsShown = false; // indicates whether tooltip is shown or not
+            this.tooltipIsShown = true; // indicates whether tooltip is shown or not
 
+            
+            this.onmousehover = function (pv, e) {
+                this.vc.currentlyHoveredInfodot = this;
+                this.vc.requestInvalidate();
+            };
+
+            this.onmouseclick = function (e) {
+                return zoomToElementHandler(this, e, 1.0);
+            };
+
+            this.onmouseenter = function (e) {
+                this.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
+                this.settings.lineWidth = 0;
+                this.vc.requestInvalidate();
+
+                // clear tooltipIsShown flag for currently hovered timeline
+                // it can be null because of mouse events sequence: mouseenter for infodot -> mousehover for timeline -> mouseunhover for timeline 
+                if (this.vc.currentlyHoveredTimeline != null) {
+                    // stop active tooltip fadein animation and hide tooltip
+                    CZ.Common.stopAnimationTooltip();
+                    this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
+                }
+
+                $(".bubbleInfo span").text(infodotDescription.title);
+                this.panelWidth = $('.bubbleInfo').outerWidth(); // complete width of tooltip panel
+                this.panelHeight = $('.bubbleInfo').outerHeight(); // complete height of tooltip panel        
+
+                CZ.Common.tooltipMode = "infodot"; //set tooltip mode to infodot
+
+                // start tooltip fadein animation for this infodot
+                if ((this.tooltipEnabled == true) && (this.tooltipIsShown == false)) {
+                    this.tooltipIsShown = true;
+                    $(".bubbleInfo").attr("id", "defaultBox");
+                    CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
+                }
+
+                this.vc.cursorPosition = time;
+                this.vc.currentlyHoveredInfodot = this;
+                this.vc._setConstraintsByInfodotHover(this);
+                this.vc.RaiseCursorChanged();
+            };
+
+            this.onmouseleave = function (e) {
+                this.isMouseIn = false
+
+                this.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                this.settings.lineWidth = CZ.Settings.infoDotBorderWidth * radv;
+                this.vc.requestInvalidate();
+
+
+                // stop active fadein animation and hide tooltip
+                if (this.tooltipIsShown == true) 
+                    CZ.Common.stopAnimationTooltip();
+
+                this.tooltipIsShown = false;
+                CZ.Common.tooltipMode = "default";
+
+                this.vc.currentlyHoveredInfodot = undefined;
+                this.vc._setConstraintsByInfodotHover(undefined);
+                this.vc.RaiseCursorChanged();
+            };
+
+            this.onmouseclick = function (e) {
+               // return zoomToElementHandler(this, e, 1.0);
+            };
+
+            //Bibliography flag accroding to BUG 215750
+            var bibliographyFlag = true;
+
+            
 
             // Building dynamic LOD content
             var infodot = this;
@@ -2594,8 +2688,11 @@ module CZ {
             root.changeZoomLevel = function (curZl, newZl) {
                 var vyc = infodot.newY + radv;
 
+                var canvasEventYear = Math.round(CZ.Dates.convertCoordinateToYear(infodot.infodotDescription.date).year);
+                $('#info-date').text(canvasEventYear + ' Million Years Ago');
+
                 // Showing only thumbnails for every content item of the infodot
-                if (newZl >= CZ.Settings.infodotShowContentThumbZoomLevel && newZl < CZ.Settings.infodotShowContentZoomLevel) {
+                if (newZl < CZ.Settings.infodotShowContentZoomLevel) {
                     var URL = CZ.UrlNav.getURL();
                     if (typeof URL.hash.params != 'undefined' && typeof URL.hash.params['b'] != 'undefined')
                         bibliographyFlag = false;
@@ -2708,6 +2805,17 @@ module CZ {
             var xlt1 = _wc / 2 * radv + time;
             var ylt1 = _hc / 2 * radv + vyc;
 
+            var self = this;
+
+            this.isVisible = function(visibleBox_v) {
+                var objRight = this.x + this.width;
+                var objBottom = this.y + this.height;
+                var visVal = Math.max(this.x, visibleBox_v.Left) <= Math.min(objRight, visibleBox_v.Right) &&
+                            Math.max(this.y, visibleBox_v.Top) <= Math.min(objBottom, visibleBox_v.Bottom);
+
+                return visVal;
+            };
+
             /* Renders an infodot.
             @param ctx              (context2d) Canvas context2d to render on.
             @param visibleBox_v     ({Left,Right,Top,Bottom}) describes visible region in the virtual space
@@ -2717,6 +2825,7 @@ module CZ {
             */
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
                 this.prototype.render.call(this, ctx, visibleBox, viewport2d, size_p, opacity); // rendering the circle
+                    
 
                 var sw = viewport2d.widthVirtualToScreen(strokeWidth);
                 if (sw < 0.5) return;
@@ -3097,8 +3206,10 @@ module CZ {
             // build content items
             var vcitems = [];
 
+
             for (var i = 0, len = Math.min(10, n); i < len; i++) {
                 var ci = contentItems[i];
+                ci.date = xc+rad/2;
                 if (i === 0) { // center
                     vcitems.push(new ContentItem(vc, layerid, ci.id, xc - rad, yc - rad, rad*2, rad*2, ci));
                 } else if (i >= 1 && i <= 3) { // left
