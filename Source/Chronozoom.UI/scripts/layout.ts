@@ -440,7 +440,7 @@ module CZ {
                 guid: timeline.id,
                 timeStart: timeline.left,
                 timeEnd: timeline.right,
-                top: timeline.y,
+                top: -timeline.height/2,
                 height: timeline.height,
                 header: timeline.title,
                 fillStyle: "rgba(0,0,0,0.25)",
@@ -452,7 +452,12 @@ module CZ {
                 depth: timeline.depth
             });
 
+            //console.log(timeline.title);
+            //console.log(t1);
 
+            var timelineDepth = 0;
+            if(typeof timeline !== 'undefined')
+                timelineDepth = timeline.depth;
 
             //Creating Infodots
             if (timeline.exhibits instanceof Array) {
@@ -465,7 +470,7 @@ module CZ {
                             contentItems[i].guid = contentItems[i].id;
                         }
                     }
-
+/*
                     var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id,
                             (childInfodot.left + childInfodot.right) / 2.0, childInfodot.y, 0.8 * childInfodot.size / 2.0, contentItems,
                             {
@@ -475,6 +480,18 @@ module CZ {
                                 date: childInfodot.time,
                                 opacity: 1
                             });
+
+*/                  childInfodot.size = CZ.Settings.fixedEventSizeMap[timelineDepth];
+                    var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id,
+                        childInfodot.time-childInfodot.size/2, -childInfodot.size/2, childInfodot.size, contentItems,
+                        {
+                                isBuffered: false,
+                                guid: childInfodot.id,
+                                title: childInfodot.title,
+                                date: childInfodot.time,
+                                opacity: 1,
+                                depth: timelineDepth
+                        });
                 });
             }
 
@@ -586,7 +603,7 @@ module CZ {
 
         // converts a scenegraph element in absolute coords to relative coords
         function convertRelativeToAbsoluteCoords(el, delta) {
-            console.log(el);
+            //console.log(el);
             if (!delta) return;
 
             if (typeof el.y !== 'undefined') {

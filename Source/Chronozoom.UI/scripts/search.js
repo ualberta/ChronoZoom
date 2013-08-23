@@ -82,6 +82,16 @@ var CZ;
             CZ.Common.controller.moveToVisible(visible);
         }
         Search.goToSearchResult = goToSearchResult;
+        function goToEvent(resultId, elementType) {
+            var element = findVCElement(CZ.Common.vc.virtualCanvas("getLayerContent"), resultId, elementType);
+            var navStringElement = CZ.UrlNav.vcelementToNavString(element);
+            var visible = CZ.UrlNav.navStringToVisible(navStringElement, CZ.Common.vc);
+            if(visible) {
+                visible.scale /= 80;
+            }
+            CZ.Common.controller.moveToVisible(visible);
+        }
+        Search.goToEvent = goToEvent;
         function findVCElement(root, id, elementType) {
             var lookingForCI = elementType === "contentItem";
             var rfind = function (el, id) {

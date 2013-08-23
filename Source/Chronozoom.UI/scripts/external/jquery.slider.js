@@ -70,7 +70,7 @@ Description:	Displays nested lists of links as a sliding menu
                     nextUl = $("ul:first", divContainer);
                 }
                 
-                nextUl.prepend('<li class="'+base.options.classPrefix+'prev"><a class="'+base.options.classPrefix+'back'+'" href="#">'+base.options.backWording+' '+item.html()+'</a></li>');
+                nextUl.prepend('<li class="'+base.options.classPrefix+'prev"><a class="'+base.options.classPrefix+'back'+'" href="#">Back <strong>&#x25C0;</strong></a></li>');
                 $('a.'+base.options.classPrefix+'back'+' strong', nextUl).html(base.options.prevArrow);
 
                 if(!transitionsSupported)

@@ -23,6 +23,7 @@ var CZ;
                             title: "initObject"
                         }
                     };
+                    self.currentlyViewedEvent = undefined;
                     self.cursorPosition = 0;
                     var layerDivs = self.element.children("div");
                     layerDivs.each(function (index) {
@@ -68,6 +69,8 @@ var CZ;
                     };
                     $("iframe").css("pointer-events", "none");
                     $('#iframe_layer').css("display", "block").css("z-index", "99999");
+                    $('#navigation, #ev-navigation').addClass('hidden');
+                    $('#timeline-btn, #events-btn').removeClass('active');
                 },
                 _mouseUp: function (e) {
                     var viewport = this.getViewport();
@@ -186,13 +189,22 @@ var CZ;
                     }
                     var mouseInStack = [];
                     var _mouseMoveNode = function (contentItem, forceOutside, pv) {
-                        if(forceOutside) {
+                        var childInside = false;
+                        for(var i = 0; i < contentItem.children.length; i++) {
+                            if(contentItem.children[i].isInside(pv)) {
+                                childInside = true;
+                            }
+                        }
+                        if(forceOutside && !childInside) {
                             if(contentItem.reactsOnMouse && contentItem.isMouseIn && contentItem.onmouseleave) {
                                 contentItem.onmouseleave(pv, e);
                                 contentItem.isMouseIn = false;
                             }
                         } else {
                             var inside = contentItem.isInside(pv);
+                            if(!inside) {
+                                inside = childInside;
+                            }
                             forceOutside = !inside;
                             if(contentItem.reactsOnMouse) {
                                 if(inside) {
@@ -335,6 +347,10 @@ var CZ;
                     this.isInAnimation = isInAnimation && isInAnimation.isActive;
                     var viewbox_v = this._visibleToViewBox(newVisible);
                     var viewport = this.getViewport();
+                    var bgPos = Math.abs((-CZ.Settings.maxPermitedTimeRange.left + newVisible.centerX) / (-CZ.Settings.maxPermitedTimeRange.left) * 100);
+                    var bgScale = (1 - newVisible.scale / 4000000) * 40 + 110;
+                    this.element.css('background-position', bgPos + '% 0%');
+                    this.element.css('background-size', bgScale + '%');
                     this._renderCanvas(this._layersContent, viewbox_v, viewport);
                 },
                 updateViewport: function () {

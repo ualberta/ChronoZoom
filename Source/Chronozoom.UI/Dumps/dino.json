@@ -182,7 +182,7 @@
 		                "mediaType" : "Picture",
 		                "parentExhibitId" : "00000000-0000-0000-3000-000000000000",
 		                "title" : "The First Dinosaurs",
-		                "uri" : "/Images/Triassic_Argentina.jpg"
+		                "uri" : "http://www.ualberta.ca/~lolson/Images/Triassic_Argentina.jpg"
 		          } ],
 		          "id" : "00000000-0000-0000-3000-000000000000",
 		          "parentTimelineId" : "4a4897e0-ce40-4fe2-be92-5e1000466f91",
@@ -197,7 +197,7 @@
 		                "mediaType" : "Picture",
 		                "parentExhibitId" : "00000000-0000-0000-1000-000000000000",
 		                "title" : "End-Cretaceous Mass Extinction",
-		                "uri" : "/Images/mass-extinction.jpg"
+		                "uri" : "http://www.ualberta.ca/~lolson/Images/mass-extinction.jpg"
 		          } ],
 		          "id" : "00000000-0000-0000-1000-000000000000",
 		          "parentTimelineId" : "4a4897e0-ce40-4fe2-be92-5e1000466f91",
@@ -311,7 +311,7 @@
 		          "mediaType" : "Picture",
 		          "parentExhibitId" : "00000000-0000-0000-2000-000000000000",
 		          "title" : "The Ediacaran Fauna",
-		          "uri" : "/Images/fauna.jpg"
+		          "uri" : "http://www.ualberta.ca/~lolson/Images/fauna.jpg"
 		    } ],
 		    "id" : "00000000-0000-0000-2000-000000000000",
 		    "parentTimelineId" : "c3f0ba48-ed86-4683-8667-134017521ea",

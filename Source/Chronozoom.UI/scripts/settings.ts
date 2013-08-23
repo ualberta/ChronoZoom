@@ -28,7 +28,7 @@
         export var timelineHeaderMargin = -1.0/10.0;  // size of left margins, relative to height of the timeline.
         export var timelineHeaderSize = 1.0 / 4.0;    // header's font size, relative to height of the timeline
         export var timelineTooltipMaxHeaderSize = 10; // timeline tooltip appears, when its title screen size less than this constant
-        export var timelineHeaderFontName = 'Open Sans Condensed';    // header's font size, relative to height of the timeline
+        export var timelineHeaderFontName = 'OSPDIN';    // header's font size, relative to height of the timeline
         export var timelineHeaderFontColor = 'rgb(232,232,232)';
         export var timelineHoveredHeaderFontColor = 'white';
         export var timelineStrokeStyle = 'rgb(232,232,232)'; // border line style
@@ -41,14 +41,26 @@
         export var timelineBreadCrumbBorderOffset = 50; // maximum allowed offset of timeline from canvas edge to show breadcrumb
         export var timelineCenterOffsetAcceptableImplicity = 0.00001; // acceptable implicity in position of center of canvas inside timeline
 
+
+
         export var timelineEndTicks = 8; // Height for ticks
-        export var fixedTimelineHeight = 50; // Fixed timeline height
-        export var fixedTimelineOffset = 10; // offset from the bottom of the viewport
-        export var fixedTimelineFontMap = [0,24,20,18,16,14,12,12,12];
+        export var fixedTimelineHeight = 34; // Fixed timeline height
+        export var fixedTimelineOffset = 20; // offset from the bottom of the viewport
+        export var fixedTimelineFontMap = [0,21,18,16,14,12,12,12,12];
         export var fixedTimelineHeightMap = [62,50,40,42,36,32,30];
         export var fixedTimelineHeadingThreshold = 100;
+        export var fixedTimelineAreaHeight = 250;
         export var timelineFixedHeadingWidth = 120;
-        export var fixedTimelineTooltipThreshold = 30
+        export var fixedTimelineTooltipThreshold = 30;
+        export var fixedTimelineEventWidth = 200;
+
+        export var eventImageBasePath = 'http://d101.loc/';
+        export var eventFullResFolder = 'Events/';
+        export var eventThumbnailFolder = 'Events/thumbs/';
+
+        export var fixedEventSizeMap = [293700000,293700000,293700000,12500000,12500000,12500000];
+        export var fixedEventUnfocusedOpacity = 0.1;
+        export var fixedContentSizeMap = [];
 
         export var infodotShowContentZoomLevel = 11; // zoom level (log_2 of size in pixel) when all content is shown
         export var infodotShowContentThumbZoomLevel = 2; // zoom level (log_2 of size in pixel) when thumbnails for all content items are shown
@@ -57,8 +69,8 @@
         export var infodotTitleWidth = 200.0 / 489;
         export var infodotTitleHeight = 60.0 / 489;
         export var infodotBibliographyHeight = 10.0 / 489;
-        export var infoDotBorderColor = 'rgba(0,0,0,0)'; // color of infdot's circle border
-        export var infoDotHoveredBorderColor = 'rgba(0,0,0,0)'; // color of infdot's circle border when mouse cursor is over it
+        export var infoDotBorderColor = '#ffffff'; // color of infdot's circle border
+        export var infoDotHoveredBorderColor = '#ffdb05'; // color of infdot's circle border when mouse cursor is over it
         export var infoDotFillColor = 'rgb(92,92,92)'; // color of infdot's circle border
         export var infoDotTinyContentImageUri = '/images/tinyContent.png';
         export var infodotMaxContentItemsCount = 10;
@@ -69,6 +81,7 @@
         export var contentItemThumbnailMinLevel = 4; // miminimal available thumbnail in the database
         export var contentItemThumbnailMaxLevel = 7; // maximal available thumbnail in the database
         export var contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
+        export var contentItemImageBaseUri = 'http://www.ualberta.ca/~lolson/Images/';
         export var contentItemTopTitleHeight = 47.0 / 540;
         export var contentItemContentWidth = 680.0 / 520;
         export var contentItemVerticalMargin = 13.0 / 540;
@@ -165,5 +178,8 @@
         export var signinUrlMicrosoft = "";
         export var signinUrlGoogle = "";
         export var signinUrlYahoo = "";
+
+        // LANE: extra vars
+        export var fixedEventLine = 0;
     }
 }

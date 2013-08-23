@@ -145,7 +145,7 @@ var CZ;
             var loc = document.location.toString().split("#");
             var path = loc[0];
             var hash = loc[1];
-            var expr = new RegExp("^(https|http):\/\/([a-z_0-9\-.]{4,})(?:\:([0-9]{1,5}))?(?:\/*)([a-z\-_0-9\/.%]*)[?]?([a-z\-_0-9=&]*)$", "i");
+            var expr = new RegExp("^(https|http):\/\/([a-z_0-9\-.]{4,})(?:\:([0-9]{1,5}))?(?:\/*)([a-z\-_0-9\/.%~]*)[?]?([a-z\-_0-9=&]*)$", "i");
             var result = path.match(expr);
             if(result != null) {
                 url = {
@@ -175,7 +175,6 @@ var CZ;
                     }
                 }
             } else {
-                window.location.href = "fallback.html";
             }
             url.hash = {
                 params: [],
@@ -205,9 +204,8 @@ var CZ;
                 reload = true;
             }
             if(url == null) {
-                window.location.href = "fallback.html";
+                var path = url.protocol + "://" + url.host + ((url.port != "") ? (":" + url.port) : ("")) + "/" + (url.path === undefined ? "" : url.path.join('/'));
             }
-            var path = url.protocol + "://" + url.host + ((url.port != "") ? (":" + url.port) : ("")) + "/" + (url.path === undefined ? "" : url.path.join('/'));
             var params = new Array();
             for(var key in url.params) {
                 params.push(key + "=" + url.params[key]);

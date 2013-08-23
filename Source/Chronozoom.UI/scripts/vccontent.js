@@ -17,7 +17,7 @@ var CZ;
             var vs = {
                 centerX: element.x + element.width / 2,
                 centerY: element.y + element.height / 2,
-                scale: Math.max(scaleX, scaleY)
+                scale: scaleX
             };
             return vs;
         }
@@ -96,6 +96,11 @@ var CZ;
             return VCContent.addChild(element, new CanvasFixedHeading(element.vc, layerid, id, vx, vy, baseline, vh, text, settings, vw), false);
         }
         VCContent.addFixedHeading = addFixedHeading;
+        ; ;
+        function addEventHeading(element, layerid, id, vx, vy, baseline, vh, text, settings, vw) {
+            return VCContent.addChild(element, new CanvasEventHeading(element.vc, layerid, id, vx, vy, baseline, vh, text, settings, vw), false);
+        }
+        VCContent.addEventHeading = addEventHeading;
         ; ;
         function addScrollText(element, layerid, id, vx, vy, vw, vh, text, z, settings) {
             return VCContent.addChild(element, new CanvasScrollTextItem(element.vc, layerid, id, vx, vy, vw, vh, text, z), false);
@@ -307,6 +312,7 @@ var CZ;
                 }
             };
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                this.vy = vy = viewport2d.visible.centerY;
                 if(this.asyncContent) {
                     return;
                 }
@@ -388,7 +394,9 @@ var CZ;
         function CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings) {
             this.base = CanvasElement;
             this.base(vc, layerid, id, vx, vy, vw, vh);
-            this.settings = settings;
+            this.settings = settings || {
+            };
+            this.settings.gradientFillStyle = false;
             this.type = "rectangle";
             var lineY = -CZ.Settings.fixedTimelineOffset;
             var sideTicks = CZ.Settings.timelineEndTicks;
@@ -453,24 +461,42 @@ var CZ;
                             if(this.settings.spanGap > 0) {
                                 lineLength = this.settings.spanGap / 2;
                             }
+                            var lineStart = 0;
+                            var lineEnd = 0;
+                            var baseLine = tlOffset;
                             if(((right - left) - lineLength * 2) > 0) {
                                 if(right > (right - (((right - left) / 2) - lineLength - 5))) {
+                                    lineStart = right - (((right - left) / 2) - lineLength - 5);
+                                    lineEnd = right;
                                     ctx.beginPath();
-                                    ctx.moveTo(right - (((right - left) / 2) - lineLength - 5), viewport2d.height + lineY);
-                                    ctx.lineTo(right, viewport2d.height + lineY);
+                                    ctx.moveTo(lineStart, baseLine);
+                                    ctx.lineTo(lineEnd, baseLine);
                                     ctx.stroke();
                                 }
                                 if(left < (left + (((right - left) / 2) - lineLength - 5))) {
+                                    lineStart = left;
+                                    lineEnd = left + (((right - left) / 2) - lineLength - 5);
                                     ctx.beginPath();
-                                    ctx.moveTo(left, viewport2d.height + lineY);
-                                    ctx.lineTo(left + (((right - left) / 2) - lineLength - 5), viewport2d.height + lineY);
+                                    ctx.moveTo(lineStart, baseLine);
+                                    ctx.lineTo(lineEnd, baseLine);
                                     ctx.stroke();
                                 }
                             } else {
+                                lineStart = left;
+                                lineEnd = right;
                                 ctx.beginPath();
-                                ctx.moveTo(left, viewport2d.height + lineY);
-                                ctx.lineTo(right, viewport2d.height + lineY);
+                                ctx.moveTo(lineStart, baseLine);
+                                ctx.lineTo(lineEnd, baseLine);
                                 ctx.stroke();
+                            }
+                            if(this.settings.gradientFillStyle) {
+                                var lineargradient = ctx.createLinearGradient(0, baseLine - 200, 0, baseLine);
+                                var transparent = "rgba(0, 0, 0, 0)";
+                                lineargradient.addColorStop(0, transparent);
+                                lineargradient.addColorStop(1, 'rgba(255,255,255,0.15)');
+                                ctx.globalAlpha = lineOpacity;
+                                ctx.fillStyle = lineargradient;
+                                ctx.fillRect(p.x + 3, baseLine - 200, p2.x - p.x - 5, 197);
                             }
                         }
                     }
@@ -736,7 +762,6 @@ var CZ;
             this.base = CanvasTimespan;
             this.base(vc, layerid, id, vx, vy, vw, vh);
             this.guid = timelineinfo.guid;
-            this.type = 'timeline';
             this.isBuffered = timelineinfo.isBuffered;
             this.settings = settings;
             this.parent = undefined;
@@ -769,8 +794,205 @@ var CZ;
             this.reactsOnMouse = true;
             this.tooltipEnabled = true;
             this.tooltipIsShown = false;
+            this.getSiblingTimeline = function (next) {
+                var distance;
+                var siblingTimeline;
+                var curTimeline = this;
+                if(this.parent && this.parent.type == 'timeline') {
+                    var parentTimeline = this.parent;
+                    var endDiff = Math.abs((parentTimeline.endDate) - (curTimeline.endDate));
+                    var startDiff = Math.abs(parentTimeline.x - curTimeline.x);
+                    if((endDiff < 1000 && next) || (startDiff < 1000 && !next)) {
+                        var nextTimeline = parentTimeline.getSiblingTimeline(next);
+                        parentTimeline = siblingTimeline = nextTimeline;
+                    }
+                    if(!parentTimeline) {
+                        return false;
+                    }
+                    for(var i = 0; i < parentTimeline.children.length; i++) {
+                        var sibling = parentTimeline.children[i];
+                        if(sibling.type == 'timeline') {
+                            if(next) {
+                                if(Math.abs((curTimeline.endDate) - sibling.x) < 1000) {
+                                    siblingTimeline = sibling;
+                                    break;
+                                }
+                            } else {
+                                if(Math.abs(sibling.endDate - curTimeline.x) < 1000) {
+                                    siblingTimeline = sibling;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                if(siblingTimeline) {
+                    return siblingTimeline;
+                }
+                return false;
+            };
+            this.hasEvents = function () {
+                var hasEvents = false;
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot') {
+                        hasEvents = true;
+                    }
+                    if(this.children[i].type == 'timeline') {
+                        hasEvents = this.children[i].hasEvents();
+                    }
+                }
+                return hasEvents;
+            };
+            this.getFirstEvent = function () {
+                if(this.children.length == 0) {
+                    return false;
+                }
+                if(this.children.length == 1) {
+                    if(this.children[0].type !== 'infodot' && this.children[0].type == 'timeline') {
+                        return false;
+                    }
+                }
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot') {
+                        return this.children[i];
+                    }
+                    if(this.children[i].type == 'timeline') {
+                        return this.children[i].getFirstEvent();
+                    }
+                }
+                return false;
+            };
+            this.getLastEvent = function () {
+                if(this.children.length == 0) {
+                    return false;
+                }
+                if(this.children.length == 1) {
+                    if(this.children[0].type !== 'infodot' && this.children[0].type == 'timeline') {
+                        return false;
+                    }
+                }
+                for(var i = this.children.length - 1; i > 0; i--) {
+                    if(this.children[i].type == 'infodot') {
+                        return this.children[i];
+                    }
+                    if(this.children[i].type == 'timeline') {
+                        return this.children[i].getLastEvent();
+                    }
+                }
+                return false;
+            };
+            this.getSiblingEvent = function (currentEvent, next) {
+                var nextEvent;
+                var distance;
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot' && this.children[i].x > currentEvent.x && next) {
+                        if(distance) {
+                            if(distance > (this.children[i].x - currentEvent.x)) {
+                                distance = this.children[i].x - currentEvent.x;
+                                nextEvent = this.children[i];
+                            }
+                        } else {
+                            distance = this.children[i].x - currentEvent.x;
+                            nextEvent = this.children[i];
+                        }
+                    } else {
+                        if(this.children[i].type == 'infodot' && this.children[i].x < currentEvent.x && !next) {
+                            if(distance) {
+                                if(distance > (currentEvent.x - this.children[i].x)) {
+                                    distance = currentEvent.x - this.children[i].x;
+                                    nextEvent = this.children[i];
+                                }
+                            } else {
+                                distance = currentEvent.x - this.children[i].x;
+                                nextEvent = this.children[i];
+                            }
+                        }
+                    }
+                }
+                if(nextEvent) {
+                    return nextEvent;
+                }
+                var sibling = this.getSiblingTimeline(next);
+                while(sibling && !sibling.hasEvents()) {
+                    sibling = sibling.getSiblingTimeline(next);
+                }
+                if(sibling) {
+                    if(next) {
+                        if(sibling.getFirstEvent()) {
+                            return sibling.getFirstEvent();
+                        }
+                    } else {
+                        for(var i = sibling.children.length - 1; i > 0; i--) {
+                            if(sibling.children[i].type == 'infodot') {
+                                return sibling.getLastEvent();
+                            }
+                        }
+                    }
+                    return sibling;
+                }
+                return false;
+            };
+            this.getNextEvent = function (currentEvent) {
+                var nextEvent;
+                var distance;
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot' && this.children[i].x > currentEvent.x) {
+                        if(distance) {
+                            if(distance > (this.children[i].x - currentEvent.x)) {
+                                distance = this.children[i].x - currentEvent.x;
+                                nextEvent = this.children[i];
+                            }
+                        } else {
+                            distance = this.children[i].x - currentEvent.x;
+                            nextEvent = this.children[i];
+                        }
+                    }
+                }
+                if(nextEvent) {
+                    return nextEvent;
+                }
+            };
+            this.getPreviousEvent = function (currentEvent) {
+                var prevEvent;
+                var distance;
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot' && this.children[i].x < currentEvent.x) {
+                        if(distance) {
+                            if(distance > (currentEvent.x - this.children[i].x)) {
+                                distance = currentEvent.x - this.children[i].x;
+                                prevEvent = this.children[i];
+                            }
+                        } else {
+                            distance = currentEvent.x - this.children[i].x;
+                            prevEvent = this.children[i];
+                        }
+                    }
+                }
+                if(prevEvent) {
+                    return prevEvent;
+                }
+            };
+            this.getClosestTimelineEvent = function (xCoordinate) {
+                var offset;
+                var closest;
+                for(var i = 0; i < this.children.length; i++) {
+                    if(this.children[i].type == 'infodot' && this.children[i].canvasContentItem.isActive) {
+                        if(offset) {
+                            if(offset > Math.abs(xCoordinate - this.children[i].canvasContentItem.x)) {
+                                closest = this.children[i];
+                                offset = Math.abs(xCoordinate - this.children[i].canvasContentItem.x);
+                            }
+                        } else {
+                            closest = this.children[i];
+                            offset = Math.abs(xCoordinate - this.children[i].canvasContentItem.x);
+                        }
+                    }
+                }
+                return closest;
+            };
             this.isVisible = function (visibleBox_v) {
-                return true;
+                var objRight = this.x + this.width;
+                return Math.max(this.x, visibleBox_v.Left) <= Math.min(objRight, visibleBox_v.Right);
             };
             this.isInside = function (point_v) {
                 var sideTicks = CZ.Settings.timelineEndTicks;
@@ -780,11 +1002,14 @@ var CZ;
                     return false;
                 } else {
                     var point_s = vc.viewport.pointVirtualToScreen(point_v.x, point_v.y);
-                    var insideBool = point_v.x >= this.x && point_v.x <= this.x + this.width && point_s.y <= tlOffset + sideTicks;
+                    var insideBool = point_v.x >= this.x && point_v.x <= this.x + this.width && point_s.y <= tlOffset + sideTicks * 2;
                     return insideBool;
                 }
             };
             this.onmouseclick = function (e) {
+                if(this.vc.currentlyHoveredInfodot) {
+                    return zoomToElementHandler(this.vc.currentlyHoveredInfodot.canvasContentItem, e, 0.35);
+                }
                 return zoomToElementHandler(this, e, 1);
             };
             this.onmousehover = function (pv, e) {
@@ -799,6 +1024,7 @@ var CZ;
                 this.vc.currentlyHoveredTimeline = this;
                 this.settings.strokeStyle = CZ.Settings.timelineHoveredBoxBorderColor;
                 this.settings.lineWidth = CZ.Settings.timelineHoveredLineWidth;
+                this.settings.gradientFillStyle = 'rgba(255,255,255,0.15)';
                 this.titleObject.settings.fillStyle = CZ.Settings.timelineHoveredHeaderFontColor;
                 this.settings.hoverAnimationDelta = 3 / 60;
                 this.vc.requestInvalidate();
@@ -806,7 +1032,7 @@ var CZ;
                     var vp = this.vc.getViewport();
                     this.titleObject.screenFontSize = CZ.Settings.timelineHeaderSize * vp.heightVirtualToScreen(this.height);
                 }
-                if(vc.viewport.widthVirtualToScreen(this.width) <= CZ.Settings.fixedTimelineHeadingThreshold) {
+                if(vc.viewport.widthVirtualToScreen(this.width) <= CZ.Settings.fixedTimelineHeadingThreshold + 5) {
                     this.tooltipEnabled = true;
                 } else {
                     this.tooltipEnabled = false;
@@ -866,6 +1092,7 @@ var CZ;
                 }
                 this.settings.strokeStyle = timelineinfo.strokeStyle ? timelineinfo.strokeStyle : CZ.Settings.timelineBorderColor;
                 this.settings.lineWidth = CZ.Settings.timelineLineWidth;
+                this.settings.gradientFillStyle = false;
                 this.titleObject.settings.fillStyle = CZ.Settings.timelineHeaderFontColor;
                 this.settings.hoverAnimationDelta = -3 / 60;
                 this.vc.requestInvalidate();
@@ -890,6 +1117,14 @@ var CZ;
                     x: p.x + size_p.x,
                     y: p.y + size_p.y
                 };
+                if(this.vc.currentlyViewedEvent) {
+                    if(this.vc.currentlyViewedEvent.parent.id == this.id) {
+                        if(!this.vc.currentlyViewedEvent.canvasContentItem.isVisible(visibleBox) || !this.vc.currentlyViewedEvent.canvasContentItem.isActive) {
+                            this.vc.currentlyViewedEvent.hideContentItem();
+                            this.vc.currentlyViewedEvent = undefined;
+                        }
+                    }
+                }
                 var isCenterInside = viewport2d.visible.centerX - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.x + this.width && viewport2d.visible.centerX + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.x && viewport2d.visible.centerY - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.y + this.height && viewport2d.visible.centerY + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.y;
                 var isVisibleInTheRectangle = ((p.x < CZ.Settings.timelineBreadCrumbBorderOffset && p2.x > viewport2d.width - CZ.Settings.timelineBreadCrumbBorderOffset) || (p.y < CZ.Settings.timelineBreadCrumbBorderOffset && p2.y > viewport2d.height - CZ.Settings.timelineBreadCrumbBorderOffset));
                 if(isVisibleInTheRectangle && isCenterInside) {
@@ -902,7 +1137,28 @@ var CZ;
                     vc.breadCrumbs.push({
                         vcElement: this
                     });
+                    var centerEvent = this.getClosestTimelineEvent(viewport2d.visible.centerX);
+                    if(centerEvent) {
+                        if(centerEvent.canvasContentItem.isVisible(visibleBox)) {
+                            if(!this.vc.currentlyViewedEvent || this.vc.currentlyViewedEvent.id !== centerEvent.id) {
+                                this.vc.currentlyViewedEvent = centerEvent;
+                                centerEvent.showContentItem();
+                            }
+                        }
+                    } else {
+                        if(typeof (this.vc.currentlyViewedEvent) !== 'undefined') {
+                            if(this.vc.currentlyViewedEvent.parent.id == this.id) {
+                                this.vc.currentlyViewedEvent.hideContentItem();
+                                this.vc.currentlyViewedEvent = undefined;
+                            }
+                        } else {
+                            $('#info-box').attr('class', 'info-box-hidden');
+                        }
+                    }
                 }
+            };
+            this.checkForHoveredEvents = function () {
+                return;
             };
             this.prototype = new CanvasTimespan(vc, layerid, id, vx, vy, vw, vh, settings);
         }
@@ -1150,6 +1406,44 @@ var CZ;
             };
             this.prototype = new CanvasText(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv);
         }
+        function CanvasEventHeading(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv) {
+            this.base = CanvasFixedHeading;
+            this.base(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv);
+            this.settings = settings || {
+            };
+            this.settings.opacity = 1;
+            this.settings.strokeStyle = 'rgb(255,255,255)';
+            this.showHeading = false;
+            this.isVisible = function (vbox) {
+                return this.showHeading;
+            };
+            this.isInside = function (vbox) {
+                return false;
+            };
+            this.onmouseclick = function (e) {
+                return zoomToElementHandler(this.parent, e, 0.35);
+            };
+            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
+                var p = viewport2d.pointVirtualToScreen(this.x + this.width / 2, this.y);
+                fontSize = CZ.Settings.fixedTimelineFontMap[this.settings.depth];
+                ctx.font = fontSize + "pt " + CZ.Settings.timelineHeaderFontName;
+                var size = ctx.measureText(this.text);
+                this.headingWidth = Math.max(0, size.width);
+                size_p.x = headingOffset = size.width;
+                ctx.globalAlpha = this.settings.opacity;
+                ctx.fillStyle = 'rgba(0,0,0,0.85)';
+                ctx.fillRect(p.x - headingOffset / 2 - 20, p.y + 115, headingOffset + 40, 40);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = this.settings.strokeStyle;
+                ctx.strokeRect(p.x - headingOffset / 2 - 20, p.y + 115, headingOffset + 40, 40);
+                if(this.settings.textBaseline) {
+                    ctx.textBaseline = this.settings.textBaseline;
+                }
+                ctx.fillStyle = 'rgba(255,255,255,1)';
+                drawText(this.text, ctx, p.x - headingOffset / 2, p.y + 135, fontSize, this.settings.fontName);
+            };
+            this.prototype = new CanvasText(vc, layerid, id, vx, vy, baseline, vh, text, settings, wv);
+        }
         function CanvasMultiLineTextItem(vc, layerid, id, vx, vy, vh, text, lineWidth, settings) {
             this.base = CanvasElement;
             this.base(vc, layerid, id, vx, vy, vh * 10, vh);
@@ -1210,7 +1504,7 @@ var CZ;
                         var ar0 = self.width / self.height;
                         var ar1 = img.naturalWidth / img.naturalHeight;
                         if(ar0 > ar1) {
-                            var imgWidth = self.height / ar0;
+                            var imgWidth = ar1 * self.height;
                             var offset = (self.width - imgWidth) / 2;
                             self.x += offset;
                             self.width = imgWidth;
@@ -1576,7 +1870,6 @@ var CZ;
             this.guid = contentItem.id;
             this.type = 'contentItem';
             this.contentItem = contentItem;
-            console.log(contentItem.date);
             var titleHeight = vh * CZ.Settings.contentItemTopTitleHeight * 0.8;
             var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
             var descrHeight = CZ.Settings.contentItemFontHeight * vh;
@@ -1590,6 +1883,11 @@ var CZ;
             var sourceHeight = vh * CZ.Settings.contentItemSourceHeight * 0.8;
             var titleTop = sourceTop + verticalMargin + sourceHeight;
             this.reactsOnMouse = true;
+            this.isVisible = function (visibleBox_v) {
+                var objRight = this.x + this.width;
+                var objBottom = this.y + this.height;
+                return Math.max(this.x, visibleBox_v.Left) <= Math.min(objRight, visibleBox_v.Right) && Math.max(this.y, visibleBox_v.Top) <= Math.min(objBottom, visibleBox_v.Bottom);
+            };
             this.onmouseenter = function (e) {
                 this.vc.currentlyHoveredContentItem = this;
                 this.vc.requestInvalidate();
@@ -1616,7 +1914,7 @@ var CZ;
                     var mediaID = id + "__media__";
                     var imageElem = null;
                     if(this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
-                        imageElem = VCContent.addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
+                        imageElem = VCContent.addImage(container, layerid, mediaID, vx + vw / 4, vy + vh / 4, vw / 2, vh / 2, CZ.Settings.eventImageBasePath + CZ.Settings.eventFullResFolder + this.contentItem.uri + '_FullRes.jpg');
                     } else {
                         if(this.contentItem.mediaType.toLowerCase() === 'deepimage') {
                             imageElem = VCContent.addSeadragonImage(container, layerid, mediaID, vx - vw / 4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
@@ -1636,36 +1934,14 @@ var CZ;
                             }
                         }
                     }
-                    $('#info-heading').text(this.contentItem.title);
-                    $('#info-content').css('top', ($('#info-header').outerHeight() + 33) + 'px');
-                    $('#info-content').html('<p>' + this.contentItem.description + '</p>');
-                    setTimeout(function () {
-                        $('#info-box').removeClass('info-box-hidden');
-                    }, 200);
+                    this.isActive = true;
                     return {
                         zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
                         content: container
                     };
                 } else {
-                    var zl = newZl;
-                    if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
-                        if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.contentItemShowContentZoomLevel) {
-                            return null;
-                        }
-                        zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                    } else {
-                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
-                                return null;
-                            }
-                            zl = CZ.Settings.contentItemThumbnailMinLevel;
-                        }
-                    }
-                    var sz = 1 << zl;
-                    var thumbnailUri = '/Images/thumbs/' + contentItem.guid + '.jpg';
+                    this.isActive = false;
                     var container = new ContainerElement(vc, layerid, id + "__content", vx, vy, vw, vh);
-                    VCContent.addImage(container, layerid, id + "@" + 1, vx, vy, vw, vh, thumbnailUri);
-                    $('#info-box').addClass('info-box-hidden');
                     return {
                         zoomLevel: newZl,
                         content: container
@@ -1674,559 +1950,375 @@ var CZ;
             };
             this.prototype = new CanvasDynamicLOD(vc, layerid, id, vx, vy, vw, vh);
         }
-        function SimpleItem(vc, layerid, id, vx, vy, vw, vh, contentItem) {
-            this.base = CanvasDynamicLOD;
+        function CanvasEvent(vc, layerid, id, vx, vy, vw, contentItems, infodotDescription) {
+            var vh = vw;
+            var time = vx;
+            var vp2d = vc.viewport;
+            this.actualWidth = 1;
+            this.actualY = 1;
+            this.base = CanvasElement;
             this.base(vc, layerid, id, vx, vy, vw, vh);
-            this.guid = contentItem.id;
-            this.type = 'contentItem';
-            this.contentItem = contentItem;
-            var titleHeight = vh * CZ.Settings.contentItemTopTitleHeight * 0.8;
-            var mediaHeight = vh * CZ.Settings.contentItemMediaHeight;
-            var descrHeight = CZ.Settings.contentItemFontHeight * vh;
-            var contentWidth = vw * CZ.Settings.contentItemContentWidth;
-            var leftOffset = (vw - contentWidth) / 2;
-            var verticalMargin = vh * CZ.Settings.contentItemVerticalMargin;
-            var mediaTop = vy + verticalMargin;
-            var sourceVertMargin = verticalMargin * 0.4;
-            var sourceTop = mediaTop + mediaHeight + sourceVertMargin;
-            var sourceRight = vx + vw - leftOffset;
-            var sourceHeight = vh * CZ.Settings.contentItemSourceHeight * 0.8;
-            var titleTop = sourceTop + verticalMargin + sourceHeight;
-            var rect = VCContent.addRectangle(this, layerid, id + "__rect__", vx, vy, vw, vh, {
-                strokeStyle: CZ.Settings.contentItemBoundingBoxBorderColor,
-                lineWidth: CZ.Settings.contentItemBoundingBoxBorderWidth * vw,
-                fillStyle: CZ.Settings.contentItemBoundingBoxFillColor,
-                isLineWidthVirtual: true
-            });
-            this.reactsOnMouse = true;
-            this.onmouseenter = function (e) {
-                rect.settings.strokeStyle = CZ.Settings.contentItemBoundingHoveredBoxBorderColor;
-                this.vc.currentlyHoveredContentItem = this;
-                this.vc.requestInvalidate();
-            };
-            this.onmouseleave = function (e) {
-                rect.settings.strokeStyle = CZ.Settings.contentItemBoundingBoxBorderColor;
-                this.vc.currentlyHoveredContentItem = null;
-                this.isMouseIn = false;
-                this.vc.requestInvalidate();
-            };
-            this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1);
-            };
-            var self = this;
-            this.changeZoomLevel = function (curZl, newZl) {
-                var vy = self.newY;
-                var mediaTop = vy + verticalMargin;
-                var sourceTop = mediaTop + mediaHeight + sourceVertMargin;
-                var titleTop = mediaTop;
-                if(newZl >= CZ.Settings.contentItemShowContentZoomLevel) {
-                    if(curZl >= CZ.Settings.contentItemShowContentZoomLevel) {
-                        return null;
-                    }
-                    var container = new ContainerElement(vc, layerid, id + "__content", vx, vy, vw, vh);
-                    var mediaID = id + "__media__";
-                    var imageElem = null;
-                    if(this.contentItem.mediaType.toLowerCase() === 'image' || this.contentItem.mediaType.toLowerCase() === 'picture') {
-                        imageElem = VCContent.addImage(container, layerid, mediaID, vx, vy, vw, vh, this.contentItem.uri);
-                    } else {
-                        if(this.contentItem.mediaType.toLowerCase() === 'deepimage') {
-                            imageElem = VCContent.addSeadragonImage(container, layerid, mediaID, vx - vw / 4, vy, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex, this.contentItem.uri);
-                        } else {
-                            if(this.contentItem.mediaType.toLowerCase() === 'video') {
-                                VCContent.addVideo(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
-                            } else {
-                                if(this.contentItem.mediaType.toLowerCase() === 'audio') {
-                                    mediaTop += CZ.Settings.contentItemAudioTopMargin * vh;
-                                    mediaHeight = vh * CZ.Settings.contentItemAudioHeight;
-                                    addAudio(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
-                                } else {
-                                    if(this.contentItem.mediaType.toLowerCase() === 'pdf') {
-                                        VCContent.addPdf(container, layerid, mediaID, this.contentItem.uri, vx + leftOffset, mediaTop, contentWidth, mediaHeight, CZ.Settings.mediaContentElementZIndex);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    var virtualMargin = vc.getViewport().widthScreenToVirtual(10);
-                    var titleText = this.contentItem.title;
-                    addText(container, layerid, id + "__title__", vx + vw / 100, titleTop, titleTop + titleHeight / 2, 0.9 * titleHeight, titleText, {
-                        fontName: CZ.Settings.contentItemHeaderFontName,
-                        fillStyle: CZ.Settings.contentItemHeaderFontColor,
-                        textBaseline: 'middle',
-                        textAlign: 'left',
-                        opacity: 1,
-                        wrapText: true,
-                        numberOfLines: 1
-                    }, contentWidth);
-                    var descrTop = titleTop + titleHeight + verticalMargin;
-                    var descr = addScrollText(container, layerid, id + "__description__", vx + vw / 100, descrTop, contentWidth / 3, descrHeight, this.contentItem.description, 30, {
-                    });
-                    return {
-                        zoomLevel: CZ.Settings.contentItemShowContentZoomLevel,
-                        content: container
-                    };
-                } else {
-                    var zl = newZl;
-                    if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
-                        if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.contentItemShowContentZoomLevel) {
-                            return null;
-                        }
-                        zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                    } else {
-                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
-                                return null;
-                            }
-                            zl = CZ.Settings.contentItemThumbnailMinLevel;
-                        }
-                    }
-                    var sz = 1 << zl;
-                    var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
-                    return {
-                        zoomLevel: newZl,
-                        content: new CanvasImage(vc, layerid, id + "@" + 1, thumbnailUri, vx, vy, vw, vh)
-                    };
-                }
-            };
-            this.prototype = new CanvasDynamicLOD(vc, layerid, id, vx, vy, vw, vh);
-        }
-        function CanvasEvent(vc, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
-            this.base = CanvasCircle;
-            this.base(vc, layerid, id, time, vyc, radv, {
-                strokeStyle: 'rgba(0,0,0,0)',
-                lineWidth: 0,
-                fillStyle: 'rgba(0,0,0,0)',
-                isLineWidthVirtual: true
-            });
+            this.y = vp2d.heightScreenToVirtual(vp2d.eventRegion / 2);
             this.guid = infodotDescription.guid;
             this.type = 'infodot';
             this.isBuffered = infodotDescription.isBuffered;
-            this.contentItems = contentItems;
+            this.contentItem = contentItems[0];
             this.hasContentItems = false;
             this.infodotDescription = infodotDescription;
             this.title = infodotDescription.title;
-            this.opacity = typeof infodotDescription.opacity !== 'undefined' ? infodotDescription.opacity : 1;
-            contentItems.sort(function (a, b) {
-                return a.order - b.order;
-            });
-            var vyc = this.newY + radv;
-            var innerRad = radv - CZ.Settings.infoDotHoveredBorderWidth * radv;
-            this.outerRad = radv;
-            this.reactsOnMouse = true;
-            this.tooltipEnabled = true;
-            this.tooltipIsShown = true;
-            this.onmousehover = function (pv, e) {
-                this.vc.currentlyHoveredInfodot = this;
-                this.vc.requestInvalidate();
-            };
-            this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1);
-            };
-            this.onmouseenter = function (e) {
-                this.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
-                this.settings.lineWidth = 0;
-                this.vc.requestInvalidate();
-                if(this.vc.currentlyHoveredTimeline != null) {
-                    CZ.Common.stopAnimationTooltip();
-                    this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
-                }
-                $(".bubbleInfo span").text(infodotDescription.title);
-                this.panelWidth = $('.bubbleInfo').outerWidth();
-                this.panelHeight = $('.bubbleInfo').outerHeight();
-                CZ.Common.tooltipMode = "infodot";
-                if((this.tooltipEnabled == true) && (this.tooltipIsShown == false)) {
-                    this.tooltipIsShown = true;
-                    $(".bubbleInfo").attr("id", "defaultBox");
-                    CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
-                }
-                this.vc.cursorPosition = time;
-                this.vc.currentlyHoveredInfodot = this;
-                this.vc._setConstraintsByInfodotHover(this);
-                this.vc.RaiseCursorChanged();
-            };
-            this.onmouseleave = function (e) {
-                this.isMouseIn = false;
-                this.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
-                this.settings.lineWidth = CZ.Settings.infoDotBorderWidth * radv;
-                this.vc.requestInvalidate();
-                if(this.tooltipIsShown == true) {
-                    CZ.Common.stopAnimationTooltip();
-                }
-                this.tooltipIsShown = false;
-                CZ.Common.tooltipMode = "default";
-                this.vc.currentlyHoveredInfodot = undefined;
-                this.vc._setConstraintsByInfodotHover(undefined);
-                this.vc.RaiseCursorChanged();
-            };
-            this.onmouseclick = function (e) {
-            };
-            var bibliographyFlag = true;
-            var infodot = this;
-            var root = new CanvasDynamicLOD(vc, layerid, id + "_dlod", time - innerRad, vyc - innerRad, 2 * innerRad, 2 * innerRad);
-            root.removeWhenInvisible = true;
-            VCContent.addChild(this, root, false);
-            root.firstLoad = true;
-            root.changeZoomLevel = function (curZl, newZl) {
-                var vyc = infodot.newY + radv;
-                var canvasEventYear = Math.round(CZ.Dates.convertCoordinateToYear(infodot.infodotDescription.date).year);
-                $('#info-date').text(canvasEventYear + ' Million Years Ago');
-                if(newZl < CZ.Settings.infodotShowContentZoomLevel) {
-                    var URL = CZ.UrlNav.getURL();
-                    if(typeof URL.hash.params != 'undefined' && typeof URL.hash.params['b'] != 'undefined') {
-                        bibliographyFlag = false;
-                    }
-                    if(curZl >= CZ.Settings.infodotShowContentThumbZoomLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
-                        return null;
-                    }
-                    infodot.tooltipEnabled = true;
-                    var contentItem = null;
-                    if(infodot.contentItems.length > 0) {
-                        contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.newY, 2 * innerRad, 2 * innerRad);
-                        var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
-                        if(items) {
-                            for(var i = 0; i < items.length; i++) {
-                                VCContent.addChild(contentItem, items[i], false);
-                            }
-                        }
-                    }
-                    if(contentItem) {
-                        infodot.hasContentItems = true;
-                        return {
-                            zoomLevel: newZl,
-                            content: contentItem
-                        };
-                    } else {
-                        return null;
-                    }
-                } else {
-                    if(newZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                        if(curZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                            return null;
-                        }
-                        infodot.tooltipEnabled = false;
-                        if(infodot.tooltipIsShown == true) {
-                            CZ.Common.stopAnimationTooltip();
-                            infodot.tooltipIsShown = false;
-                        }
-                        var contentItem = null;
-                        if(infodot.contentItems.length > 0) {
-                            contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.y, 2 * innerRad, 2 * innerRad);
-                            var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
-                            if(items) {
-                                for(var i = 0; i < items.length; i++) {
-                                    VCContent.addChild(contentItem, items[i], false);
-                                }
-                            }
-                        }
-                        if(contentItem == null) {
-                            return null;
-                        }
-                        if(contentItem) {
-                            infodot.hasContentItems = true;
-                            return {
-                                zoomLevel: newZl,
-                                content: contentItem
-                            };
-                        }
-                    } else {
-                        infodot.tooltipEnabled = true;
-                        infodot.hasContentItems = false;
-                        if(infodot.contentItems.length == 0) {
-                            return null;
-                        }
-                        var zl = newZl;
-                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
-                                return null;
-                            }
-                        }
-                        if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
-                            if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
-                                return null;
-                            }
-                            zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                        }
-                        if(zl < CZ.Settings.contentItemThumbnailMinLevel) {
-                            return {
-                                zoomLevel: zl,
-                                content: new ContainerElement(vc, layerid, id + "__empty", time, vyc, 0, 0)
-                            };
-                        }
-                        var contentItem = infodot.contentItems[0];
-                        var sz = 1 << zl;
-                        var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
-                        var l = innerRad * 260 / 225;
-                        return {
-                            zoomLevel: zl,
-                            content: new CanvasImage(vc, layerid, id + "@" + zl, thumbnailUri, time - l / 2, vyc - l / 2, l, l)
-                        };
-                    }
-                }
-            };
-            var _rad = 450 / 2;
-            var k = 1 / _rad;
-            var _wc = (252 + 0) * k;
-            var _hc = (262 + 0) * k;
-            var strokeWidth = 3 * k * radv;
-            var strokeLength = 24 * k * radv;
-            var xlt0 = -_wc / 2 * radv + time;
-            var ylt0 = -_hc / 2 * radv + vyc;
-            var xlt1 = _wc / 2 * radv + time;
-            var ylt1 = _hc / 2 * radv + vyc;
-            var self = this;
-            this.isVisible = function (visibleBox_v) {
-                var objRight = this.x + this.width;
-                var objBottom = this.y + this.height;
-                var visVal = Math.max(this.x, visibleBox_v.Left) <= Math.min(objRight, visibleBox_v.Right) && Math.max(this.y, visibleBox_v.Top) <= Math.min(objBottom, visibleBox_v.Bottom);
-                return visVal;
-            };
-            this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
-                this.prototype.render.call(this, ctx, visibleBox, viewport2d, size_p, opacity);
-                var sw = viewport2d.widthVirtualToScreen(strokeWidth);
-                if(sw < 0.5) {
-                    return;
-                }
-                var vyc = infodot.y + radv;
-                var xlt0 = -_wc / 2 * radv + time;
-                var ylt0 = -_hc / 2 * radv + vyc;
-                var xlt1 = _wc / 2 * radv + time;
-                var ylt1 = _hc / 2 * radv + vyc;
-                var rad = this.width / 2;
-                var xc = this.x + rad;
-                var yc = this.y + rad;
-                var radp = size_p.x / 2;
-                var sl = viewport2d.widthVirtualToScreen(strokeLength);
-                var pl0 = viewport2d.pointVirtualToScreen(xlt0, ylt0);
-                var pl1 = viewport2d.pointVirtualToScreen(xlt1, ylt1);
-                ctx.lineWidth = sw;
-                ctx.strokeStyle = CZ.Settings.contentItemBoundingBoxFillColor;
-            };
-            this.isInside = function (point_v) {
-                var len2 = CZ.Common.sqr(point_v.x - this.x - (this.width / 2)) + CZ.Common.sqr(point_v.y - this.y - (this.height / 2));
-                var rad = this.width / 2;
-                return len2 <= rad * rad;
-            };
-            this.prototype = new CanvasCircle(vc, layerid, id, time, vyc, radv, {
+            this.recentlyActive = false;
+            this.titleObject = addEventHeading(this, layerid, id + "__title__", vx, vy + vh / 2, vy + vh / 2, vh, this.contentItem.title, {
+                fontName: CZ.Settings.timelineHeaderFontName,
+                fillStyle: CZ.Settings.timelineHeaderFontColor,
+                textBaseline: 'middle',
+                depth: 5,
+                timeStart: vx,
+                timeEnd: vx + vw
+            }, vw);
+            this.settings = {
                 strokeStyle: CZ.Settings.infoDotBorderColor,
-                lineWidth: CZ.Settings.infoDotBorderWidth * radv,
-                fillStyle: CZ.Settings.infoDotFillColor,
-                isLineWidthVirtual: true
-            });
-        }
-        function CanvasInfodot(vc, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
-            this.base = CanvasCircle;
-            this.base(vc, layerid, id, time, vyc, radv, {
-                strokeStyle: CZ.Settings.infoDotBorderColor,
-                lineWidth: CZ.Settings.infoDotBorderWidth * radv,
-                fillStyle: CZ.Settings.infoDotFillColor,
-                isLineWidthVirtual: true
-            });
-            this.guid = infodotDescription.guid;
-            this.type = 'infodot';
-            this.isBuffered = infodotDescription.isBuffered;
-            this.contentItems = contentItems;
-            this.hasContentItems = false;
-            this.infodotDescription = infodotDescription;
-            this.title = infodotDescription.title;
-            this.opacity = typeof infodotDescription.opacity !== 'undefined' ? infodotDescription.opacity : 1;
-            contentItems.sort(function (a, b) {
-                return a.order - b.order;
-            });
-            var vyc = this.newY + radv;
-            var innerRad = radv - CZ.Settings.infoDotHoveredBorderWidth * radv;
-            this.outerRad = radv;
+                opacity: 1
+            };
+            this.screenDimensions = null;
             this.reactsOnMouse = true;
             this.tooltipEnabled = true;
             this.tooltipIsShown = false;
+            this.isLoading = true;
+            var img = new Image();
+            this.img = img;
+            this.img.isLoaded = false;
+            var self = this;
+            var onCanvasImageLoad = function (s) {
+                img['isLoading'] = false;
+                if(!img['isRemoved']) {
+                    if(img.naturalHeight) {
+                        var ar0 = self.width / self.height;
+                        var ar1 = img.naturalWidth / img.naturalHeight;
+                        if(ar0 > ar1) {
+                            var imgWidth = self.height / ar0;
+                            var offset = (self.width - imgWidth) / 2;
+                            self.x += offset;
+                            self.width = imgWidth;
+                        } else {
+                            if(ar0 < ar1) {
+                                var imgHeight = self.width / ar1;
+                                var offset = (self.height - imgHeight) / 2;
+                                self.y += offset;
+                                self.height = imgHeight;
+                            }
+                        }
+                    }
+                    img['isLoaded'] = true;
+                    if(self.onLoad) {
+                        self.onLoad();
+                    }
+                    self.vc.requestInvalidate();
+                } else {
+                    delete img['isRemoved'];
+                    delete img['isLoaded'];
+                }
+            };
+            var onCanvasImageLoadError = function (e) {
+                if(!img['isFallback']) {
+                    img['isFallback'] = true;
+                    img.src = CZ.Settings.fallbackImageUri;
+                } else {
+                    throw "Cannot load an image!";
+                }
+            };
+            this.img.addEventListener("load", onCanvasImageLoad, false);
+            if(onload) {
+                this.img.addEventListener("load", onload, false);
+            }
+            this.img.addEventListener("error", onCanvasImageLoadError, false);
+            this.img.src = CZ.Settings.eventImageBasePath + CZ.Settings.eventThumbnailFolder + this.contentItem.uri + '_thumb.jpg';
+            this.isInside = function (point_v) {
+                if(this.screenDimensions === null) {
+                    return false;
+                }
+                var vp2d = vc.viewport;
+                var screenPoint = vp2d.pointVirtualToScreen(point_v.x, point_v.y);
+                var len2 = CZ.Common.sqr(screenPoint.x - (this.screenDimensions.centerX)) + CZ.Common.sqr(screenPoint.y - this.screenDimensions.centerY);
+                return len2 <= this.screenDimensions.radius * this.screenDimensions.radius;
+            };
             this.onmousehover = function (pv, e) {
-                this.vc.currentlyHoveredInfodot = this;
-                this.vc.requestInvalidate();
+                if(typeof (this.vc.currentlyHoveredInfodot) === 'undefined') {
+                    this.vc.currentlyHoveredInfodot = this;
+                    this.vc.requestInvalidate();
+                }
             };
             this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1);
+                if(typeof (this.vc.currentlyHoveredInfodot) === 'undefined') {
+                    return zoomToElementHandler(this.canvasContentItem, e, 0.35);
+                } else {
+                    return zoomToElementHandler(this.vc.currentlyHoveredInfodot.canvasContentItem, e, 0.35);
+                }
             };
             this.onmouseenter = function (e) {
-                this.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
-                this.settings.lineWidth = CZ.Settings.infoDotHoveredBorderWidth * radv;
-                this.vc.requestInvalidate();
-                if(this.vc.currentlyHoveredTimeline != null) {
-                    CZ.Common.stopAnimationTooltip();
-                    this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
+                this.isMouseIn = true;
+                var visibleV = {
+                    Left: this.x,
+                    Right: this.x + this.width,
+                    Top: this.y,
+                    Bottom: this.y + this.height
+                };
+                if(this.titleObject.isVisible(visibleV)) {
+                    this.tooltipEnabled = false;
+                } else {
+                    this.tooltipEnabled = true;
                 }
-                $(".bubbleInfo span").text(infodotDescription.title);
-                this.panelWidth = $('.bubbleInfo').outerWidth();
-                this.panelHeight = $('.bubbleInfo').outerHeight();
-                CZ.Common.tooltipMode = "infodot";
-                if((this.tooltipEnabled == true) && (this.tooltipIsShown == false)) {
-                    this.tooltipIsShown = true;
-                    $(".bubbleInfo").attr("id", "defaultBox");
-                    CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
+                if(typeof (this.vc.currentlyHoveredInfodot) === 'undefined') {
+                    this.vc.requestInvalidate();
+                    if(this.vc.currentlyHoveredTimeline != null) {
+                        CZ.Common.stopAnimationTooltip();
+                        this.vc.currentlyHoveredTimeline.tooltipIsShown = false;
+                    }
+                    $(".bubbleInfo span").text(infodotDescription.title);
+                    this.panelWidth = $('.bubbleInfo').outerWidth();
+                    this.panelHeight = $('.bubbleInfo').outerHeight();
+                    CZ.Common.tooltipMode = "infodot";
+                    if((this.tooltipEnabled == true)) {
+                        this.tooltipIsShown = true;
+                        $(".bubbleInfo").attr("id", "defaultBox");
+                        CZ.Common.animationTooltipRunning = $('.bubbleInfo').fadeIn();
+                    }
+                    this.vc.cursorPosition = vx + vw / 2;
+                    this.vc.currentlyHoveredInfodot = this;
+                    var count = 0;
+                    for(var i = 0; i < this.parent.children.length; i++) {
+                        if(this.id == this.parent.children[i].id) {
+                            count++;
+                        }
+                    }
+                    if(count < 2) {
+                        this.parent.children.push(this);
+                    }
+                    this.vc._setConstraintsByInfodotHover(this);
+                    this.vc.RaiseCursorChanged();
                 }
-                this.vc.cursorPosition = time;
-                this.vc.currentlyHoveredInfodot = this;
-                this.vc._setConstraintsByInfodotHover(this);
-                this.vc.RaiseCursorChanged();
             };
             this.onmouseleave = function (e) {
                 this.isMouseIn = false;
-                this.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
-                this.settings.lineWidth = CZ.Settings.infoDotBorderWidth * radv;
-                this.vc.requestInvalidate();
-                if(this.tooltipIsShown == true) {
-                    CZ.Common.stopAnimationTooltip();
+                var otherHoveredInfoDot;
+                if(this.vc.currentlyHoveredInfodot && this.vc.currentlyHoveredInfodot.id == this.id) {
+                    var count = 0;
+                    var indexMatch;
+                    for(var i = 0; i < this.parent.children.length; i++) {
+                        if(this.id == this.parent.children[i].id) {
+                            count++;
+                            indexMatch = i;
+                        }
+                    }
+                    if(count > 1) {
+                        this.parent.children.splice(indexMatch, 1);
+                    }
+                    for(var i = 0; i < this.parent.children.length; i++) {
+                        if(this.parent.children[i].type == 'infodot' && this.parent.children[i].isMouseIn) {
+                            otherHoveredInfoDot = this.parent.children[i];
+                            break;
+                        }
+                    }
                 }
+                this.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                this.settings.lineWidth = CZ.Settings.infoDotBorderWidth;
+                this.vc.requestInvalidate();
                 this.tooltipIsShown = false;
                 CZ.Common.tooltipMode = "default";
                 this.vc.currentlyHoveredInfodot = undefined;
                 this.vc._setConstraintsByInfodotHover(undefined);
+                if(otherHoveredInfoDot) {
+                    otherHoveredInfoDot.onmouseenter();
+                }
                 this.vc.RaiseCursorChanged();
             };
-            this.onmouseclick = function (e) {
-                return zoomToElementHandler(this, e, 1);
+            this.checkIfHovered = function () {
+                try  {
+                    if(this.vc.currentlyHoveredInfodot.id == this.id) {
+                        this.settings.strokeStyle = this.titleObject.settings.strokeStyle = CZ.Settings.infoDotHoveredBorderColor;
+                        this.settings.opacity = this.titleObject.settings.opacity = this.newOpacity = 1;
+                    } else {
+                        this.settings.opacity = this.titleObject.settings.opacity = this.newOpacity = 0.1;
+                    }
+                } catch (ex) {
+                    this.settings.strokeStyle = this.titleObject.settings.strokeStyle = CZ.Settings.infoDotBorderColor;
+                    this.settings.opacity = this.titleObject.settings.opacity = this.newOpacity = 1;
+                }
             };
             var bibliographyFlag = true;
-            var infodot = this;
-            var root = new CanvasDynamicLOD(vc, layerid, id + "_dlod", time - innerRad, vyc - innerRad, 2 * innerRad, 2 * innerRad);
-            root.removeWhenInvisible = true;
-            VCContent.addChild(this, root, false);
-            root.firstLoad = true;
-            root.changeZoomLevel = function (curZl, newZl) {
-                var vyc = infodot.newY + radv;
-                if(newZl >= CZ.Settings.infodotShowContentThumbZoomLevel && newZl < CZ.Settings.infodotShowContentZoomLevel) {
-                    var URL = CZ.UrlNav.getURL();
-                    if(typeof URL.hash.params != 'undefined' && typeof URL.hash.params['b'] != 'undefined') {
-                        bibliographyFlag = false;
-                    }
-                    if(curZl >= CZ.Settings.infodotShowContentThumbZoomLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
-                        return null;
-                    }
-                    infodot.tooltipEnabled = true;
-                    var contentItem = null;
-                    if(infodot.contentItems.length > 0) {
-                        contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.newY, 2 * innerRad, 2 * innerRad);
-                        var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
-                        if(items) {
-                            for(var i = 0; i < items.length; i++) {
-                                VCContent.addChild(contentItem, items[i], false);
-                            }
-                        }
-                    }
-                    if(contentItem) {
-                        infodot.hasContentItems = true;
-                        return {
-                            zoomLevel: newZl,
-                            content: contentItem
-                        };
-                    } else {
-                        return null;
-                    }
+            var self = this;
+            this.canvasContentItem = VCContent.addChild(this, new ContentItem(vc, layerid, this.contentItem.id, vx + vw / 2 - vw / 30, vy + vw / 2 - vw / 30, vw / 15, vw / 15, this.contentItem), false);
+            this.isVisible = function (visibleBox_v) {
+                var visVal = false;
+                if(CZ.Viewport.allowVerticalPan) {
+                    visVal = this.x < visibleBox_v.Left && this.x + this.width > visibleBox_v.Right;
                 } else {
-                    if(newZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                        if(curZl >= CZ.Settings.infodotShowContentZoomLevel) {
-                            return null;
-                        }
-                        infodot.tooltipEnabled = false;
-                        if(infodot.tooltipIsShown == true) {
-                            CZ.Common.stopAnimationTooltip();
-                            infodot.tooltipIsShown = false;
-                        }
-                        var contentItem = null;
-                        if(infodot.contentItems.length > 0) {
-                            contentItem = new ContainerElement(vc, layerid, id + "__contentItems", root.x, root.y, 2 * innerRad, 2 * innerRad);
-                            var items = buildVcContentItems(infodot.contentItems, time, vyc, innerRad, vc, layerid);
-                            if(items) {
-                                for(var i = 0; i < items.length; i++) {
-                                    VCContent.addChild(contentItem, items[i], false);
-                                }
-                            }
-                        }
-                        if(contentItem == null) {
-                            return null;
-                        }
-                        if(contentItem) {
-                            infodot.hasContentItems = true;
-                            return {
-                                zoomLevel: newZl,
-                                content: contentItem
-                            };
-                        }
-                    } else {
-                        infodot.tooltipEnabled = true;
-                        infodot.hasContentItems = false;
-                        if(infodot.contentItems.length == 0) {
-                            return null;
-                        }
-                        var zl = newZl;
-                        if(zl <= CZ.Settings.contentItemThumbnailMinLevel) {
-                            if(curZl <= CZ.Settings.contentItemThumbnailMinLevel && curZl > 0) {
-                                return null;
-                            }
-                        }
-                        if(zl >= CZ.Settings.contentItemThumbnailMaxLevel) {
-                            if(curZl >= CZ.Settings.contentItemThumbnailMaxLevel && curZl < CZ.Settings.infodotShowContentZoomLevel) {
-                                return null;
-                            }
-                            zl = CZ.Settings.contentItemThumbnailMaxLevel;
-                        }
-                        if(zl < CZ.Settings.contentItemThumbnailMinLevel) {
-                            return {
-                                zoomLevel: zl,
-                                content: new ContainerElement(vc, layerid, id + "__empty", time, vyc, 0, 0)
-                            };
-                        }
-                        var contentItem = infodot.contentItems[0];
-                        var sz = 1 << zl;
-                        var thumbnailUri = CZ.Settings.contentItemThumbnailBaseUri + 'x' + sz + '/' + contentItem.guid + '.png';
-                        var l = innerRad * 260 / 225;
-                        return {
-                            zoomLevel: zl,
-                            content: new CanvasImage(vc, layerid, id + "@" + zl, thumbnailUri, time - l / 2, vyc - l / 2, l, l)
-                        };
+                    var vp2d = vc.viewport;
+                    var actualWidth = this.width;
+                    if(vp2d.widthVirtualToScreen(this.width) > CZ.Settings.fixedTimelineEventWidth) {
+                        actualWidth = vp2d.widthScreenToVirtual(CZ.Settings.fixedTimelineEventWidth);
                     }
+                    var middle = this.x + this.width / 2;
+                    visVal = middle > visibleBox_v.Left && middle < visibleBox_v.Right;
                 }
+                if(!visVal) {
+                    this.screenDimensions = null;
+                }
+                return visVal;
             };
-            var _rad = 450 / 2;
-            var k = 1 / _rad;
-            var _wc = (252 + 0) * k;
-            var _hc = (262 + 0) * k;
-            var strokeWidth = 3 * k * radv;
-            var strokeLength = 24 * k * radv;
-            var xlt0 = -_wc / 2 * radv + time;
-            var ylt0 = -_hc / 2 * radv + vyc;
-            var xlt1 = _wc / 2 * radv + time;
-            var ylt1 = _hc / 2 * radv + vyc;
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
-                this.prototype.render.call(this, ctx, visibleBox, viewport2d, size_p, opacity);
-                var sw = viewport2d.widthVirtualToScreen(strokeWidth);
-                if(sw < 0.5) {
-                    return;
+                var p = viewport2d.pointVirtualToScreen(this.x, this.y);
+                var p2 = viewport2d.pointVirtualToScreen(this.x + this.width, this.y + this.height);
+                var scrHeight = viewport2d.heightVirtualToScreen(this.height);
+                var left = Math.max(0, p.x);
+                var top = Math.max(0, p.y);
+                var right = Math.min(viewport2d.width, p2.x);
+                var bottom = Math.min(viewport2d.height, p2.y);
+                var middle = p.x + (p2.x - p.x) / 2;
+                this.checkIfHovered();
+                var eventRegion = {
+                    top: 0,
+                    left: 0,
+                    width: viewport2d.width,
+                    height: (viewport2d.height - CZ.Settings.fixedTimelineAreaHeight)
+                };
+                var maxWidth = Math.min(eventRegion.height, CZ.Settings.fixedTimelineEventWidth);
+                if((right - left) > maxWidth) {
+                    left = middle - maxWidth / 2;
+                    right = middle + maxWidth / 2;
+                    this.titleObject.showHeading = true;
+                } else {
+                    this.titleObject.showHeading = false;
                 }
-                var vyc = infodot.y + radv;
-                var xlt0 = -_wc / 2 * radv + time;
-                var ylt0 = -_hc / 2 * radv + vyc;
-                var xlt1 = _wc / 2 * radv + time;
-                var ylt1 = _hc / 2 * radv + vyc;
-                var rad = this.width / 2;
-                var xc = this.x + rad;
-                var yc = this.y + rad;
-                var radp = size_p.x / 2;
-                var sl = viewport2d.widthVirtualToScreen(strokeLength);
-                var pl0 = viewport2d.pointVirtualToScreen(xlt0, ylt0);
-                var pl1 = viewport2d.pointVirtualToScreen(xlt1, ylt1);
-                ctx.lineWidth = sw;
-                ctx.strokeStyle = CZ.Settings.contentItemBoundingBoxFillColor;
+                this.screenDimensions = {
+                    centerX: left + (right - left) / 2,
+                    centerY: p.y + (p2.y - p.y) / 2,
+                    radius: (right - left) / 2
+                };
+                if(left < right && top < bottom) {
+                    this.actualWidth = right - left;
+                    this.actualY = eventRegion.height / 2;
+                    top = (p.y + (p2.y - p.y) / 2 - this.actualWidth / 2);
+                    bottom = (p.y + (p2.y - p.y) / 2 + this.actualWidth / 2);
+                    var circStroke = ctx.lineWidth = Math.min(this.actualWidth / 150, 1) * 6;
+                    var opacity = Math.min(0.1 + this.actualWidth / 100, this.settings.opacity);
+                    var eventLineWidth = Math.min(1 + Math.round(this.actualWidth / 200), 2);
+                    var triangleBase = 4 + eventLineWidth;
+                    var circleBaseY = bottom + circStroke / 2;
+                    var triangleOffset = 0;
+                    if(eventLineWidth > 1) {
+                        triangleOffset = 1;
+                    }
+                    ctx.globalAlpha = opacity;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(middle, p.y + (p2.y - p.y) / 2, this.actualWidth / 2, 0, Math.PI * 2, true);
+                    ctx.clip();
+                    ctx.drawImage(this.img, middle - this.actualWidth / 2, p.y + (p2.y - p.y) / 2 - this.actualWidth / 2, this.actualWidth, this.actualWidth);
+                    ctx.restore();
+                    if(circStroke > 2) {
+                        ctx.globalAlpha = opacity;
+                        ctx.beginPath();
+                        ctx.arc(middle + 3, p.y + (p2.y - p.y) / 2 + 3, this.actualWidth / 2, 0, Math.PI * 2, true);
+                        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = opacity;
+                    ctx.beginPath();
+                    ctx.arc(middle, p.y + (p2.y - p.y) / 2, this.actualWidth / 2, 0, Math.PI * 2, true);
+                    ctx.strokeStyle = this.settings.strokeStyle;
+                    ctx.stroke();
+                    ctx.globalAlpha = Math.min(opacity, 0.35);
+                    ctx.lineWidth = eventLineWidth;
+                    ctx.strokeStyle = this.settings.strokeStyle;
+                    ctx.beginPath();
+                    ctx.moveTo(middle, circleBaseY + triangleBase - triangleOffset);
+                    ctx.lineTo(middle, viewport2d.height - 8);
+                    ctx.stroke();
+                    ctx.fillStyle = this.settings.strokeStyle;
+                    ctx.globalAlpha = opacity;
+                    ctx.beginPath();
+                    ctx.moveTo(middle - triangleBase, circleBaseY);
+                    ctx.lineTo(middle, circleBaseY + triangleBase);
+                    ctx.lineTo(middle + triangleBase, circleBaseY);
+                    ctx.lineTo(middle, circleBaseY - 1);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = this.settings.strokeStyle;
+                    ctx.globalAlpha = opacity;
+                    ctx.beginPath();
+                    ctx.moveTo(middle - 8, viewport2d.height);
+                    ctx.lineTo(middle, viewport2d.height - 8);
+                    ctx.lineTo(middle + 8, viewport2d.height);
+                    ctx.closePath();
+                    ctx.fill();
+                }
             };
-            this.isInside = function (point_v) {
-                var len2 = CZ.Common.sqr(point_v.x - this.x - (this.width / 2)) + CZ.Common.sqr(point_v.y - this.y - (this.height / 2));
-                var rad = this.width / 2;
-                return len2 <= rad * rad;
+            this.onRemove = function () {
+                this.img.removeEventListener("load", onCanvasImageLoad, false);
+                this.img.removeEventListener("error", onCanvasImageLoadError, false);
+                if(this.onload) {
+                    this.img.removeEventListener("load", this.onload, false);
+                }
+                this.img.isRemoved = true;
+                delete this.img;
             };
-            this.prototype = new CanvasCircle(vc, layerid, id, time, vyc, radv, {
-                strokeStyle: CZ.Settings.infoDotBorderColor,
-                lineWidth: CZ.Settings.infoDotBorderWidth * radv,
-                fillStyle: CZ.Settings.infoDotFillColor,
-                isLineWidthVirtual: true
-            });
+            this.getNextEvent = function () {
+                return this.parent.getNextEvent(this);
+            };
+            this.getPreviousEvent = function () {
+                return this.parent.getPreviousEvent(this);
+            };
+            this.showContentItem = function () {
+                this.recentlyActive = true;
+                $('#info-heading').text(this.contentItem.title);
+                $('#info-date').text(CZ.Dates.convertCoordinateToYearString(this.x + this.width / 2));
+                $('#event-content').html('<p>' + this.contentItem.description + '</p>');
+                $('#event-timeline-label').text(this.parent.title + ' Timeline');
+                $('#event-timeline-link').data('timelineId', this.parent.id);
+                $('#event-timeline-link').attr('href', '#' + this.parent.id);
+                var nextEvent = this.parent.getSiblingEvent(this, true);
+                var prevEvent = this.parent.getSiblingEvent(this, false);
+                if(nextEvent) {
+                    $('#event-next-link').data('eventId', nextEvent.id);
+                    $('#event-next-link').removeClass('no-event');
+                } else {
+                    $('#event-next-link').addClass('no-event');
+                }
+                if(prevEvent) {
+                    $('#event-previous-link').data('eventId', prevEvent.id);
+                    $('#event-previous-link').removeClass('no-event');
+                } else {
+                    $('#event-previous-link').addClass('no-event');
+                }
+                var headerOffset = ($('#info-header').outerHeight() + 33);
+                var totalHeight = $('#info-header').outerHeight(true) + $('#event-content').outerHeight(true) + 16 + 60;
+                var maxHeight = (this.vc.canvasHeight - 104);
+                var contentHeight = Math.min(totalHeight, maxHeight) - headerOffset - 44 + 36;
+                $('#info-content').css('top', headerOffset + 'px');
+                $('#info-content').css('height', contentHeight + 'px');
+                $('#info-box').css({
+                    'height': totalHeight + 'px',
+                    'max-height': maxHeight + 'px'
+                });
+                setTimeout(function () {
+                    $('#info-box').removeClass('info-box-hidden');
+                }, 200);
+                CZ.Viewport.allowVerticalPan = true;
+            };
+            this.hideContentItem = function () {
+                $('#info-box').addClass('info-box-hidden');
+                setTimeout(function () {
+                    self.recentlyActive = false;
+                }, 1000);
+                CZ.Viewport.allowVerticalPan = false;
+            };
+            this.intersects = function (rect) {
+                return !(this.x + this.width < rect.x || this.x > rect.x + rect.width || this.y + this.height < rect.y || this.y > rect.y + rect.height);
+            };
+            this.contains = function (rect) {
+                return (rect.x > this.x && rect.x + rect.width < this.x + this.width && rect.y > this.y && rect.y + rect.height < this.y + this.height);
+            };
+            this.prototype = new CanvasElement(vc, layerid, id, vx, vy, vw, vh);
         }
         function getContentItem(infodot, cid) {
             if(infodot.type !== 'infodot' || infodot.contentItems.length === 0) {
@@ -2255,11 +2347,6 @@ var CZ;
             return null;
         }
         VCContent.getContentItem = getContentItem;
-        function addInfodot(element, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
-            var infodot = new CanvasInfodot(element.vc, layerid, id, time, vyc, radv, contentItems, infodotDescription);
-            return VCContent.addChild(element, infodot, true);
-        }
-        VCContent.addInfodot = addInfodot;
         function addEvent(element, layerid, id, time, vyc, radv, contentItems, infodotDescription) {
             var eventItem = new CanvasEvent(element.vc, layerid, id, time, vyc, radv, contentItems, infodotDescription);
             return VCContent.addChild(element, eventItem, true);

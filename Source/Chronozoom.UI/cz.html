@@ -3,7 +3,6 @@
 <head>
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="Description" content="ChronoZoom is an open-source community project dedicated to visualizing the history of everything." />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <script type="text/javascript" id="constants"></script>
     <script type="text/javascript">
@@ -18,43 +17,42 @@
         })();
     </script>
 
-    <link rel="stylesheet" type="text/css" href="/css/dino-cz.css" />
+    <link rel="stylesheet" type="text/css" href="./css/dino-cz.css" />
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'>
+    <link href='./css/fonts.css' rel='stylesheet' type='text/css'>
 
     <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-    <script type="text/javascript" src="/scripts/external/jquery.slider.js"></script>
+    <script type="text/javascript" src="./scripts/external/jquery.slider.js"></script>
 
-    <script type="text/javascript" src="/scripts/external/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/scripts/external/rx.js"></script>
-    <script type="text/javascript" src="/scripts/external/rx.jQuery.js"></script>
-    <script type="text/javascript" src="/scripts/external/mouseWheelPlugin.js"></script>
-    <script type="text/javascript" src="/scripts/external/csvToArray.v2.1.js"></script>
-    <script type="text/javascript" src="/scripts/external/ACS.js"></script>
-    <script type="text/javascript" src="/scripts/external/seadragon-min.js"></script>
+    <script type="text/javascript" src="./scripts/external/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./scripts/external/rx.js"></script>
+    <script type="text/javascript" src="./scripts/external/rx.jQuery.js"></script>
+    <script type="text/javascript" src="./scripts/external/mouseWheelPlugin.js"></script>
+    <script type="text/javascript" src="./scripts/external/csvToArray.v2.1.js"></script>
+    <script type="text/javascript" src="./scripts/external/ACS.js"></script>
+    <script type="text/javascript" src="./scripts/external/seadragon-min.js"></script>
 
-    <script type="text/javascript" src="/scripts/settings.js"></script>
-    <script type="text/javascript" src="/scripts/common.js"></script>
-    <script type="text/javascript" src="/scripts/viewport.js"></script>
-    <script type="text/javascript" src="/scripts/viewport-animation.js"></script>
-    <script type="text/javascript" src="/scripts/gestures.js"></script>
-    <script type="text/javascript" src="/scripts/virtual-canvas.js"></script>
-    <script type="text/javascript" src="/scripts/vccontent.js"></script>
-    <script type="text/javascript" src="/scripts/viewport-controller.js"></script>
-    <script type="text/javascript" src="/scripts/urlnav.js"></script>
-    <script type="text/javascript" src="/scripts/layout.js"></script>
-    <script type="text/javascript" src="/scripts/search.js"></script>
-    <script type="text/javascript" src="/scripts/bibliography.js"></script>
-    <script type="text/javascript" src="/scripts/breadcrumbs.js"></script>
-
-    <script type="text/javascript" src="/scripts/service.js"></script>
-    <script type="text/javascript" src="/scripts/data.js"></script>
-    <script type="text/javascript" src="/scripts/timescale.js"></script>
-    <script type="text/javascript" src="/scripts/dates.js"></script>
+    <script type="text/javascript" src="./scripts/settings.js"></script>
+    <script type="text/javascript" src="./scripts/common.js"></script>
+    <script type="text/javascript" src="./scripts/viewport.js"></script>
+    <script type="text/javascript" src="./scripts/viewport-animation.js"></script>
+    <script type="text/javascript" src="./scripts/gestures.js"></script>
+    <script type="text/javascript" src="./scripts/virtual-canvas.js"></script>
+    <script type="text/javascript" src="./scripts/vccontent.js"></script>
+    <script type="text/javascript" src="./scripts/viewport-controller.js"></script>
+    <script type="text/javascript" src="./scripts/urlnav.js"></script>
+    <script type="text/javascript" src="./scripts/layout.js"></script>
+    <script type="text/javascript" src="./scripts/search.js"></script>
+    <script type="text/javascript" src="./scripts/bibliography.js"></script>
+    <script type="text/javascript" src="./scripts/breadcrumbs.js"></script>
+    <script type="text/javascript" src="./scripts/service.js"></script>
+    <script type="text/javascript" src="./scripts/data.js"></script>
+    <script type="text/javascript" src="./scripts/timescale.js"></script>
+    <script type="text/javascript" src="./scripts/dates.js"></script>
     
-    <script type="text/javascript" src="/scripts/cz.js"></script>
+    <script type="text/javascript" src="./scripts/cz.js"></script>
 
     <script type="text/javascript">
         function AddScript(path) {
@@ -68,7 +66,7 @@
 
         }
         else {
-            window.location = "/fallback.html"
+           window.location = "./fallback.html"
         }
     </script>
 
@@ -96,12 +94,24 @@
 
         <section id="info-box" class="info-box-hidden">
           <header id="info-header">
-            <h1 id="info-heading">The First Dinosaurs</h1>
-            <h2 id="info-date">230 Million Years Ago</h2>
+            <h1 id="info-heading"></h1>
+            <h2 id="info-date"></h2>
           </header>
           <div id="info-content">
-            <p>The first skeletal fossils of dinosaurs come from Ischigualasto Provincial Park in Argentina. Within the park, the remains of several dinosaurs, including the theropod Herrerasaurus, the sauropodomorph Eoraptor, and the ornithischian Pisanosaurus, are found. However, dinosaur fossils make up only a small part of the fossil remains found here. Other groups, such as the bizarre herbivorous rhynchosaurs and large predators like the crocodilian relative Saurosuchus were much more common, as well as much larger than most of the dinosaurs. However, by the beginning of the Jurassic, most of these other non-dinosaur groups were on the decline or already extinct, while the dinosaurs came to dominate the landscape.</p>
+            <div id="event-content"></div>
           </div>
+          <div id="info-image-source"></div>
+          <ul id="event-controls">
+            <li id="event-previous">
+              <a id="event-previous-link" href="#"><span class="event-icon event-previous-icon"></span>Previous</a>
+            </li>
+            <li id="event-timeline">
+              <a id="event-timeline-link" href="#"><span class="event-icon event-tl-icon"></span><span id="event-timeline-label">Parent Timeline</span></a>
+            </li>
+            <li id="event-next">
+              <a id="event-next-link" href="#">Next<span class="event-icon event-next-icon"></span></a>
+            </li>
+          </ul>
         </section>
 
     </div>
@@ -121,24 +131,15 @@
             <div id="breadcrumbs-nav-right" class="">&#187;</div>
         </div>
         
-        <ul id="controls">
-             
+        <ul id="controls">             
            <li class="control"><a id="timeline-btn" class="control-btn" href="#">Timelines</a></li>
-             <li class="control"><a id="events-btn" class="control-btn" href="#">Events</a></li>
         </ul>
 
         <div class="clearer"></div>
       </div>
-      <nav id="ev-navigation" class="hidden">
-        <ul>
-            <li class="about"><a class="time-link" id="00000000-0000-0000-2000-000000000000" href="#">The Ediacaran Fauna</a></li>
-          <li class="products"><a class="time-link" id="454db51-e2d6-4cd0-b47e-84d391a6ebf4" href="#">The First Dinosaurs</a></li>
-          <li class="blog"><a class="time-link" id="454dbff-f5f4-4cd0-b47e-84d391a6ebf4" href="#">End-Cretaceous Mass Extinction</a></li>
-        </ul>
-      </nav>
       <nav id="navigation" class="hidden">
         <ul>
-            <li class="about"><a class="time-link" id="00000000-0000-0000-0000-000000000000" href="#">All of Time</a></li>
+            <li class="about"><a class="time-link" id="00000000-0000-0000-0000-000000000000" href="#">History of Earth</a></li>
           <li class="about"><a class="time-link" id="c3f0ba48-f852-4683-9254-134017521ea" href="#">Hadean Eon</a></li>
           <li class="products"><a class="time-link" id="c3f0ba48-ed86-4683-9254-134017521ea" href="#">Archean Eon</a></li>
           <li class="blog"><a class="time-link" id="c3f0ba48-ed86-4683-8667-134017521ea" href="#">Proterozoic Eon</a></li>
@@ -178,7 +179,6 @@
           $('#navigation').slider();
           
           $('html').bind('click',function(event) {
-            console.log(event);
             $('#navigation, #ev-navigation').addClass('hidden');
             $('#timeline-btn, #events-btn').removeClass('active');
           });
@@ -199,16 +199,39 @@
             event.stopPropagation();
           });
           
-          setTimeout(function() {
-            
-          }, 500);
           
           $('#navigation').find('a.time-link').click(function() {
             CZ.Search.goToSearchResult('t'+$(this).attr('id'));
           });
-          $('#ev-navigation').find('a.time-link').click(function() {
-            CZ.Search.goToSearchResult('e'+$(this).attr('id'));
+          $('#event-timeline-link').click(function() {
+            console.log($(this).data('timelineId'));
+            CZ.Search.goToSearchResult($(this).data('timelineId'));
           });
+          $('#event-controls').find('a').click(function() {
+            CZ.Search.goToEvent($(this).data('eventId'));
+          });
+
+/*
+          $('#vc').on('mousemove', function(e) {
+            var xPercent = (e.offsetX/$(this).width()*100);
+            //var yPercent = (e.offsetY/$(this).width()*100);
+            $(this).css('background-position', xPercent+'% 50%');
+          });
+*/
+          var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+          if(iOS) {
+            $('body').on('touchstart','#info-content',function(e) {
+              if (e.currentTarget.scrollTop === 0) {
+                e.currentTarget.scrollTop = 1;
+              } else if (e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.offsetHeight) {
+                e.currentTarget.scrollTop -= 1;
+              }
+            });
+            //prevents preventDefault from being called on document if it sees a scrollable div
+            $('body').on('touchmove','#info-content',function(e) {
+              e.stopPropagation();
+            });
+          }
         });
     </script>
 </body>

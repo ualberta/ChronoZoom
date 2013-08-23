@@ -86,12 +86,12 @@ module CZ {
             var canvasIsEmpty;
 
             CZ.Common.initialize();
-
+            /*
             CZ.Service.getServiceInformation().then(
                 function (response) {
                     CZ.Settings.contentItemThumbnailBaseUri = response.thumbnailsPath;
                 });
-
+            */
             var url = CZ.UrlNav.getURL();
             var rootCollection = url.superCollectionName === undefined;
             CZ.Service.superCollectionName = url.superCollectionName;

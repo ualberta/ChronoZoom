@@ -143,6 +143,39 @@ var CZ;
             return year;
         }
         Dates.convertCoordinateToYear = convertCoordinateToYear;
+        function convertCoordinateToYearString(coordinate) {
+            var year = {
+                year: coordinate,
+                regime: "CE"
+            };
+            if(coordinate < -999999999) {
+                year.year = (year.year - 1) / (-1000000000);
+                year.year = Math.round(year.year * 100) / 100;
+                year.regime = 'Billion Years Ago';
+            } else {
+                if(coordinate < -999999) {
+                    year.year = (year.year - 1) / (-1000000);
+                    year.year = Math.floor(year.year);
+                    year.regime = 'Million Years Ago';
+                } else {
+                    if(coordinate < -9999) {
+                        year.year = (year.year - 1) / (-1000);
+                        year.year = Math.round(year.year);
+                        year.regime = 'Thousand Years Ago';
+                    } else {
+                        if(coordinate < 1) {
+                            year.year = (year.year - 1) / (-1);
+                            year.year = Math.ceil(year.year);
+                            year.regime = 'Years Ago';
+                        } else {
+                            year.year = Math.floor(year.year);
+                        }
+                    }
+                }
+            }
+            return year.year + ' ' + year.regime;
+        }
+        Dates.convertCoordinateToYearString = convertCoordinateToYearString;
         function convertYearToCoordinate(year, regime) {
             var coordinate = year;
             switch(regime.toLowerCase()) {
