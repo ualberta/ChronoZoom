@@ -36,6 +36,12 @@ module CZ {
                 var rh = vp.heightScreenToVirtual(vp.height) / el.height;
                 var URL = getURL();
 
+                if(ry < -1) {
+                    ry = -1;
+                } else if(ry > 1) {
+                    ry = 1;
+                }
+
                 nav += '@x=' + rx + "&y=" + ry + "&w=" + rw + "&h=" + rh;
 
                 if (typeof URL.hash.params != 'undefined') {
@@ -139,8 +145,13 @@ module CZ {
                     var start = parts[i].substring(0, 2);
                     if (start == "x=")
                         x = parseFloat(parts[i].substring(2));
-                    else if (start == "y=")
+                    else if (start == "y=") {
                         y = parseFloat(parts[i].substring(2));
+                        if(y < -1)
+                            y = -1;
+                        if (y > 1)
+                            y = 1;
+                    }       
                     else if (start == "w=")
                         w = parseFloat(parts[i].substring(2));
                     else if (start == "h=")
@@ -224,7 +235,7 @@ module CZ {
             var loc = document.location.toString().split("#");
             var path = loc[0];
             var hash = loc[1];
-            var expr = new RegExp("^(https|http):\/\/([a-z_0-9\-.]{4,})(?:\:([0-9]{1,5}))?(?:\/*)([a-z\-_0-9\/.%]*)[?]?([a-z\-_0-9=&]*)$", "i");
+            var expr = new RegExp("^(https|http):\/\/([a-z_0-9\-.]{4,})(?:\:([0-9]{1,5}))?(?:\/*)([a-z\-_0-9\/.%~]*)[?]?([a-z\-_0-9=&]*)$", "i");
             var result = path.match(expr);
             if (result != null) {
                 url = {
@@ -259,7 +270,7 @@ module CZ {
                     }
                 }
             } else {
-                window.location.href = "fallback.html";
+                // window.location.href = "fallback.html";
             }
 
             url.hash = {
@@ -299,7 +310,7 @@ module CZ {
                 reload = true;
             }
             if (url == null)
-                window.location.href = "fallback.html";
+                //window.location.href = "fallback.html";
 
             var path = url.protocol + "://" + url.host
                 + ((url.port != "") ? (":" + url.port) : ("")) + "/"

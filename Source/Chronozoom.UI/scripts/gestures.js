@@ -44,6 +44,7 @@ var CZ;
                 event.delta = intDelta;
                 event.origin = CZ.Common.getXBrowserMouseOrigin(vc, objEvent);
                 vc.trigger(event);
+                objEvent.preventDefault();
             });
             var mouseWheel = vc.toObservable("xbrowserwheel");
             var mouseWheels = mouseWheel.Zip(mouseWheel, function (arg) {

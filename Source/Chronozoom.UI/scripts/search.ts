@@ -90,10 +90,24 @@ module CZ {
         }
 
         export function goToSearchResult(resultId, elementType?) {
+            
+            var element = findVCElement(CZ.Common.vc.virtualCanvas("getLayerContent"), resultId, elementType);
+            //console.log(element);
+            var navStringElement = CZ.UrlNav.vcelementToNavString(element);
+            //console.log(navStringElement);
+
+            var visible = CZ.UrlNav.navStringToVisible(navStringElement, CZ.Common.vc);
+            //console.log(visible);
+            CZ.Common.controller.moveToVisible(visible)
+        }
+
+        export function goToEvent(resultId, elementType?) {
             var element = findVCElement(CZ.Common.vc.virtualCanvas("getLayerContent"), resultId, elementType);
             var navStringElement = CZ.UrlNav.vcelementToNavString(element);
 
             var visible = CZ.UrlNav.navStringToVisible(navStringElement, CZ.Common.vc);
+            if(visible)
+                visible.scale /= 80;
             CZ.Common.controller.moveToVisible(visible)
         }
 

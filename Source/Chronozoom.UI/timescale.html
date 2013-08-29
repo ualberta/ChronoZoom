@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" id="constants"></script>
+    <script type="text/javascript">
+        (function () {
+            var lastHashData = null;
+            window.onhashchange = function () {
+                var hashData = window.location.hash.split("@")[0];
+                if (hashData !== lastHashData) {
+                    lastHashData = hashData;
+                }
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Fdino-cz.css" />
+    <link href='https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts.css' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+    <script type="text/javascript" src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fscripts%2Fplugins.js"></script>
+    <script type="text/javascript" src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fscripts%2Fcz.min.js"></script>
+
+    <script type="text/javascript">
+        function AddScript(path) {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = path;
+            document.getElementsByTagName("head")[0].appendChild(script);
+        }
+
+        if (Modernizr.canvas) {
+
+        }
+        else {
+           window.location = "./fallback.html"
+        }
+    </script>
+
+    <title>Dino 101 - Geological Timescale Viewer</title>
+</head>
+<body>
+    <div id="content">
+        
+
+        <div id="vc-container" >
+            <div id="vc">
+                <div id="layerTimelines" onselectstart="return false;">
+                </div>
+                <!--for popup's-->
+                <p class="bubbleInfo" style="display: inline-block; z-index: 3000;" id="defaultBox">
+                    <span></span>
+                </p>
+                <!--//////////-->
+                <div id="layerInfodots" onselectstart="return false;">
+                </div>
+                <div id="iframe_layer" onselectstart="return false;">
+                </div>
+            </div>
+        </div>
+
+        <section id="info-box" class="info-box-hidden">
+          <header id="info-header">
+            <h1 id="info-heading"></h1>
+            <h2 id="info-date"></h2>
+          </header>
+          <div id="info-content">
+            <div id="event-content"></div>
+          </div>
+          <div id="info-image-source"></div>
+          <ul id="event-controls">
+            <li id="event-previous">
+              <a id="event-previous-link" href="#"><span class="event-icon event-previous-icon"></span>Previous</a>
+            </li>
+            <li id="event-timeline">
+              <a id="event-timeline-link" href="#"><span class="event-icon event-tl-icon"></span><span id="event-timeline-label">Parent Timeline</span></a>
+            </li>
+            <li id="event-next">
+              <a id="event-next-link" href="#">Next<span class="event-icon event-next-icon"></span></a>
+            </li>
+          </ul>
+        </section>
+
+    </div>
+        <div id="axis">
+        </div>
+    <div id="footer">
+        <div id="bottom-bar">
+        <div class="breadcrumbs-nav fleft">
+            <div id="breadcrumbs-nav-left">&#171;</div>
+        </div>
+        <div class="breadcrumbs-container fleft">
+            <table id="breadcrumbs-table">
+                <tr></tr>
+            </table>
+        </div>
+        <div class="breadcrumbs-nav fleft">
+            <div id="breadcrumbs-nav-right" class="">&#187;</div>
+        </div>
+        
+        <ul id="controls">             
+           <li class="control"><a id="timeline-btn" class="control-btn" href="#">Timelines</a></li>
+        </ul>
+
+        <div class="clearer"></div>
+      </div>
+      <nav id="navigation" class="hidden">
+        <ul>
+            <li class="root1"><a class="time-link" data-tid="00000000-0000-0000-0000-000000000000" href="#">History of Earth</a></li>
+          <li class="root1"><a class="time-link" data-tid="c3f0ba48-f852-4683-9254-134017521ea" href="#">Hadean Eon</a></li>
+          <li class="root2"><a class="time-link" data-tid="c3f0ba48-ed86-4683-9254-134017521ea" href="#">Archean Eon</a></li>
+          <li class="root3"><a class="time-link" data-tid="c3f0ba48-ed86-4683-8667-134017521ea" href="#">Proterozoic Eon</a></li>
+          <li class="root4"><a class="time-link" data-tid="096717fd-64db-4416-92a7-6d35c83777d5" href="#/t096717fd-64db-4416-92a7-6d35c83777d5">Phanerozoic Eon</a>
+            <ul>
+              <li><a class="time-link" data-tid="1f793bf4-ed86-4683-8667-13f4190321ea" href="#">Paleozoic Era</a>
+                <ul>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000001" href="#">Cambrian</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000002" href="#">Ordovician</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000003" href="#">Silurian</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000004" href="#">Devonian</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000005" href="#">Carboniferous</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000006" href="#">Permian</a></li>
+                </ul>
+              </li>
+              <li><a class="time-link" data-tid="4a4897e0-ce40-4fe2-be92-5e1000466f91" href="#">Mesozoic Era</a>
+                <ul>
+                  <li><a class="time-link" data-tid="5f793bf4-ec86-4683-8667-10f4190321ea" href="#">Triassic</a></li>
+                  <li><a class="time-link" data-tid="e66246f6-647f-46ef-ac29-ab58b93b87ab" href="#">Jurassic</a></li>
+                  <li><a class="time-link" data-tid="31fc1030-5e28-4bb6-b8cb-ad0c81f444fa" href="#">Cretaceous</a></li>
+                </ul>
+              </li>
+              <li><a class="time-link" data-tid="1f793bf4-ed86-4683-8667-13f017521ea" href="#">Cenozoic Era</a>
+                <ul>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000010" href="#">Paleogene</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000011" href="#">Neogene</a></li>
+                  <li><a class="time-link" data-tid="00000000-0000-0000-0000-000000000012" href="#">Quarternary</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div id="introBox" class="intro-box">
+      <div class="intro-box-content">
+        <h1>Geological Timescale</h1>
+        <div class="intro-instructions">
+          <div class="intro-images">
+            <img src="/Images/instructions/1.jpg" alt="Navigate timelines" />
+            <img src="/Images/instructions/2.jpg" alt="Navigate Events" />
+          </div>
+          <p>Navigate through this interactive timescale to find and learn about important events in the history of Earth.</p>
+        </div>
+          <ul class="intro-controls">
+            <li>
+              <a id="start-button" href="#"><span id="event-timeline-label">Get Started</span></a>
+            </li>
+          </ul>
+      </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+          // sliding timeline navigation
+          $('#navigation').slider();
+          
+          // hide timeline navigation if clicked outside
+          $('html').bind('click',function(event) {
+            $('#navigation').addClass('hidden');
+            $('#timeline-btn').removeClass('active');
+          });
+          
+          // timeline navigation toggle
+          $('#timeline-btn').click(function(event) {
+            $('#navigation').toggleClass('hidden');
+            $(this).toggleClass('active');
+            event.stopPropagation();
+          });
+
+          $('#navigation').find('a.time-link').click(function(e) {
+            CZ.Search.goToSearchResult('t'+$(this).data('tid'));
+            CZ.Viewport.lockEvents = true;
+          });
+
+          // get started
+          $('#start-button').click(function(e) {
+            $('#introBox').remove();
+            CZ.Search.goToSearchResult('t00000000-0000-0000-0000-000000000000');
+            e.stopPropagation();
+
+          });
+
+          // info box back to timeline link
+          $('#event-timeline-link').click(function(e) {
+            CZ.Search.goToSearchResult($(this).data('timelineId'));
+            CZ.Viewport.lockEvents = true;
+            e.stopPropagation();
+          });
+
+          // info box event controls
+          $('#event-controls').find('a').click(function(e) {
+            CZ.Search.goToEvent($(this).data('eventId'));
+            e.stopPropagation();
+          });
+
+          // instructions
+          $(function(){
+            $('.intro-images img:gt(0)').hide();
+            setInterval(function(){
+                $('.intro-images :first-child').fadeOut()
+                .next('img').fadeIn()
+                .end().appendTo('.intro-images');
+              }, 3000);
+          });
+
+          // info box scrolling fix
+          var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+          if(iOS) {
+            $('body').on('touchstart','#info-content',function(e) {
+              if (e.currentTarget.scrollTop === 0) {
+                e.currentTarget.scrollTop = 1;
+              } else if (e.currentTarget.scrollHeight === e.currentTarget.scrollTop + e.currentTarget.offsetHeight) {
+                e.currentTarget.scrollTop -= 1;
+              }
+            });
+            //prevents preventDefault from being called on document if it sees a scrollable div
+            $('body').on('touchmove','#info-content',function(e) {
+              e.stopPropagation();
+            });
+          }
+        });
+    </script>
+</body>
+</html>

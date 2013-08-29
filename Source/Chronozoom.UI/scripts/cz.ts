@@ -86,12 +86,12 @@ module CZ {
             var canvasIsEmpty;
 
             CZ.Common.initialize();
-
+            /*
             CZ.Service.getServiceInformation().then(
                 function (response) {
                     CZ.Settings.contentItemThumbnailBaseUri = response.thumbnailsPath;
                 });
-
+            */
             var url = CZ.UrlNav.getURL();
             var rootCollection = url.superCollectionName === undefined;
             CZ.Service.superCollectionName = url.superCollectionName;
@@ -163,9 +163,6 @@ module CZ {
                 var body = document.getElementsByTagName('body')[0];
                 (<any>body).style.overflow = "hidden";
             }
-
-            // init seadragon. set path to image resources for nav buttons 
-            Seadragon.Config.imagePath = CZ.Settings.seadragonImagePath;
 
             CZ.Common.maxPermitedVerticalRange = { top: 0, bottom: 10000000 }; //temporary value until there is no data
 
@@ -249,11 +246,15 @@ module CZ {
 
             // Axis: enable showing thresholds
             CZ.Common.controller.onAnimationComplete.push(function () {
+                CZ.Viewport.lockEvents = false;
                 //CZ.Common.ax.axis("enableThresholds", true);
                 //if (window.console && console.log("thresholds enabled"));
+
             });
             //Axis: disable showing thresholds
             CZ.Common.controller.onAnimationStarted.push(function () {
+                //console.log('locking');
+                
                 //CZ.Common.ax.axis("enableThresholds", true);
                 //if (window.console && console.log("thresholds disabled"));
             });

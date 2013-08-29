@@ -1,16 +1,9 @@
 /** 
-slider
----------------------------------------------------------------------
-Author: 		Lane Olson
-Sources: 		jQuery Plugin Patterns:
-					http://coding.smashingmagazine.com/2011/10/11/essential-jquery-plugin-patterns/
-Download:     https://github.com/Lane/Slider/
-Version:		  1.0
-Description:	Displays nested lists of links as a sliding menu
----------------------------------------------------------------------
+ * Sliding Navigation Plugin
+ * Author: 		Lane Olson
+ * Download:     https://github.com/Lane/Slider/
+ * Description:	Displays nested lists of links as a sliding menu
 **/
-
-
 ;(function ($) {
 
     // initialize namespace if it doesn't exist
@@ -70,7 +63,7 @@ Description:	Displays nested lists of links as a sliding menu
                     nextUl = $("ul:first", divContainer);
                 }
                 
-                nextUl.prepend('<li class="'+base.options.classPrefix+'prev"><a class="'+base.options.classPrefix+'back'+'" href="#">'+base.options.backWording+' '+item.html()+'</a></li>');
+                nextUl.prepend('<li class="'+base.options.classPrefix+'prev"><a class="'+base.options.classPrefix+'back'+'" href="#">Back <strong>&#x25C0;</strong></a></li>');
                 $('a.'+base.options.classPrefix+'back'+' strong', nextUl).html(base.options.prevArrow);
 
                 if(!transitionsSupported)

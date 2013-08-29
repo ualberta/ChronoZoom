@@ -1,11 +1,10 @@
 @font-face {
     font-family: 'OSPDIN';
-    src: url('fonts/OSP-DIN-webfont.eot');
-    src: url('fonts/OSP-DIN-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/OSP-DIN-webfont.woff') format('woff'),
-         url('fonts/OSP-DIN-webfont.ttf') format('truetype'),
-         url('fonts/OSP-DIN-webfont.svg#OSPDIN') format('svg');
+    src: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts%2FOSP-DIN-webfont.eot');
+    src: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts%2FOSP-DIN-webfont.eot?#iefix') format('embedded-opentype'),
+         url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts%2FOSP-DIN-webfont.woff') format('woff'),
+         url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts%2FOSP-DIN-webfont.ttf') format('truetype'),
+         url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts%2FOSP-DIN-webfont.svg#OSPDIN') format('svg');
     font-weight: normal;
     font-style: normal;
-
 }

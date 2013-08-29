@@ -365,7 +365,7 @@ var CZ;
                 guid: timeline.id,
                 timeStart: timeline.left,
                 timeEnd: timeline.right,
-                top: timeline.y,
+                top: -timeline.height / 2,
                 height: timeline.height,
                 header: timeline.title,
                 fillStyle: "rgba(0,0,0,0.25)",
@@ -376,6 +376,10 @@ var CZ;
                 opacity: 0,
                 depth: timeline.depth
             });
+            var timelineDepth = 0;
+            if(typeof timeline !== 'undefined') {
+                timelineDepth = timeline.depth;
+            }
             if(timeline.exhibits instanceof Array) {
                 timeline.exhibits.forEach(function (childInfodot) {
                     var contentItems = [];
@@ -385,12 +389,14 @@ var CZ;
                             contentItems[i].guid = contentItems[i].id;
                         }
                     }
-                    var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id, (childInfodot.left + childInfodot.right) / 2, childInfodot.y, 0.8 * childInfodot.size / 2, contentItems, {
+                    childInfodot.size = CZ.Settings.fixedEventSizeMap[timelineDepth];
+                    var infodot1 = CZ.VCContent.addEvent(t1, "layerInfodots", 'e' + childInfodot.id, childInfodot.time - childInfodot.size / 2, -childInfodot.size / 2, childInfodot.size, contentItems, {
                         isBuffered: false,
                         guid: childInfodot.id,
                         title: childInfodot.title,
                         date: childInfodot.time,
-                        opacity: 1
+                        opacity: 1,
+                        depth: timelineDepth
                     });
                 });
             }
@@ -481,7 +487,6 @@ var CZ;
             }
         }
         function convertRelativeToAbsoluteCoords(el, delta) {
-            console.log(el);
             if(!delta) {
                 return;
             }

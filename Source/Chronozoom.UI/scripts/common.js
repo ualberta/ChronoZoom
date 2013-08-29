@@ -160,7 +160,7 @@ var CZ;
             }
         }
         function loadData() {
-            var url = 'Dumps/dino.json';
+            var url = CZ.Settings.baseDataPath + 'geo-timescale.json';
             return $.ajax({
                 cache: false,
                 type: "GET",
@@ -306,10 +306,11 @@ var CZ;
         }
         Common.getCookie = getCookie;
         function viewportToViewBox(vp) {
+            var centerY = vp.heightScreenToVirtual(vp.eventOffset) / 2;
             var w = vp.widthScreenToVirtual(vp.width);
             var h = vp.heightScreenToVirtual(vp.height);
             var x = vp.visible.centerX - w / 2;
-            var y = vp.visible.centerY - h / 2;
+            var y = centerY - h / 2;
             return {
                 left: x,
                 right: x + w,
@@ -318,7 +319,7 @@ var CZ;
                 width: w,
                 height: h,
                 centerX: vp.visible.centerX,
-                centerY: vp.visible.centerY,
+                centerY: centerY,
                 scale: vp.visible.scale
             };
         }

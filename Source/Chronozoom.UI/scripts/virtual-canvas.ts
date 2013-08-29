@@ -52,6 +52,8 @@ module CZ {
                     self.breadCrumbs = [];
                     self.recentBreadCrumb = { vcElement: { title: "initObject" } };
 
+                    self.currentlyViewedEvent = undefined;
+
                     self.cursorPosition = 0.0;
 
                     var layerDivs = self.element.children("div");
@@ -113,6 +115,9 @@ module CZ {
 
                     //IE solution
                     $('#iframe_layer').css("display", "block").css("z-index", "99999");
+
+                    $('#navigation, #ev-navigation').addClass('hidden');
+                    $('#timeline-btn, #events-btn').removeClass('active');
                 },
 
                 /* Handles mouse up event within the widget
@@ -284,7 +289,16 @@ module CZ {
 
                     // the function handle mouse move event
                     var _mouseMoveNode = function (contentItem/*an element to handle mouse move*/, forceOutside/*if true, we know that pv is outside of the contentItem*/, pv/*clicked point in virtual coordinates*/) {
-                        if (forceOutside) { // we know that pv is outside of the contentItem
+                        // LANE: Added a fix to keep child items hovered when the mouse leaves the parent
+                        var childInside = false;
+                        for(var i = 0; i < contentItem.children.length; i++)
+                        {
+                            if(contentItem.children[i].isInside(pv)) {
+                                childInside = true;
+                                //contentItem.children[i].isMouseIn = true;
+                            }
+                        }
+                        if (forceOutside && !childInside) { // we know that pv is outside of the contentItem
                             // and if previously mouse was inside content item, we should handle mouse leave:
                             if (contentItem.reactsOnMouse && contentItem.isMouseIn && contentItem.onmouseleave) {
                                 contentItem.onmouseleave(pv, e);
@@ -293,6 +307,10 @@ module CZ {
                         }
                         else { // we should chech whether mouse is inside or outside of the contentItem
                             var inside = contentItem.isInside(pv);
+                            // LANE: if we're in a child element, we're inside the parent
+                            if(!inside)
+                                inside = childInside;
+
                             forceOutside = !inside; // for further handle of event in children of this content item
                             // We should invoke mousemove, mouseenter, mouseleave handlers
                             if (contentItem.reactsOnMouse) {
@@ -319,7 +337,8 @@ module CZ {
                         // Every child handles the event
                         for (var i = 0; i < contentItem.children.length; i++) {
                             var child = contentItem.children[i];
-                            if (!forceOutside || child.isMouseIn) // if mouse is outside of this element (hence of its children), at most we just should                                                           
+                            //if (!forceOutside || child.isMouseIn) // if mouse is outside of this element (hence of its children), at most we just should                                                           
+                            if (!forceOutside || child.isMouseIn)
                                 _mouseMoveNode(child, forceOutside, pv); // call mouseleave or do nothing within that branch of the tree.
                         }
                     };
@@ -440,8 +459,15 @@ module CZ {
                     //console.log("newvs",newVisible);
                     // rendering canvas (we should update the image because of new visible region)
                     var viewbox_v = this._visibleToViewBox(newVisible); // visible region in appropriate format
-                    //console.log(viewbox_v);
+                    //console.log(newVisible);
                     var viewport = this.getViewport();
+
+                    var bgPos = Math.abs((-CZ.Settings.maxPermitedTimeRange.left+newVisible.centerX)/(-CZ.Settings.maxPermitedTimeRange.left)*100);
+                    var bgScale = (1-newVisible.scale/4000000)*40+110;
+
+                    this.element.css('background-position', bgPos+'% 0%');
+                    this.element.css('background-size', bgScale+'%');
+
                     this._renderCanvas(this._layersContent, viewbox_v, viewport);
                 },
 

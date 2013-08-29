@@ -80,8 +80,32 @@ module CZ {
             function PanViewport(viewport, panGesture) {
                 var virtualOffset = viewport.vectorScreenToVirtual(panGesture.xOffset, panGesture.yOffset);
                 var oldVisible = viewport.visible;
-                viewport.visible.centerX = oldVisible.centerX - virtualOffset.x;
-                viewport.visible.centerY = oldVisible.centerY - virtualOffset.y;
+                var virtualTimespan = (viewport.width*viewport.visible.scale)/2;
+
+                var newCenter = (viewport.visible.centerX - virtualOffset.x)
+                var left = newCenter - virtualTimespan;
+                var right = newCenter + virtualTimespan;
+                var minYear = -4609999999;
+                var maxYear = 9999999;
+                if(right > maxYear && left < minYear)
+                    newCenter = (minYear-maxYear)/2;
+                else if(right > maxYear)
+                    newCenter = maxYear-virtualTimespan;
+                else if(left < minYear)
+                    newCenter = minYear+virtualTimespan;
+
+                viewport.visible.centerX = newCenter;
+
+
+
+                if(CZ.Viewport.allowVerticalPan) // find a way to enable/disable vertical panning
+                    viewport.visible.centerY = oldVisible.centerY - virtualOffset.y;
+                else
+                    viewport.visible.centerY = viewport.heightScreenToVirtual(viewport.eventOffset)/1.25;
+                    //viewport.visible.centerY = 0;
+                    //viewport.visible.centerY = viewport.pointScreenToVirtual(viewport.width,(viewport.height-CZ.Settings.fixedTimelineAreaHeight)/2).y;
+
+                //console.log(viewport.visible.centerY);
             }
 
             /*Transforms the viewport correcting its visible according to zoom gesture passed
@@ -92,11 +116,21 @@ module CZ {
             function ZoomViewport(viewport, zoomGesture) {
                 var oldVisible = viewport.visible;
                 var x = zoomGesture.xOrigin + (viewport.width / 2.0 - zoomGesture.xOrigin) * zoomGesture.scaleFactor;
-                var y = (viewport.height / 2.0);
+                var y = zoomGesture.yOrigin + (viewport.height / 2.0 - zoomGesture.yOrigin) * zoomGesture.scaleFactor
                 var newCenter = viewport.pointScreenToVirtual(x, y);
-                viewport.visible.centerX = newCenter.x;
-                viewport.visible.centerY = newCenter.y;
-                viewport.visible.scale = oldVisible.scale * zoomGesture.scaleFactor;
+                
+                var virtualTimespan = (viewport.width*viewport.visible.scale);
+                if(virtualTimespan < 4700000000 || zoomGesture.scaleFactor < 1) {
+                    viewport.visible.centerX = newCenter.x;
+                    //viewport.visible.centerY = 0;
+                    viewport.visible.scale = oldVisible.scale * zoomGesture.scaleFactor;
+
+                    if(CZ.Viewport.allowVerticalPan) // find a way to enable/disable vertical panning
+                        viewport.visible.centerY = newCenter.y;
+                    else
+                        viewport.visible.centerY = viewport.heightScreenToVirtual(viewport.eventOffset)/1.25;
+                }
+                   
             }
 
             /*calculates a viewport that will be actual at the end of the gesture handling animation
@@ -348,7 +382,7 @@ module CZ {
 
                     if (gesture.Type == "Pan" || gesture.Type == "Zoom") {
                         var newlyEstimatedViewport = calculateTargetViewport(latestViewport, gesture, self.estimatedViewport);
-
+                        //console.log([latestViewport, gesture, self.estimatedViewport]);
                         var vbox = CZ.Common.viewportToViewBox(newlyEstimatedViewport);
                         var wnd = new CZ.VCContent.CanvasRectangle(null, null, null, vbox.left, vbox.top, vbox.width, vbox.height, null);
 
@@ -472,8 +506,11 @@ module CZ {
             //param visible (Visible2D) a visible region to zoom into
             //param noAnimation (bool) - method performs instant transition without any animation if true
             this.moveToVisible = function (visible, noAnimation) {
+                if(visible == null)
+                    return;
                 var currentViewport = getViewport();
                 var targetViewport = new CZ.Viewport.Viewport2d(currentViewport.aspectRatio, currentViewport.width, currentViewport.height, visible);
+                
                 var vbox = CZ.Common.viewportToViewBox(targetViewport);
                 var wnd = new CZ.VCContent.CanvasRectangle(null, null, null, vbox.left, vbox.top, vbox.width, vbox.height, null);
 
@@ -497,7 +534,10 @@ module CZ {
 
                 self.updateRecentViewport();
                 var vp = self.recentViewport;
+                // LANE: Keep events in the event region
+                visible.centerY = targetViewport.heightScreenToVirtual(targetViewport.eventOffset)/1.5;
                 this.estimatedViewport = undefined;
+                //console.log([vp.visible, visible]);
                 this.activeAnimation = new CZ.ViewportAnimation.EllipticalZoom(vp.visible, visible);
 
                 //storing size to handle window resize

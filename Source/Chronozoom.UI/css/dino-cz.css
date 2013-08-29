@@ -152,15 +152,14 @@ a:visited {
   overflow: hidden;
   width: 100%;
   height: 100%;
-	background-image: url('/images/pt-bg.jpg');
+	background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fpt-bg.jpg');
   background-position: 50% 50%;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+  -webkit-background-size: 125%;
+  -moz-background-size: 125%;
+  -o-background-size: 125%;
+  background-size: 125%;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  transition: background-position 0.2s ease-in-out;
 }
 .virtualCanvas {
   position: relative;
@@ -203,18 +202,23 @@ Infobox
 *****/
 
 #info-box {
-  background:rgba(255, 255, 255, 0.95);
+  background-color:#fff;
+  background-color:rgba(255, 255, 255, 0.95);
+  background-image:none;
   position:fixed;
   left:1em;
   top:1em;
-  bottom:6.2em;
   width:20em;
   color:#000;
-  z-index:9999;
+  z-index:9998;
   box-shadow: 2px 4px 20px;
+  -webkit-box-shadow: 2px 4px 20px;
+  -moz-box-shadow: 2px 4px 20px;
   line-height:1.5em;
   padding:1.65em 2em;
   transition: all 0.15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
+  -moz-transition: all 0.15s ease-in-out;
 }
 
 #info-box.info-box-hidden {
@@ -223,31 +227,54 @@ Infobox
 }
 
 header {
-  font-family: "Open Sans Condensed", sans-serif;
+  font-family: "OSPDIN", sans-serif;
+  font-weight:300;
 }
 
 #info-box header h1 {
   margin:0;
   font-size:1.8em;
   line-height:1em;
+  font-weight:300;
 }
 
 #info-box header h2 {
   margin: 0.2em 0em 0em;
-  color: rgba(37, 39, 39, 0.45);
+  color: rgba(37, 39, 39, 0.55);
   text-transform: uppercase;
-  font-size: 1.2em;
+  font-size: 1.3em;
+  font-weight:300;
+}
+
+#info-content .media-source {
+  font-size: 12px;
+  width: 295px;
+  padding: 0px 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color:#999;
+  font-weight:bold;
+}
+
+.media-source a {
+  font-weight:normal;
+  color:#999;
+  text-decoration: underline;
 }
 
 #info-content {
   position: absolute;
     top: 5.5em;
-    bottom: 0em;
-    overflow: auto;
+    overflow: scroll;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling: touch;
     left: 0em;
     width: 24em;
     border-top: 1px solid #ccc;
     margin-top:1em;
+    z-index:9999;
 }
 
 #info-content p {
@@ -255,6 +282,126 @@ header {
   font-size:1em;
 }
 
+#event-controls, .intro-controls {
+  margin:0;
+  padding:0;
+  list-style:none;
+  position: absolute;
+  bottom: 0px;
+  left: 3px;
+  right: 0px;
+  height: 44px;
+}
+
+#event-controls li,
+.intro-controls li {
+  display:block;
+  margin-left:-3px;
+}
+
+#event-controls li a,
+.intro-controls li a {
+  display: block;
+  background: #DDD;
+  color: #666;
+  height: 20px;
+  text-decoration: none;
+  font-family: 'OSPDIN', sans-serif;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px 0px 11px;
+  border-top: 3px solid;
+  border-color: #CCC;
+}
+
+#event-controls li a:hover,
+.intro-controls li a:hover {
+  border-color:#3394a4;
+  background-color:#eee;
+}
+
+#event-controls li a span.event-icon {
+  color:#999;
+  display:inline-block;
+  width:16px;
+  height:16px;
+  background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fevent-controls.png');
+  background-repeat: no-repeat;
+  position:relative;
+  top:2px;
+}
+
+#event-previous, #event-next {
+  width:101px;
+  position:absolute;
+  top:0;
+}
+
+#event-previous {
+  left:0;
+}
+
+#event-next {
+  right:0;
+}
+
+#event-controls #event-next-link {
+  padding-left:10px;
+}
+
+#event-controls #event-next-link {
+  padding-right:4px;
+}
+
+#event-controls li a.no-event {
+  cursor:default;
+  color:#ccc;
+  border-color: #ddd;
+  text-shadow: 1px 1px 0px #fff;
+}  
+
+#event-controls li a.no-event span.event-previous-icon,
+#event-controls li a.no-event span.event-next-icon {
+  display:none;
+}  
+
+#event-controls li a.no-event:hover {
+  cursor:default;
+  color:#ccc;
+  border-color: #ddd;
+  background-color:#ddd;
+  text-shadow: 1px 1px 0px #fff;
+}  
+
+#event-controls li#event-timeline {
+  display:block;
+  margin-left:99px;
+  margin-right:102px;
+}
+
+#event-controls li a span.event-previous-icon {
+  background-position: top left;
+  display:inline-block;
+  margin-right:10px;
+}
+
+#event-controls li a span.event-tl-icon {
+  background-position: center center;
+  display:inline-block;
+  margin-right:10px;
+}
+
+#event-controls li a span.event-next-icon {
+  background-position: top right;
+  display:inline-block;
+  margin-left:10px;
+}
+
+#info-box.loading {
+  background-image: url(https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fspinner.gif);
+  background-repeat: no-repeat;
+  background-position: 21em 2em;
+}
 /***********************************************************
 
                         Bibliography
@@ -612,7 +759,7 @@ header {
   opacity: 0.9;
 }
 #defaultBox {
-  background-image: url('../images/defaultGradientBox.jpg');
+  background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2FdefaultGradientBox.jpg');
 }
 .bubbleInfo span {
   color: #fff;
@@ -879,8 +1026,8 @@ img.fallbackBackground {
   height:4.0em;
   left:0px;
   right:0px;
-  font-family: "Open Sans Condensed", sans-serif;
-  font-weight: 700;
+  font-family: "OSPDIN", sans-serif;
+  font-weight: normal;
   z-index: 50;
 }
 
@@ -918,7 +1065,8 @@ img.fallbackBackground {
   text-decoration:none;
   white-space: nowrap;
   color:#fff;
-  padding:1.25em 2em;
+  font-size:1.2em;
+  padding:1.1em 2em;
   -webkit-transition: all 0.1s ease-in-out;
   -moz-transition: all 0.1s ease-in-out;
   -ms-transition: all 0.1s ease-in-out;
@@ -1002,12 +1150,13 @@ nav ul li a {
   text-decoration:none;
   white-space: nowrap;
   border-left:.5em solid;
+  font-size:1.2em;
 }
 
 nav ul li a strong {
   float:right;
   font-size:.6em;
-  margin-top:.65em
+  margin-top:.25em
 }
 
 nav ul li a.slider-back {
@@ -1032,11 +1181,11 @@ nav ul li ul.slider-current { left:100% }
 nav ul li ul.slider-left { left:0 }
 nav ul li ul.slider-right { left:200% }
 
-nav ul li.about a { border-left-color:rgba(0,226,255,.85) }
-nav ul li.products a { border-left-color:rgba(0,226,255,.65) }
-nav ul li.blog a { border-left-color:rgba(0,226,255,.45) }
-nav ul li.resources a { border-left-color:rgba(0,226,255,.3) }
-nav ul li.contact a { border-left-color:rgba(0,226,255,.125) }
+nav ul li.root1 a { border-left-color:rgba(0,226,255,.85) }
+nav ul li.root2 a { border-left-color:rgba(0,226,255,.65) }
+nav ul li.root3 a { border-left-color:rgba(0,226,255,.45) }
+nav ul li.root4 a { border-left-color:rgba(0,226,255,.3) }
+nav ul li.root5 a { border-left-color:rgba(0,226,255,.125) }
 
 nav ul li a:hover {
   background:rgba(0,0,0,.35);
@@ -1060,9 +1209,9 @@ nav ul li a:hover {
 }
 
 @keyframes glowBtn {
-	0% { background-color:red }
-	50% { background-color:green }
-	100% { background-color:red }
+  0% { border-top:6px solid rgba(0,232,255,0.35); }
+  50% { border-top:6px solid rgba(255,205,0,1); }
+  100% { border-top:6px solid rgba(0,232,255,0.35); }
 }
 .footer-link {
   margin-right: 20px;
@@ -1075,6 +1224,82 @@ nav ul li a:hover {
 .footer-link:hover {
   cursor: pointer;
 }
+
+.intro-box {
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  bottom:0;
+  right:0;
+  width:100%;
+  z-index:9998;
+  background-color:rgba(0,0,0,0.65);
+}
+
+.intro-box-content {
+  background:rgba(255, 255, 255, 0.95);
+  position:absolute;
+  left:1em;
+  top:1em;
+  width:20em;
+  color:#000;
+  z-index:9998;
+  height:25.5em;
+  box-shadow: 2px 4px 20px;
+  -webkit-box-shadow: 2px 4px 20px;
+  -moz-box-shadow: 2px 4px 20px;
+  line-height:1.5em;
+  padding:1.65em 2em;
+  transition: all 0.15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
+  -moz-transition: all 0.15s ease-in-out;
+}
+
+.intro-box-content h1 {
+  font-family:'OSPDIN';
+  margin:0;
+  font-size:1.8em;
+  line-height:1em;
+  font-weight:300;
+}
+
+.intro-instructions {
+    position: absolute;
+    top: 3.5em;
+    overflow: auto;
+    left: 0em;
+    right:0em;
+    padding: 0 2em;
+    border-top: 1px solid #ccc;
+    margin-top:1em;
+    z-index:9999;
+}
+.intro-images {
+  height:205px;
+}
+
+.intro-images img {
+  position:absolute;
+  left:0em; top: 0;
+  right:0em;
+  
+}
+
+.intro-controls {
+  height:75px;
+}
+
+#start-button {
+  font-size:1.5em;
+  height:auto;
+  padding:1em 0;
+}
+
+
+
+
+
 /***********************************************************
 
                         Breadcrumbs
@@ -1144,7 +1369,7 @@ nav ul li a:hover {
   position: relative;
   display: inline-block;
   height: 25px;
-  font-size: 1em;
+  font-size: 1.2em;
   line-height: 25px;
   cursor: pointer;
   color: lightgrey;

@@ -71,9 +71,6 @@ var CZ;
             $('.bubbleInfo').hide();
             var canvasIsEmpty;
             CZ.Common.initialize();
-            CZ.Service.getServiceInformation().then(function (response) {
-                CZ.Settings.contentItemThumbnailBaseUri = response.thumbnailsPath;
-            });
             var url = CZ.UrlNav.getURL();
             var rootCollection = url.superCollectionName === undefined;
             CZ.Service.superCollectionName = url.superCollectionName;
@@ -129,7 +126,6 @@ var CZ;
                 var body = document.getElementsByTagName('body')[0];
                 (body).style.overflow = "hidden";
             }
-            Seadragon.Config.imagePath = CZ.Settings.seadragonImagePath;
             CZ.Common.maxPermitedVerticalRange = {
                 top: 0,
                 bottom: 10000000
@@ -196,6 +192,7 @@ var CZ;
                 }
             });
             CZ.Common.controller.onAnimationComplete.push(function () {
+                CZ.Viewport.lockEvents = false;
             });
             CZ.Common.controller.onAnimationStarted.push(function () {
             });

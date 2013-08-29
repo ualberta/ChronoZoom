@@ -1,0 +1,6 @@
+/* 
+ * Geological Timescale Viewer
+ * @author: Lane Olson <lolson@ualberta.ca>
+ * @overview: An educational tool for navigating through important events in time. Based off of the ChronoZoom Project <http://www.chronozoom.com/>
+ * @license: Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
+ */

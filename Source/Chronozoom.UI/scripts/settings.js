@@ -20,7 +20,7 @@ var CZ;
         Settings.timelineHeaderMargin = -1 / 10;
         Settings.timelineHeaderSize = 1 / 4;
         Settings.timelineTooltipMaxHeaderSize = 10;
-        Settings.timelineHeaderFontName = 'Open Sans Condensed';
+        Settings.timelineHeaderFontName = 'OSPDIN';
         Settings.timelineHeaderFontColor = 'rgb(232,232,232)';
         Settings.timelineHoveredHeaderFontColor = 'white';
         Settings.timelineStrokeStyle = 'rgb(232,232,232)';
@@ -32,16 +32,17 @@ var CZ;
         Settings.timelineHoveredBoxBorderColor = 'rgb(232,232,232)';
         Settings.timelineBreadCrumbBorderOffset = 50;
         Settings.timelineCenterOffsetAcceptableImplicity = 0.00001;
+        Settings.baseDataPath = 'http://d101.loc/Dumps/';
         Settings.timelineEndTicks = 8;
-        Settings.fixedTimelineHeight = 50;
-        Settings.fixedTimelineOffset = 10;
+        Settings.fixedTimelineHeight = 34;
+        Settings.fixedTimelineOffset = 20;
         Settings.fixedTimelineFontMap = [
             0, 
-            24, 
-            20, 
+            21, 
             18, 
             16, 
             14, 
+            12, 
             12, 
             12, 
             12
@@ -56,8 +57,23 @@ var CZ;
             30
         ];
         Settings.fixedTimelineHeadingThreshold = 100;
+        Settings.fixedTimelineAreaHeight = 250;
         Settings.timelineFixedHeadingWidth = 120;
         Settings.fixedTimelineTooltipThreshold = 30;
+        Settings.fixedTimelineEventWidth = 200;
+        Settings.eventImageBasePath = 'http://d101.loc/';
+        Settings.eventFullResFolder = 'Events/';
+        Settings.eventThumbnailFolder = 'Events/thumbs/';
+        Settings.fixedEventSizeMap = [
+            293700000, 
+            293700000, 
+            293700000, 
+            12500000, 
+            12500000, 
+            12500000
+        ];
+        Settings.fixedEventUnfocusedOpacity = 0.1;
+        Settings.fixedContentSizeMap = [];
         Settings.infodotShowContentZoomLevel = 11;
         Settings.infodotShowContentThumbZoomLevel = 2;
         Settings.infoDotHoveredBorderWidth = 0;
@@ -65,8 +81,8 @@ var CZ;
         Settings.infodotTitleWidth = 200 / 489;
         Settings.infodotTitleHeight = 60 / 489;
         Settings.infodotBibliographyHeight = 10 / 489;
-        Settings.infoDotBorderColor = 'rgba(0,0,0,0)';
-        Settings.infoDotHoveredBorderColor = 'rgba(0,0,0,0)';
+        Settings.infoDotBorderColor = '#ffffff';
+        Settings.infoDotHoveredBorderColor = '#ffdb05';
         Settings.infoDotFillColor = 'rgb(92,92,92)';
         Settings.infoDotTinyContentImageUri = '/images/tinyContent.png';
         Settings.infodotMaxContentItemsCount = 10;
@@ -76,6 +92,7 @@ var CZ;
         Settings.contentItemThumbnailMinLevel = 4;
         Settings.contentItemThumbnailMaxLevel = 7;
         Settings.contentItemThumbnailBaseUri = 'http://czbeta.blob.core.windows.net/images/';
+        Settings.contentItemImageBaseUri = 'http://www.ualberta.ca/~lolson/Images/';
         Settings.contentItemTopTitleHeight = 47 / 540;
         Settings.contentItemContentWidth = 680 / 520;
         Settings.contentItemVerticalMargin = 13 / 540;
@@ -191,6 +208,7 @@ var CZ;
         Settings.signinUrlMicrosoft = "";
         Settings.signinUrlGoogle = "";
         Settings.signinUrlYahoo = "";
+        Settings.fixedEventLine = 0;
     })(CZ.Settings || (CZ.Settings = {}));
     var Settings = CZ.Settings;
 
