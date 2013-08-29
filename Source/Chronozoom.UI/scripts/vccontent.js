@@ -972,19 +972,37 @@ var CZ;
                     return prevEvent;
                 }
             };
-            this.getClosestTimelineEvent = function (xCoordinate) {
+            this.getClosestTimelineEvent = function (visibleBox) {
                 var offset;
                 var closest;
+                var center = visibleBox.Left + (visibleBox.Right - visibleBox.Left) / 2;
                 for(var i = 0; i < this.children.length; i++) {
-                    if(this.children[i].type == 'infodot' && this.children[i].canvasContentItem.isActive) {
+                    if(this.children[i].type == 'infodot' && this.children[i].isVisible(visibleBox)) {
                         if(offset) {
-                            if(offset > Math.abs(xCoordinate - this.children[i].canvasContentItem.x)) {
+                            if(offset > Math.abs(center - this.children[i].canvasContentItem.x)) {
                                 closest = this.children[i];
-                                offset = Math.abs(xCoordinate - this.children[i].canvasContentItem.x);
+                                offset = Math.abs(center - this.children[i].canvasContentItem.x);
                             }
                         } else {
                             closest = this.children[i];
-                            offset = Math.abs(xCoordinate - this.children[i].canvasContentItem.x);
+                            offset = Math.abs(center - this.children[i].canvasContentItem.x);
+                        }
+                    }
+                    if(this.children[i].type == 'timeline') {
+                        var childTimeline = this.children[i];
+                        if(childTimeline.isVisible(visibleBox) && childTimeline.hasEvents()) {
+                            var closestEvent = childTimeline.getClosestTimelineEvent(visibleBox);
+                            if(closestEvent) {
+                                if(offset) {
+                                    if(offset > Math.abs(center - closestEvent.canvasContentItem.x)) {
+                                        closest = closestEvent;
+                                        offset = Math.abs(center - closestEvent.canvasContentItem.x);
+                                    }
+                                } else {
+                                    closest = closestEvent;
+                                    offset = Math.abs(center - closestEvent.canvasContentItem.x);
+                                }
+                            }
                         }
                     }
                 }
@@ -1007,6 +1025,7 @@ var CZ;
                 }
             };
             this.onmouseclick = function (e) {
+                CZ.Viewport.lockEvents = true;
                 if(this.vc.currentlyHoveredInfodot) {
                     return zoomToElementHandler(this.vc.currentlyHoveredInfodot.canvasContentItem, e, 0.35);
                 }
@@ -1125,8 +1144,8 @@ var CZ;
                         }
                     }
                 }
-                var isCenterInside = viewport2d.visible.centerX - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.x + this.width && viewport2d.visible.centerX + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.x && viewport2d.visible.centerY - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.y + this.height && viewport2d.visible.centerY + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.y;
-                var isVisibleInTheRectangle = ((p.x < CZ.Settings.timelineBreadCrumbBorderOffset && p2.x > viewport2d.width - CZ.Settings.timelineBreadCrumbBorderOffset) || (p.y < CZ.Settings.timelineBreadCrumbBorderOffset && p2.y > viewport2d.height - CZ.Settings.timelineBreadCrumbBorderOffset));
+                var isCenterInside = viewport2d.visible.centerX - CZ.Settings.timelineCenterOffsetAcceptableImplicity <= this.x + this.width && viewport2d.visible.centerX + CZ.Settings.timelineCenterOffsetAcceptableImplicity >= this.x;
+                var isVisibleInTheRectangle = (p.x < CZ.Settings.timelineBreadCrumbBorderOffset && p2.x > viewport2d.width - CZ.Settings.timelineBreadCrumbBorderOffset);
                 if(isVisibleInTheRectangle && isCenterInside) {
                     var length = vc.breadCrumbs.length;
                     if(length > 1) {
@@ -1137,12 +1156,25 @@ var CZ;
                     vc.breadCrumbs.push({
                         vcElement: this
                     });
-                    var centerEvent = this.getClosestTimelineEvent(viewport2d.visible.centerX);
+                }
+                if(isVisibleInTheRectangle) {
+                    var centerEvent = this.getClosestTimelineEvent(visibleBox);
                     if(centerEvent) {
-                        if(centerEvent.canvasContentItem.isVisible(visibleBox)) {
-                            if(!this.vc.currentlyViewedEvent || this.vc.currentlyViewedEvent.id !== centerEvent.id) {
-                                this.vc.currentlyViewedEvent = centerEvent;
-                                centerEvent.showContentItem();
+                        if(centerEvent.canvasContentItem.isActive) {
+                            if(centerEvent.canvasContentItem.isVisible(visibleBox)) {
+                                if(!this.vc.currentlyViewedEvent || this.vc.currentlyViewedEvent.id !== centerEvent.id) {
+                                    this.vc.currentlyViewedEvent = centerEvent;
+                                    centerEvent.showContentItem();
+                                }
+                            }
+                        } else {
+                            if(typeof (this.vc.currentlyViewedEvent) !== 'undefined') {
+                                if(this.vc.currentlyViewedEvent.parent.id == this.id || !this.vc.currentlyViewedEvent.canvasContentItem.isActive) {
+                                    this.vc.currentlyViewedEvent.hideContentItem();
+                                    this.vc.currentlyViewedEvent = undefined;
+                                }
+                            } else {
+                                $('#info-box').addClass('info-box-hidden');
                             }
                         }
                     } else {
@@ -1152,7 +1184,7 @@ var CZ;
                                 this.vc.currentlyViewedEvent = undefined;
                             }
                         } else {
-                            $('#info-box').attr('class', 'info-box-hidden');
+                            $('#info-box').addClass('info-box-hidden');
                         }
                     }
                 }
@@ -1541,10 +1573,12 @@ var CZ;
             }
             this.img.addEventListener("error", onCanvasImageLoadError, false);
             this.img.src = imageSource;
+            $('#info-box').addClass('loading');
             this.render = function (ctx, visibleBox, viewport2d, size_p, opacity) {
                 if(!this.img.isLoaded) {
                     return;
                 }
+                $('#info-box').removeClass('loading');
                 var p = viewport2d.pointVirtualToScreen(vx + vw / 2, vy + vh / 2);
                 ctx.globalAlpha = opacity;
                 var imageScale = size_p.x / this.img.width;
@@ -2269,41 +2303,44 @@ var CZ;
                 return this.parent.getPreviousEvent(this);
             };
             this.showContentItem = function () {
-                this.recentlyActive = true;
-                $('#info-heading').text(this.contentItem.title);
-                $('#info-date').text(CZ.Dates.convertCoordinateToYearString(this.x + this.width / 2));
-                $('#event-content').html('<p>' + this.contentItem.description + '</p>');
-                $('#event-timeline-label').text(this.parent.title + ' Timeline');
-                $('#event-timeline-link').data('timelineId', this.parent.id);
-                $('#event-timeline-link').attr('href', '#' + this.parent.id);
-                var nextEvent = this.parent.getSiblingEvent(this, true);
-                var prevEvent = this.parent.getSiblingEvent(this, false);
-                if(nextEvent) {
-                    $('#event-next-link').data('eventId', nextEvent.id);
-                    $('#event-next-link').removeClass('no-event');
-                } else {
-                    $('#event-next-link').addClass('no-event');
+                if(!CZ.Viewport.lockEvents) {
+                    this.recentlyActive = true;
+                    $('#info-heading').text(this.contentItem.title);
+                    $('#info-date').text(CZ.Dates.convertCoordinateToYearString(this.x + this.width / 2));
+                    $('#event-content').html('<p>' + this.contentItem.description + '</p>');
+                    $('#info-content').scrollTop(0);
+                    $('#event-timeline-label').text(this.parent.title + ' Timeline');
+                    $('#event-timeline-link').data('timelineId', this.parent.id);
+                    $('#event-timeline-link').attr('href', '#' + this.parent.id);
+                    var nextEvent = this.parent.getSiblingEvent(this, true);
+                    var prevEvent = this.parent.getSiblingEvent(this, false);
+                    if(nextEvent) {
+                        $('#event-next-link').data('eventId', nextEvent.id);
+                        $('#event-next-link').removeClass('no-event');
+                    } else {
+                        $('#event-next-link').addClass('no-event');
+                    }
+                    if(prevEvent) {
+                        $('#event-previous-link').data('eventId', prevEvent.id);
+                        $('#event-previous-link').removeClass('no-event');
+                    } else {
+                        $('#event-previous-link').addClass('no-event');
+                    }
+                    var headerOffset = ($('#info-header').outerHeight() + 33);
+                    var totalHeight = $('#info-header').outerHeight(true) + $('#event-content').outerHeight(true) + 16 + 60;
+                    var maxHeight = (this.vc.canvasHeight - 104);
+                    var contentHeight = Math.min(totalHeight, maxHeight) - headerOffset - 44 + 36;
+                    $('#info-content').css('top', headerOffset + 'px');
+                    $('#info-content').css('height', contentHeight + 'px');
+                    $('#info-box').css({
+                        'height': totalHeight + 'px',
+                        'max-height': maxHeight + 'px'
+                    });
+                    setTimeout(function () {
+                        $('#info-box').removeClass('info-box-hidden');
+                    }, 200);
+                    CZ.Viewport.allowVerticalPan = true;
                 }
-                if(prevEvent) {
-                    $('#event-previous-link').data('eventId', prevEvent.id);
-                    $('#event-previous-link').removeClass('no-event');
-                } else {
-                    $('#event-previous-link').addClass('no-event');
-                }
-                var headerOffset = ($('#info-header').outerHeight() + 33);
-                var totalHeight = $('#info-header').outerHeight(true) + $('#event-content').outerHeight(true) + 16 + 60;
-                var maxHeight = (this.vc.canvasHeight - 104);
-                var contentHeight = Math.min(totalHeight, maxHeight) - headerOffset - 44 + 36;
-                $('#info-content').css('top', headerOffset + 'px');
-                $('#info-content').css('height', contentHeight + 'px');
-                $('#info-box').css({
-                    'height': totalHeight + 'px',
-                    'max-height': maxHeight + 'px'
-                });
-                setTimeout(function () {
-                    $('#info-box').removeClass('info-box-hidden');
-                }, 200);
-                CZ.Viewport.allowVerticalPan = true;
             };
             this.hideContentItem = function () {
                 $('#info-box').addClass('info-box-hidden');

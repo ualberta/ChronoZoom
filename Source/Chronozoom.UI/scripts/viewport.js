@@ -2,6 +2,7 @@ var CZ;
 (function (CZ) {
     (function (Viewport) {
         Viewport.allowVerticalPan = false;
+        Viewport.lockEvents = false;
         function VisibleRegion2d(centerX, centerY, scale) {
             this.centerX = centerX;
             this.centerY = centerY;
@@ -15,7 +16,9 @@ var CZ;
             this.height = height;
             this.eventOffset = (CZ.Common.vc.height() - CZ.Settings.fixedTimelineAreaHeight) / 2;
             this.widthScreenToVirtual = function (wp) {
-                return this.visible.scale * wp;
+                if(this.visible) {
+                    return this.visible.scale * wp;
+                }
             };
             this.heightScreenToVirtual = function (hp) {
                 if(this.visible) {

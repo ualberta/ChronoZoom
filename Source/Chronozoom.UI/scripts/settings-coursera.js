@@ -32,7 +32,7 @@ var CZ;
         Settings.timelineHoveredBoxBorderColor = 'rgb(232,232,232)';
         Settings.timelineBreadCrumbBorderOffset = 50;
         Settings.timelineCenterOffsetAcceptableImplicity = 0.00001;
-        Settings.baseDataPath = 'http://d101.loc/Dumps/';
+        Settings.baseDataPath = 'https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FDumps%2F';
         Settings.timelineEndTicks = 8;
         Settings.fixedTimelineHeight = 34;
         Settings.fixedTimelineOffset = 20;
@@ -61,9 +61,9 @@ var CZ;
         Settings.timelineFixedHeadingWidth = 120;
         Settings.fixedTimelineTooltipThreshold = 30;
         Settings.fixedTimelineEventWidth = 200;
-        Settings.eventImageBasePath = 'http://d101.loc/';
-        Settings.eventFullResFolder = 'Events/';
-        Settings.eventThumbnailFolder = 'Events/thumbs/';
+        Settings.eventImageBasePath = 'https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2F';
+        Settings.eventFullResFolder = 'Events%2F';
+        Settings.eventThumbnailFolder = 'Events%2Fthumbs%2F';
         Settings.fixedEventSizeMap = [
             293700000, 
             293700000, 

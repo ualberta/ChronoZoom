@@ -2,6 +2,7 @@
     export module Viewport {
 
         export var allowVerticalPan = false;
+        export var lockEvents = false;
 
         // Creates an instance of VisibleRegion.
         // @param centerX, centerY  (number)     center point of visible rectangle (in virtual coordinates)
@@ -32,7 +33,8 @@
             // @param wp    (number)    Amount of pixels
             // @returns amount of h-units 
             this.widthScreenToVirtual = function (wp) {
-                return this.visible.scale * wp;
+                if(this.visible)
+                    return this.visible.scale * wp;
             };
             // Converts pixels in t-units 
             // @param hp    (number)    Amount of pixels

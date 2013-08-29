@@ -17,6 +17,13 @@ var CZ;
                 var rw = vp.widthScreenToVirtual(vp.width) / el.width;
                 var rh = vp.heightScreenToVirtual(vp.height) / el.height;
                 var URL = getURL();
+                if(ry < -1) {
+                    ry = -1;
+                } else {
+                    if(ry > 1) {
+                        ry = 1;
+                    }
+                }
                 nav += '@x=' + rx + "&y=" + ry + "&w=" + rw + "&h=" + rh;
                 if(typeof URL.hash.params != 'undefined') {
                     if(typeof URL.hash.params['bookmark'] != 'undefined') {
@@ -105,6 +112,12 @@ var CZ;
                     } else {
                         if(start == "y=") {
                             y = parseFloat(parts[i].substring(2));
+                            if(y < -1) {
+                                y = -1;
+                            }
+                            if(y > 1) {
+                                y = 1;
+                            }
                         } else {
                             if(start == "w=") {
                                 w = parseFloat(parts[i].substring(2));

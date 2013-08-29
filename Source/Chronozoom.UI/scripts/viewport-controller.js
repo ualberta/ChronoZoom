@@ -318,6 +318,9 @@ var CZ;
             }, 1000);
             this.PanViewportAccessor = PanViewport;
             this.moveToVisible = function (visible, noAnimation) {
+                if(visible == null) {
+                    return;
+                }
                 var currentViewport = getViewport();
                 var targetViewport = new CZ.Viewport.Viewport2d(currentViewport.aspectRatio, currentViewport.width, currentViewport.height, visible);
                 var vbox = CZ.Common.viewportToViewBox(targetViewport);

@@ -281,6 +281,7 @@ var CZ;
         }
         BreadCrumbs.breadCrumbNavRight = breadCrumbNavRight;
         function clickOverBreadCrumb(timelineID, breadCrumbLinkID) {
+            CZ.Viewport.lockEvents = true;
             CZ.Search.goToSearchResult(timelineID);
             var selector = "#bc_" + breadCrumbLinkID;
             var tableOffset = $("#breadcrumbs-table tr").position().left;

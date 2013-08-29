@@ -152,7 +152,7 @@ a:visited {
   overflow: hidden;
   width: 100%;
   height: 100%;
-	background-image: url('../Images/pt-bg.jpg');
+	background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fpt-bg.jpg');
   background-position: 50% 50%;
   -webkit-background-size: 125%;
   -moz-background-size: 125%;
@@ -202,7 +202,9 @@ Infobox
 *****/
 
 #info-box {
-  background:rgba(255, 255, 255, 0.95);
+  background-color:#fff;
+  background-color:rgba(255, 255, 255, 0.95);
+  background-image:none;
   position:fixed;
   left:1em;
   top:1em;
@@ -280,7 +282,7 @@ header {
   font-size:1em;
 }
 
-#event-controls {
+#event-controls, .intro-controls {
   margin:0;
   padding:0;
   list-style:none;
@@ -291,12 +293,14 @@ header {
   height: 44px;
 }
 
-#event-controls li {
+#event-controls li,
+.intro-controls li {
   display:block;
   margin-left:-3px;
 }
 
-#event-controls li a {
+#event-controls li a,
+.intro-controls li a {
   display: block;
   background: #DDD;
   color: #666;
@@ -310,7 +314,8 @@ header {
   border-color: #CCC;
 }
 
-#event-controls li a:hover {
+#event-controls li a:hover,
+.intro-controls li a:hover {
   border-color:#3394a4;
   background-color:#eee;
 }
@@ -320,7 +325,7 @@ header {
   display:inline-block;
   width:16px;
   height:16px;
-  background-image: url('../Images/event-controls.png');
+  background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fevent-controls.png');
   background-repeat: no-repeat;
   position:relative;
   top:2px;
@@ -390,6 +395,12 @@ header {
   background-position: top right;
   display:inline-block;
   margin-left:10px;
+}
+
+#info-box.loading {
+  background-image: url(https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Fspinner.gif);
+  background-repeat: no-repeat;
+  background-position: 21em 2em;
 }
 /***********************************************************
 
@@ -748,7 +759,7 @@ header {
   opacity: 0.9;
 }
 #defaultBox {
-  background-image: url('../images/defaultGradientBox.jpg');
+  background-image: url('https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2FdefaultGradientBox.jpg');
 }
 .bubbleInfo span {
   color: #fff;
@@ -1170,11 +1181,11 @@ nav ul li ul.slider-current { left:100% }
 nav ul li ul.slider-left { left:0 }
 nav ul li ul.slider-right { left:200% }
 
-nav ul li.about a { border-left-color:rgba(0,226,255,.85) }
-nav ul li.products a { border-left-color:rgba(0,226,255,.65) }
-nav ul li.blog a { border-left-color:rgba(0,226,255,.45) }
-nav ul li.resources a { border-left-color:rgba(0,226,255,.3) }
-nav ul li.contact a { border-left-color:rgba(0,226,255,.125) }
+nav ul li.root1 a { border-left-color:rgba(0,226,255,.85) }
+nav ul li.root2 a { border-left-color:rgba(0,226,255,.65) }
+nav ul li.root3 a { border-left-color:rgba(0,226,255,.45) }
+nav ul li.root4 a { border-left-color:rgba(0,226,255,.3) }
+nav ul li.root5 a { border-left-color:rgba(0,226,255,.125) }
 
 nav ul li a:hover {
   background:rgba(0,0,0,.35);
@@ -1213,6 +1224,82 @@ nav ul li a:hover {
 .footer-link:hover {
   cursor: pointer;
 }
+
+.intro-box {
+  position:absolute;
+  top:0;
+  left:0;
+  height:100%;
+  bottom:0;
+  right:0;
+  width:100%;
+  z-index:9998;
+  background-color:rgba(0,0,0,0.65);
+}
+
+.intro-box-content {
+  background:rgba(255, 255, 255, 0.95);
+  position:absolute;
+  left:1em;
+  top:1em;
+  width:20em;
+  color:#000;
+  z-index:9998;
+  height:25.5em;
+  box-shadow: 2px 4px 20px;
+  -webkit-box-shadow: 2px 4px 20px;
+  -moz-box-shadow: 2px 4px 20px;
+  line-height:1.5em;
+  padding:1.65em 2em;
+  transition: all 0.15s ease-in-out;
+  -webkit-transition: all 0.15s ease-in-out;
+  -moz-transition: all 0.15s ease-in-out;
+}
+
+.intro-box-content h1 {
+  font-family:'OSPDIN';
+  margin:0;
+  font-size:1.8em;
+  line-height:1em;
+  font-weight:300;
+}
+
+.intro-instructions {
+    position: absolute;
+    top: 3.5em;
+    overflow: auto;
+    left: 0em;
+    right:0em;
+    padding: 0 2em;
+    border-top: 1px solid #ccc;
+    margin-top:1em;
+    z-index:9999;
+}
+.intro-images {
+  height:205px;
+}
+
+.intro-images img {
+  position:absolute;
+  left:0em; top: 0;
+  right:0em;
+  
+}
+
+.intro-controls {
+  height:75px;
+}
+
+#start-button {
+  font-size:1.5em;
+  height:auto;
+  padding:1em 0;
+}
+
+
+
+
+
 /***********************************************************
 
                         Breadcrumbs

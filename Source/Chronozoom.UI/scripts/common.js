@@ -160,7 +160,7 @@ var CZ;
             }
         }
         function loadData() {
-            var url = 'Dumps/geo-timescale.json';
+            var url = CZ.Settings.baseDataPath + 'geo-timescale.json';
             return $.ajax({
                 cache: false,
                 type: "GET",

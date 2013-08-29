@@ -31,6 +31,7 @@ module CZ {
         Array for logging of inners messages and exceptions
         */
 
+
         var searchString;
         export var ax;
         export var axis;
@@ -215,7 +216,7 @@ module CZ {
 
         //loading the data from the service
         export function loadData() {
-          var url = 'Dumps/geo-timescale.json';
+          var url = CZ.Settings.baseDataPath+'geo-timescale.json';
           return $.ajax({ //main content fetching
               cache: false,
               type: "GET",

@@ -1,4 +1,4 @@
-﻿module CZ {
+module CZ {
     export module Settings {
         export var czDataSource = 'db'; // possible values: db, relay, dump
         // configures whether we should use Chronozoom.svc (directly accesses the database) ['db'], or ChronozoomRelay.svc (using HTTP GET) ['relay'], or saved as local file ResponseDump.txt ['dump'].
@@ -41,8 +41,7 @@
         export var timelineBreadCrumbBorderOffset = 50; // maximum allowed offset of timeline from canvas edge to show breadcrumb
         export var timelineCenterOffsetAcceptableImplicity = 0.00001; // acceptable implicity in position of center of canvas inside timeline
 
-        export var baseDataPath = 'http://d101.loc/Dumps/';
-
+        export var baseDataPath = 'https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FDumps%2F';
 
         export var timelineEndTicks = 8; // Height for ticks
         export var fixedTimelineHeight = 34; // Fixed timeline height
@@ -55,9 +54,9 @@
         export var fixedTimelineTooltipThreshold = 30;
         export var fixedTimelineEventWidth = 200;
 
-        export var eventImageBasePath = 'http://d101.loc/';
-        export var eventFullResFolder = 'Events/';
-        export var eventThumbnailFolder = 'Events/thumbs/';
+        export var eventImageBasePath = 'https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2F';
+        export var eventFullResFolder = 'Events%2F';
+        export var eventThumbnailFolder = 'Events%2Fthumbs%2F';
 
         export var fixedEventSizeMap = [293700000,293700000,293700000,12500000,12500000,12500000];
         export var fixedEventUnfocusedOpacity = 0.1;

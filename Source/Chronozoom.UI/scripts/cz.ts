@@ -164,9 +164,6 @@ module CZ {
                 (<any>body).style.overflow = "hidden";
             }
 
-            // init seadragon. set path to image resources for nav buttons 
-            Seadragon.Config.imagePath = CZ.Settings.seadragonImagePath;
-
             CZ.Common.maxPermitedVerticalRange = { top: 0, bottom: 10000000 }; //temporary value until there is no data
 
             if (window.location.hash)
@@ -249,11 +246,15 @@ module CZ {
 
             // Axis: enable showing thresholds
             CZ.Common.controller.onAnimationComplete.push(function () {
+                CZ.Viewport.lockEvents = false;
                 //CZ.Common.ax.axis("enableThresholds", true);
                 //if (window.console && console.log("thresholds enabled"));
+
             });
             //Axis: disable showing thresholds
             CZ.Common.controller.onAnimationStarted.push(function () {
+                //console.log('locking');
+                
                 //CZ.Common.ax.axis("enableThresholds", true);
                 //if (window.console && console.log("thresholds disabled"));
             });
