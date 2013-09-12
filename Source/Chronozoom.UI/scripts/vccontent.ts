@@ -1641,12 +1641,12 @@ module CZ {
                     var centerEvent = this.getClosestTimelineEvent(visibleBox);
                     if(centerEvent) {
                         if(centerEvent.canvasContentItem.isActive) {
-                            //console.log('whaaa');
                             if (centerEvent.canvasContentItem.isVisible(visibleBox)) {
                                 if(!this.vc.currentlyViewedEvent || this.vc.currentlyViewedEvent.id !== centerEvent.id) {
                                     //console.log('there is an active event in the center of the viewport, showing');
                                     //centerEvent.canvasContentItem.isActive = true;
-                                    this.vc.currentlyViewedEvent = centerEvent;
+
+                                    this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = centerEvent;
                                     centerEvent.showContentItem();
                                 }
                             }
@@ -1657,7 +1657,7 @@ module CZ {
                                     //console.log('no active events, unsetting current item, hiding');
                                     //this.vc.currentlyViewedEvent.canvasContentItem.isActive = false;
                                     this.vc.currentlyViewedEvent.hideContentItem();
-                                    this.vc.currentlyViewedEvent = undefined;
+                                    this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = undefined;
                                 }
                             }
                             else {
@@ -1670,7 +1670,7 @@ module CZ {
                                 //console.log('no active events, unsetting current item, hiding');
                                 //this.vc.currentlyViewedEvent.canvasContentItem.isActive = false;
                                 this.vc.currentlyViewedEvent.hideContentItem();
-                                this.vc.currentlyViewedEvent = undefined;
+                                this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = undefined;
                             }
                         }
                         else {

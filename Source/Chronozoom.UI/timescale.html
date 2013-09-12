@@ -15,12 +15,27 @@
                 }
             }
         })();
+
+      var _vwo_code=(function(){
+      var account_id=36096,
+      settings_tolerance=2000,
+      library_tolerance=2500,
+      use_existing_jquery=false,
+      // DO NOT EDIT BELOW THIS LINE
+      f=false,d=document;return{use_existing_jquery:function(){return use_existing_jquery;},library_tolerance:function(){return library_tolerance;},finish:function(){if(!f){f=true;var a=d.getElementById('_vis_opt_path_hides');if(a)a.parentNode.removeChild(a);}},finished:function(){return f;},load:function(a){var b=d.createElement('script');b.src=a;b.type='text/javascript';b.innerText;b.onerror=function(){_vwo_code.finish();};d.getElementsByTagName('head')[0].appendChild(b);},init:function(){settings_timer=setTimeout('_vwo_code.finish()',settings_tolerance);this.load('//dev.visualwebsiteoptimizer.com/j.php?a='+account_id+'&u='+encodeURIComponent(d.URL)+'&r='+Math.random());var a=d.createElement('style'),b='body{opacity:0 !important;filter:alpha(opacity=0) !important;background:none !important;}',h=d.getElementsByTagName('head')[0];a.setAttribute('id','_vis_opt_path_hides');a.setAttribute('type','text/css');if(a.styleSheet)a.styleSheet.cssText=b;else a.appendChild(d.createTextNode(b));h.appendChild(a);return settings_timer;}};}());_vwo_settings_timer=_vwo_code.init();
     </script>
+
+    <!-- 
+      Geologic Time Scale
+      Built from ChronoZoom Project <http://www.chronozoom.com/>, available under the Apache 2.0 license 
+      New timeline and event representations created by Lane Olson <lolson@ualberta.ca>
+    -->
 
     <link rel="stylesheet" type="text/css" href="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Fdino-cz.css" />
     <link href='https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fcss%2Ffonts.css' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <!-- <script type="text/javascript" src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script> -->
+    <script type="text/javascript" src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fscripts%2Fjquery-ui-1.10.3.custom.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
     <script type="text/javascript" src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fscripts%2Fplugins.js"></script>
     <script type="text/javascript" src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Fscripts%2Fcz.min.js"></script>
@@ -33,20 +48,22 @@
             document.getElementsByTagName("head")[0].appendChild(script);
         }
 
-        if (Modernizr.canvas) {
-
-        }
-        else {
-           window.location = "./fallback.html"
+        if (!Modernizr.canvas) {
+           window.location = "https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2Ffallback.html"
         }
     </script>
 
-    <title>Dino 101 - Geological Timescale Viewer</title>
+    <title>Dino 101 - Geologic Time Scale</title>
 </head>
-<body>
+<body style="zoom:1">
+  <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-W2G8DL"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayerTop','GTM-W2G8DL');</script>
     <div id="content">
-        
-
         <div id="vc-container" >
             <div id="vc">
                 <div id="layerTimelines" onselectstart="return false;">
@@ -147,13 +164,13 @@
     </div>
     <div id="introBox" class="intro-box">
       <div class="intro-box-content">
-        <h1>Geological Timescale</h1>
+        <h1>Geologic Time Scale</h1>
         <div class="intro-instructions">
           <div class="intro-images">
-            <img src="/Images/instructions/1.jpg" alt="Navigate timelines" />
-            <img src="/Images/instructions/2.jpg" alt="Navigate Events" />
+            <img src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Finstructions%2F1.jpg" alt="Navigate timelines" />
+            <img src="https://d396qusza40orc.cloudfront.net/dino101%2Ftimescale%2FImages%2Finstructions%2F2.jpg" alt="Navigate Events" />
           </div>
-          <p>Navigate through this interactive timescale to find and learn about important events in the history of Earth.</p>
+          <p>Navigate through this interactive time scale to find and learn about important events in the history of Earth.</p>
         </div>
           <ul class="intro-controls">
             <li>
@@ -162,6 +179,7 @@
           </ul>
       </div>
     </div>
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-NKJCGZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <script type="text/javascript">
         $(document).ready(function() {
 
@@ -233,6 +251,12 @@
             });
           }
         });
+        
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayerBottom','GTM-NKJCGZ');
     </script>
 </body>
 </html>

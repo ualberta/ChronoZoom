@@ -1151,12 +1151,15 @@ nav ul li a {
   white-space: nowrap;
   border-left:.5em solid;
   font-size:1.2em;
+  position:relative;
 }
 
 nav ul li a strong {
-  float:right;
-  font-size:.6em;
-  margin-top:.25em
+  display: block;
+  font-size: 0.6em;
+  position: absolute;
+  right: 1em;
+  top: 1.65em;
 }
 
 nav ul li a.slider-back {
@@ -1332,7 +1335,7 @@ nav ul li a:hover {
   line-height: 100%;
 }
 #breadcrumbs-table {
-  position: relative;
+  position: absolute;
   margin: 0;
   padding: 0;
   width: auto;
@@ -1341,7 +1344,7 @@ nav ul li a:hover {
   cellspacing: 0;
   cellpadding: 0;
   border-spacing: 0;
-  margin-top: 1.5em;
+  top: 1.5em;
 }
 #breadcrumbs-table tr {
   position: absolute;

@@ -193,13 +193,17 @@ var CZ;
             });
             CZ.Common.controller.onAnimationComplete.push(function () {
                 CZ.Viewport.lockEvents = false;
+                if(typeof (CZ.Common.centerActiveEvent) !== 'undefined') {
+                    if(CZ.Common.centerActiveEvent.canvasContentItem.isActive) {
+                        CZ.Common.centerActiveEvent.showContentItem();
+                    }
+                }
             });
             CZ.Common.controller.onAnimationStarted.push(function () {
             });
             CZ.Common.controller.onAnimationUpdated.push(function (oldId, newId) {
                 if(oldId != undefined && newId == undefined) {
-                    setTimeout(function () {
-                    }, 500);
+                    CZ.Viewport.lockEvents = false;
                 }
             });
             CZ.Common.updateLayout();

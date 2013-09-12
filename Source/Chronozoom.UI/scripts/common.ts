@@ -31,6 +31,7 @@ module CZ {
         Array for logging of inners messages and exceptions
         */
 
+        export var centerActiveEvent;
 
         var searchString;
         export var ax;

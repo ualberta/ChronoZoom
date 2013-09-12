@@ -1163,7 +1163,7 @@ var CZ;
                         if(centerEvent.canvasContentItem.isActive) {
                             if(centerEvent.canvasContentItem.isVisible(visibleBox)) {
                                 if(!this.vc.currentlyViewedEvent || this.vc.currentlyViewedEvent.id !== centerEvent.id) {
-                                    this.vc.currentlyViewedEvent = centerEvent;
+                                    this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = centerEvent;
                                     centerEvent.showContentItem();
                                 }
                             }
@@ -1171,7 +1171,7 @@ var CZ;
                             if(typeof (this.vc.currentlyViewedEvent) !== 'undefined') {
                                 if(this.vc.currentlyViewedEvent.parent.id == this.id || !this.vc.currentlyViewedEvent.canvasContentItem.isActive) {
                                     this.vc.currentlyViewedEvent.hideContentItem();
-                                    this.vc.currentlyViewedEvent = undefined;
+                                    this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = undefined;
                                 }
                             } else {
                                 $('#info-box').addClass('info-box-hidden');
@@ -1181,7 +1181,7 @@ var CZ;
                         if(typeof (this.vc.currentlyViewedEvent) !== 'undefined') {
                             if(this.vc.currentlyViewedEvent.parent.id == this.id) {
                                 this.vc.currentlyViewedEvent.hideContentItem();
-                                this.vc.currentlyViewedEvent = undefined;
+                                this.vc.currentlyViewedEvent = CZ.Common.centerActiveEvent = undefined;
                             }
                         } else {
                             $('#info-box').addClass('info-box-hidden');

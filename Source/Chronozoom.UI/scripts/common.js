@@ -6,6 +6,7 @@ var CZ;
         Common.controller;
         Common.isAxisFreezed = true;
         Common.startHash;
+        Common.centerActiveEvent;
         var searchString;
         Common.ax;
         Common.axis;

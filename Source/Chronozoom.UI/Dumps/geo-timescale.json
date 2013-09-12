@@ -355,7 +355,7 @@
 			        	{ "contentItems" : 
 				        	[ { "Order" : 1,
 				                "attribution" : "",
-				                "description" : "During much of the Cretaceous, the area that is now Europe was broken up into many smaller, individual islands, creating an archipelago that stretched for thousands of kilometres. In the Early Cretaceous, in what is now part of England, herbivorous iguanodonts were the most common dinosaurs present. <em>Iguanodon</em>, named in 1825 by Gideon Mantell, was only the second dinosaur to ever named. The first dinosaur ever named – <em>Megalosaurus</em>, another dinosaur found in England – was named only the year before, in 1824, by William Buckland.",
+				                "description" : "During much of the Cretaceous, the area that is now Europe was broken up into many smaller, individual islands, creating an archipelago that stretched for thousands of kilometres. In the Early Cretaceous, in what is now part of England, herbivorous iguanodonts were the most common dinosaurs present. <em>Iguanodon</em>, named in 1825 by Gideon Mantell, was only the second dinosaur to ever be named. The first dinosaur ever named – <em>Megalosaurus</em>, another dinosaur found in England – was named only the year before, in 1824, by William Buckland.",
 				                "id" : "e0000000-e000-e000-e000-000000000015",
 				                "mediaSource" : "",
 				                "mediaType" : "Picture",
@@ -581,7 +581,7 @@
 		  "exhibits" : [ { "contentItems" : 
 		  	[ { "Order" : 1,
 		          "attribution" : "",
-		          "description" : "Although the earth had abundant and diverse life living on it for over billion years by this point, it was about 2 billion years ago that the first multicellular life forms existed. Before this, we only have evidence of single-celled organisms; even large structures like stromatolites are made up of many individual organisms living in a colony, rather than a single, multicellular organism. Multicellularity likely first evolved in an algae or similar group, and may have looked like these simple, coiled <em>Grypania</em>. Multicellularity would independently appear again in several lineages, including plants, fungi, slime molds and, of course, animals.",
+		          "description" : "Although the earth had abundant and diverse life living on it for over a billion years by this point, it was about 2 billion years ago that the first multicellular life forms existed. Before this, we only have evidence of single-celled organisms; even large structures like stromatolites are made up of many individual organisms living in a colony, rather than a single, multicellular organism. Multicellularity likely first evolved in an algae or similar group, and may have looked like these simple, coiled <em>Grypania</em>. Multicellularity would independently appear again in several lineages, including plants, fungi, slime molds and, of course, animals.",
 		          "id" : "e0000000-e000-e000-e000-000000000003",
 		          "mediaSource" : "http://upload.wikimedia.org/wikipedia/commons/a/a3/Grypania_spiralis.JPG",
 		          "mediaType" : "Picture",

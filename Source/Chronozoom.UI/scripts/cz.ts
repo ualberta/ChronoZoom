@@ -247,6 +247,11 @@ module CZ {
             // Axis: enable showing thresholds
             CZ.Common.controller.onAnimationComplete.push(function () {
                 CZ.Viewport.lockEvents = false;
+                if(typeof(CZ.Common.centerActiveEvent) !== 'undefined') {
+                    if(CZ.Common.centerActiveEvent.canvasContentItem.isActive)
+                        CZ.Common.centerActiveEvent.showContentItem();
+                }
+                    
                 //CZ.Common.ax.axis("enableThresholds", true);
                 //if (window.console && console.log("thresholds enabled"));
 
@@ -261,10 +266,11 @@ module CZ {
             // Axis: enable showing thresholds
             CZ.Common.controller.onAnimationUpdated.push(function (oldId, newId) {
                 if (oldId != undefined && newId == undefined) { // animation interrupted
-                    setTimeout(function () {
+                    CZ.Viewport.lockEvents = false;
+                    //setTimeout(function () {
                         //CZ.Common.ax.axis("enableThresholds", true);
                         //if (window.console && console.log("thresholds enabled"));
-                    }, 500);
+                    //}, 500);
                 }
             });
 
